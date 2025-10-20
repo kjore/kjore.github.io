@@ -330,17 +330,17 @@
 </ul>
 <h3 id="3-5-FTP协议"><a href="#3-5-FTP协议" class="headerlink" title="3.5 FTP协议"></a><strong>3.5 FTP协议</strong></h3><h4 id="3-5-1-技术特点"><a href="#3-5-1-技术特点" class="headerlink" title="3.5.1 技术特点"></a><strong>3.5.1 技术特点</strong></h4><p>&emsp;&emsp;FTP（File Transfer Protocol，文件传输协议）是一种基于客户端&#x2F;服务器（C&#x2F;S）模式的应用层协议，用于在网络中的主机之间可靠地传输文件。它是互联网上最早使用、最广泛的文件传输协议之一，运行在 TCP 协议之上，默认使用端口  <strong>21</strong> 和  <strong>20</strong> 。</p>
 <p>&emsp;&emsp;FTP 使用 <strong>TCP 协议</strong> 进行数据传输，保证了文件传输过程中的数据可靠、有序、不丢失。与 UDP 相比，FTP 通过 TCP 的三次握手、流量控制与重传机制确保传输的完整性。FTP使用了两个并行的TCP来传输文件：一个是控制连接（port:21），一个是数据连接(port:20)。控制连接用于在两个主机之间传输控制信息，如口令，用户标识，存放、获取文件等命令。数据连接用于实际发送一个文件,发送完文件之后数据连接会关闭。因为FTP协议使用一个独立的控制连接，所以，也称FTP的控制信息是带外（out-of-band）传送的。</p>
-<style>.yhlwuicsshjh{}</style>
+<style>.iysgjflupcik{}</style>
 
 <p>&emsp;&emsp;FTP支持两种方式的传输：文本（ASCII）方式和二进制（Binary）方式。通常文本文件的传输采用ASCII方式；而图象、声音文件、加密和压缩文件等非文本文件采用二进制方式传输；如果为了从一个系统上传输文件而使用了与本地系统不同的计算机字节位数，那么就必须使用Tenex模式。FTP以ASCII方式作为默认的文件传输方式。</p>
 <p>&emsp;&emsp;FTP有两种传输模式——主动（FTP Port）模式和被动（FTP Passive）模式。主动模式（Active Mode）： 服务器主动从其20端口连接到客户端指定的一个高位端口。这种模式在客户端位于NAT或防火墙后时会遇到问题。被动模式（Passive Mode）： 客户端主动连接到服务器指定的一个高位端口。这是目前更常用的模式，因为它对客户端侧的防火墙更友好。</p>
 <figure>
-    <style>.rzyronqbqylv{}</style>
+    <style>.qpoyfmotndcm{}</style>
     <figcaption>主动模式</figcaption>
 </figure>
 
 <figure>
-    <style>.oreankgwwpia{}</style>
+    <style>.ghrkiqcdzadt{}</style>
     <figcaption>被动模式</figcaption>
 </figure>
 
