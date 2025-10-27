@@ -184,39 +184,58 @@ key)：一个关系中的属性，其值引用另一个关系的主键或候选�
 <p><strong>完整性约束</strong>： 实体完整性：主键属性不能为空
 参照完整性：外键值要么为空，要么必须在引用的关系中存在对应的主键值（外键作为主键的那个表要有它的记录）
 域完整性：属性值必须在其定义的域内</p>
-<h2 id="关系模型的操作-relational-model-operations-关系代数-relational-algebra">关系模型的操作
+<h2
+id="关系模型的操作-relational-model-operations-关系代数-relational-algebra">关系模型的操作
 Relational Model Operations 关系代数 Relational Algebra</h2>
 <p>基本操作：</p>
 <ul>
-<li>选择（Selection）：从关系中选取满足条件的元组 <span class="math inline"><em>σ</em><sub><em>条</em><em>件</em></sub>(<em>关</em><em>系</em>)</span>,eg
-<span class="math inline"><em>σ</em><sub><em>d</em><em>e</em><em>p</em><em>t</em>_<em>n</em><em>a</em><em>m</em><em>e</em>=<sup>′</sup><em>C</em><em>S</em><sup>′</sup></sub>(<em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em>)</span></li>
-<li>投影（Projection）：从关系中选取指定的属性 <span class="math inline"><em>π</em><sub><em>属</em><em>性</em></sub>(<em>关</em><em>系</em>)</span>,eg
-<span class="math inline"><em>π</em><sub><em>n</em><em>a</em><em>m</em><em>e</em>, <em>a</em><em>g</em><em>e</em></sub>(<em>s</em><em>t</em><em>u</em><em>d</em><em>e</em><em>n</em><em>t</em>)</span>
+<li>选择（Selection）：从关系中选取满足条件的元组 <span
+class="math inline"><em>σ</em><sub><em>条</em><em>件</em></sub>(<em>关</em><em>系</em>)</span>,eg
+<span
+class="math inline"><em>σ</em><sub><em>d</em><em>e</em><em>p</em><em>t</em>_<em>n</em><em>a</em><em>m</em><em>e</em>=<sup>′</sup><em>C</em><em>S</em><sup>′</sup></sub>(<em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em>)</span></li>
+<li>投影（Projection）：从关系中选取指定的属性 <span
+class="math inline"><em>π</em><sub><em>属</em><em>性</em></sub>(<em>关</em><em>系</em>)</span>,eg
+<span
+class="math inline"><em>π</em><sub><em>n</em><em>a</em><em>m</em><em>e</em>, <em>a</em><em>g</em><em>e</em></sub>(<em>s</em><em>t</em><em>u</em><em>d</em><em>e</em><em>n</em><em>t</em>)</span>
 ，投影结果是要去重的</li>
-<li>并（Union）：将两个关系的元组合并，去除重复元组 <span class="math inline"><em>R</em> ∪ <em>S</em></span></li>
-<li>差（Difference）：取一个关系中存在但另一个关系中不存在的元组 <span class="math inline"><em>R</em> − <em>S</em></span></li>
-<li>笛卡尔积（Cartesian Product）：将两个关系的所有元组进行组合。 <span class="math inline"><em>R</em> × <em>S</em></span></li>
-<li>重命名（Rename）：对关系或属性进行重命名 <span class="math inline"><em>ρ</em><sub><em>新</em><em>关</em><em>系</em><em>名</em>(<em>新</em><em>属</em><em>性</em><em>名</em><em>列</em><em>表</em>)</sub>(<em>关</em><em>系</em>)</span></li>
-<li>连接（Join）：将两个关系按某种条件组合成一个新的关系 只出现<span class="math inline">⋈</span>是自然连接：对两个关系进行默认将相同名字的属性等值连接
+<li>并（Union）：将两个关系的元组合并，去除重复元组 <span
+class="math inline"><em>R</em> ∪ <em>S</em></span></li>
+<li>差（Difference）：取一个关系中存在但另一个关系中不存在的元组 <span
+class="math inline"><em>R</em> − <em>S</em></span></li>
+<li>笛卡尔积（Cartesian Product）：将两个关系的所有元组进行组合。 <span
+class="math inline"><em>R</em> × <em>S</em></span></li>
+<li>重命名（Rename）：对关系或属性进行重命名 <span
+class="math inline"><em>ρ</em><sub><em>新</em><em>关</em><em>系</em><em>名</em>(<em>新</em><em>属</em><em>性</em><em>名</em><em>列</em><em>表</em>)</sub>(<em>关</em><em>系</em>)</span></li>
+<li>连接（Join）：将两个关系按某种条件组合成一个新的关系 只出现<span
+class="math inline">⋈</span>是自然连接：对两个关系进行默认将相同名字的属性等值连接
 但join需要显式指定连接条件</li>
 </ul>
-<p><span class="math display"><em>σ</em><sub><em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em>.<em>I</em><em>D</em> = <em>t</em><em>e</em><em>a</em><em>c</em><em>h</em><em>e</em><em>s</em>.<em>I</em><em>D</em></sub>(<em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em> × <em>t</em><em>e</em><em>a</em><em>c</em><em>h</em><em>e</em><em>s</em>)  ⇔  <em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em>⋈<sub><em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em>.<em>I</em><em>D</em> = <em>t</em><em>e</em><em>a</em><em>c</em><em>h</em><em>e</em><em>s</em>.<em>I</em><em>D</em></sub><em>t</em><em>e</em><em>a</em><em>c</em><em>h</em><em>e</em><em>s</em></span></p>
+<p><span
+class="math display"><em>σ</em><sub><em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em>.<em>I</em><em>D</em> = <em>t</em><em>e</em><em>a</em><em>c</em><em>h</em><em>e</em><em>s</em>.<em>I</em><em>D</em></sub>(<em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em> × <em>t</em><em>e</em><em>a</em><em>c</em><em>h</em><em>e</em><em>s</em>)  ⇔  <em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em>⋈<sub><em>i</em><em>n</em><em>s</em><em>t</em><em>r</em><em>u</em><em>c</em><em>t</em><em>o</em><em>r</em>.<em>I</em><em>D</em> = <em>t</em><em>e</em><em>a</em><em>c</em><em>h</em><em>e</em><em>s</em>.<em>I</em><em>D</em></sub><em>t</em><em>e</em><em>a</em><em>c</em><em>h</em><em>e</em><em>s</em></span></p>
 <ul>
-<li>交（Intersection）：取两个关系中都存在的元组 <span class="math inline"><em>R</em> ∩ <em>S</em></span></li>
-<li>赋值（Assignment）：将一个关系的结果赋值给另一个关系 <span class="math inline"><em>R</em> ← <em>S</em></span></li>
+<li>交（Intersection）：取两个关系中都存在的元组 <span
+class="math inline"><em>R</em> ∩ <em>S</em></span></li>
+<li>赋值（Assignment）：将一个关系的结果赋值给另一个关系 <span
+class="math inline"><em>R</em> ← <em>S</em></span></li>
 </ul>
-<p><span class="math display"><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em><em>f</em><em>a</em><em>l</em><em>l</em>_2017 ← <em>π</em><sub><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em>_<em>i</em><em>d</em></sub>(<em>σ</em><sub><em>y</em><em>e</em><em>a</em><em>r</em>=<sup>′</sup>2017<sup>′</sup> ∧ <em>s</em><em>e</em><em>m</em><em>e</em><em>s</em><em>t</em><em>e</em><em>r</em>=<sup>′</sup><em>F</em><em>a</em><em>l</em><em>l</em><sup>′</sup></sub>(<em>s</em><em>e</em><em>c</em><em>t</em><em>i</em><em>o</em><em>n</em>))</span></p>
-<p><span class="math display"><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em><em>s</em><em>p</em><em>r</em><em>i</em><em>n</em><em>g</em>_2018 ← <em>π</em><sub><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em>_<em>i</em><em>d</em></sub>(<em>σ</em><sub><em>y</em><em>e</em><em>a</em><em>r</em>=<sup>′</sup>2018<sup>′</sup> ∧ <em>s</em><em>e</em><em>m</em><em>e</em><em>s</em><em>t</em><em>e</em><em>r</em>=<sup>′</sup><em>S</em><em>p</em><em>r</em><em>i</em><em>n</em><em>g</em><sup>′</sup></sub>(<em>s</em><em>e</em><em>c</em><em>t</em><em>i</em><em>o</em><em>n</em>))</span></p>
-<p><span class="math display"><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em><em>f</em><em>a</em><em>l</em><em>l</em>_2017 ∩ <em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em><em>s</em><em>p</em><em>r</em><em>i</em><em>n</em><em>g</em>_2018</span></p>
+<p><span
+class="math display"><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em><em>f</em><em>a</em><em>l</em><em>l</em>_2017 ← <em>π</em><sub><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em>_<em>i</em><em>d</em></sub>(<em>σ</em><sub><em>y</em><em>e</em><em>a</em><em>r</em>=<sup>′</sup>2017<sup>′</sup> ∧ <em>s</em><em>e</em><em>m</em><em>e</em><em>s</em><em>t</em><em>e</em><em>r</em>=<sup>′</sup><em>F</em><em>a</em><em>l</em><em>l</em><sup>′</sup></sub>(<em>s</em><em>e</em><em>c</em><em>t</em><em>i</em><em>o</em><em>n</em>))</span></p>
+<p><span
+class="math display"><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em><em>s</em><em>p</em><em>r</em><em>i</em><em>n</em><em>g</em>_2018 ← <em>π</em><sub><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em>_<em>i</em><em>d</em></sub>(<em>σ</em><sub><em>y</em><em>e</em><em>a</em><em>r</em>=<sup>′</sup>2018<sup>′</sup> ∧ <em>s</em><em>e</em><em>m</em><em>e</em><em>s</em><em>t</em><em>e</em><em>r</em>=<sup>′</sup><em>S</em><em>p</em><em>r</em><em>i</em><em>n</em><em>g</em><sup>′</sup></sub>(<em>s</em><em>e</em><em>c</em><em>t</em><em>i</em><em>o</em><em>n</em>))</span></p>
+<p><span
+class="math display"><em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em><em>f</em><em>a</em><em>l</em><em>l</em>_2017 ∩ <em>c</em><em>o</em><em>u</em><em>r</em><em>s</em><em>e</em><em>s</em><em>p</em><em>r</em><em>i</em><em>n</em><em>g</em>_2018</span></p>
 <p>扩展操作：</p>
 <ul>
-<li>去重（Duplicate Elimination）：去除关系中的重复元组 <span class="math inline"><em>δ</em>(<em>关</em><em>系</em>)</span></li>
-<li>除<img src="/.io//关系模型/1761144212765.png" alt="1761144212765"></li>
+<li>去重（Duplicate Elimination）：去除关系中的重复元组 <span
+class="math inline"><em>δ</em>(<em>关</em><em>系</em>)</span></li>
+<li>除<img src="image/关系模型/1761144212765.png"
+alt="1761144212765" /></li>
 </ul>
 <p>聚集运算 (Aggregate Functions)：
 对属性进行统计计算，如计数、求和、平均值、最大值、最小值等</p>
 <ul>
-<li>COUNT：计算元组数量 <span class="math inline"><em>G</em><sub><em>属</em><em>性</em></sub><em>C</em><em>O</em><em>U</em><em>N</em><em>T</em>(<em>关</em><em>系</em>)</span></li>
+<li>COUNT：计算元组数量 <span
+class="math inline"><em>G</em><sub><em>属</em><em>性</em></sub><em>C</em><em>O</em><em>U</em><em>N</em><em>T</em>(<em>关</em><em>系</em>)</span></li>
 <li>SUM：计算属性值的总和</li>
 <li>AVG：计算属性值的平均值</li>
 <li>MAX：找出属性值的最大值</li>
