@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>NAS技术概述及常见网络文件共享协议分析与比较 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="目录  目录 1. 引言 2. NAS技术概述  2.1 NAS简介和特点 2.2 NAS基本存储原理 2.3 NAS工作原理  3.常见网络文件共享协议  3.1 SMB协议  3.1.1.技术特点 3.1.2. 优势 3.1.3. 劣势  3.2 NFS协议  3.2.1 技术特点 3.2.2 优势 3.2.3 劣势  3.3 AFP协议">
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>NAS技术概述及常见网络文件共享协议分析与比较 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="目录  目录 1. 引言 2. NAS技术概述  2.1 NAS简介和特点 2.2 NAS基本存储原理 2.3 NAS工作原理   3.常见网络文件共享协议  3.1 SMB协议  3.1.1.技术特点 3.1.2. 优势 3.1.3. 劣势   3.2 NFS协议  3.2.1 技术特点 3.2.2 优势 3.2.3 劣势   3.3 AFP协议  3.3.1 技术特点 3.3.2 优势 3.3">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NAS技术概述及常见网络文件共享协议分析与比较">
 <meta property="og:url" content="https://kjore.github.io/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/index.html">
 <meta property="og:site_name" content="kjore&#39;s blog">
-<meta property="og:description" content="目录  目录 1. 引言 2. NAS技术概述  2.1 NAS简介和特点 2.2 NAS基本存储原理 2.3 NAS工作原理  3.常见网络文件共享协议  3.1 SMB协议  3.1.1.技术特点 3.1.2. 优势 3.1.3. 劣势  3.2 NFS协议  3.2.1 技术特点 3.2.2 优势 3.2.3 劣势  3.3 AFP协议">
+<meta property="og:description" content="目录  目录 1. 引言 2. NAS技术概述  2.1 NAS简介和特点 2.2 NAS基本存储原理 2.3 NAS工作原理   3.常见网络文件共享协议  3.1 SMB协议  3.1.1.技术特点 3.1.2. 优势 3.1.3. 劣势   3.2 NFS协议  3.2.1 技术特点 3.2.2 优势 3.2.3 劣势   3.3 AFP协议  3.3.1 技术特点 3.3.2 优势 3.3">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kjore.github.io/img/head.png">
 <meta property="article:published_time" content="2025-10-19T13:21:10.000Z">
@@ -161,420 +161,243 @@
   pageType: 'post'
 }</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">NAS技术概述及常见网络文件共享协议分析与比较</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">NAS技术概述及常见网络文件共享协议分析与比较</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-19T13:21:10.000Z" title="发表于 2025-10-19 21:21:10">2025-10-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-27T15:37:19.265Z" title="更新于 2025-10-27 23:37:19">2025-10-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BD%91%E7%BB%9C%E5%AD%98%E5%82%A8%E6%8A%80%E6%9C%AF/">网络存储技术</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="目录"><strong>目录</strong></h2>
 <ul>
-<li><a href="#目录"><strong>目录</strong></a></li>
-<li><a href="#1-引言"><strong>1. 引言</strong></a></li>
-<li><a href="#2-nas技术概述"><strong>2. NAS技术概述</strong></a>
+<li><a href="#%E7%9B%AE%E5%BD%95"><strong>目录</strong></a></li>
+<li><a href="#1-%E5%BC%95%E8%A8%80"><strong>1. 引言</strong></a></li>
+<li><a href="#2-nas%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0"><strong>2. NAS技术概述</strong></a>
 <ul>
-<li><a href="#21-nas简介和特点"><strong>2.1
-NAS简介和特点</strong></a></li>
-<li><a href="#22-nas基本存储原理"><strong>2.2
-NAS基本存储原理</strong></a></li>
-<li><a href="#23-nas工作原理"><strong>2.3 NAS工作原理</strong></a></li>
-</ul></li>
-<li><a
-href="#3常见网络文件共享协议"><strong>3.常见网络文件共享协议</strong></a>
-<ul>
-<li><a href="#31-smb协议"><strong>3.1 SMB协议</strong></a>
-<ul>
-<li><a href="#311技术特点"><strong>3.1.1.技术特点</strong></a></li>
-<li><a href="#312-优势"><strong>3.1.2. 优势</strong></a></li>
-<li><a href="#313-劣势"><strong>3.1.3. 劣势</strong></a></li>
-</ul></li>
-<li><a href="#32-nfs协议"><strong>3.2 NFS协议</strong></a>
-<ul>
-<li><a href="#321-技术特点"><strong>3.2.1 技术特点</strong></a></li>
-<li><a href="#322-优势"><strong>3.2.2 优势</strong></a></li>
-<li><a href="#323-劣势"><strong>3.2.3 劣势</strong></a></li>
-</ul></li>
-<li><a href="#33-afp协议"><strong>3.3 AFP协议</strong></a>
-<ul>
-<li><a href="#331-技术特点"><strong>3.3.1 技术特点</strong></a></li>
-<li><a href="#332-优势"><strong>3.3.2 优势</strong></a></li>
-<li><a href="#333-劣势"><strong>3.3.3 劣势</strong></a></li>
-</ul></li>
-<li><a href="#34-webdav协议"><strong>3.4 WebDAV协议</strong></a>
-<ul>
-<li><a href="#341-技术特点"><strong>3.4.1 技术特点</strong></a></li>
-<li><a href="#342-优势"><strong>3.4.2 优势</strong></a></li>
-<li><a href="#343-劣势"><strong>3.4.3 劣势</strong></a></li>
-</ul></li>
-<li><a href="#35-ftp协议"><strong>3.5 FTP协议</strong></a>
-<ul>
-<li><a href="#351-技术特点"><strong>3.5.1 技术特点</strong></a></li>
-<li><a href="#352-优势"><strong>3.5.2 优势</strong></a></li>
-<li><a href="#353-劣势"><strong>3.5.3 劣势</strong></a></li>
-</ul></li>
-</ul></li>
-<li><a
-href="#4网络文件共享协议分析与比较"><strong>4.网络文件共享协议分析与比较</strong></a>
-<ul>
-<li><a href="#41协议性能比较"><strong>4.1协议性能比较</strong></a></li>
-<li><a
-href="#42协议安全性比较"><strong>4.2协议安全性比较</strong></a></li>
-<li><a
-href="#43协议的选择建议"><strong>4.3协议的选择建议</strong></a></li>
-</ul></li>
+<li><a href="#21-nas%E7%AE%80%E4%BB%8B%E5%92%8C%E7%89%B9%E7%82%B9"><strong>2.1 NAS简介和特点</strong></a></li>
+<li><a href="#22-nas%E5%9F%BA%E6%9C%AC%E5%AD%98%E5%82%A8%E5%8E%9F%E7%90%86"><strong>2.2 NAS基本存储原理</strong></a></li>
+<li><a href="#23-nas%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><strong>2.3 NAS工作原理</strong></a></li>
 </ul>
-<div style="page-break-after: always;">
-
-</div>
-<h2 id="引言"><strong>1. 引言</strong></h2>
-<p>  随着数据量的爆炸式增长，无论是在企业环境还是家庭中，高效、安全、便捷的数据存储和共享方案变得至关重要。网络附加存储（NAS，Network
-Attached
-Storage）正是在这种需求下应运而生并普及开来的一种专用数据存储技术。它本质上是一台连接到网络的、具备独立操作系统和文件系统的专用计算机，其唯一的功能就是提供文件存储和共享服务。</p>
-<p>  与直接附加存储（DAS，Direct Attached
-Storage，如电脑内置硬盘或外接USB硬盘）不同，NAS
-并非隶属于某一台特定的计算机。它通过网络（通常是TCP/IP网络）为网络中的所有授权用户提供集中的数据访问。用户可以通过各自的设备（电脑、手机、平板等）像访问本地硬盘一样访问NAS上的文件。这种架构带来了极大的灵活性和可扩展性，使其成为现代数据管理的核心组件之一。</p>
-<p>  要实现跨平台、跨设备的文件访问，NAS
-依赖于一系列标准化的网络协议。这些协议定义了客户端设备如何请求文件、如何读取/写入数据、如何管理文件权限等一系列通信规则。在众多协议中，SMB、NFS、AFP、WebDAV
-和 FTP
-是最为常见和重要的五种。它们各自诞生于不同的技术背景，服务于不同的应用场景，也因此具备了独特的特点、优势和局限性。接下来，我们将对这五种技术进行深入的剖析和比较。</p>
-<h2 id="nas技术概述"><strong>2. NAS技术概述</strong></h2>
-<h3 id="nas简介和特点"><strong>2.1 NAS简介和特点</strong></h3>
-<p>  网络附接存储（英语：Network Attached
-Storage，缩写：NAS）是一种文件级（与块级存储相对）的计算机数据存储服务器，它连接到计算机网络，并提供对异构网络用户的数据访问。它专门用于通过其硬件、软件或配置来提供文件服务。它通常作为专门制造的专用计算机设备制造。
-NAS系统是包含一个或多个通常排列成逻辑存储器、冗余存储器或RAID存储驱动器的网络设备。NAS消除了从网络上的其他服务器提供文件服务的负担，它们通常使用网络文件共享协议（如NFS、SMB或AFP）提供对文件的访问。作为一种在多台计算机之间共享文件的便捷方法，NAS设备从1990年代中期开始开始流行起来。与同样提供文件服务的通用服务器相比，专用网络附加存储的潜在优势包括更快的数据访问、更简单的管理和简单的配置。</p>
-<p>  名称中带有“NAS”的硬盘驱动器在功能上与其他驱动器相似，但可能在固件、振动耐受性或功耗上有不同之处，以使其更适合在<a
-target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2304179"
-title="完全理解RAID阵列">RAID阵列</a>中使用，这些阵列通常用于NAS的实现当中。<a
-target="_blank" rel="noopener" href="https://web.archive.org/web/20220608223456/https://www.seagate.com/files/www-content/product-content/nas-fam/nas-hdd/en-us/docs/nas-vs-desktop-marketing-bulletin-mb633-1-1304us.pdf"
-title="seagate.com (PDF). [2021-10-23]. （原始内容 (PDF)存档于2022-06-08）.">[1]</a>例如，某些NAS版本的驱动器支持命令扩展以允许禁用扩展错误恢复。在非RAID应用中，磁盘驱动器竭尽全力成功读取有问题的存储块可能很重要，即使这一过程需要花费几秒钟。在适当配置的RAID阵列中，可以通过跨RAID集编码的冗余校验完全恢复单个驱动器上的单个坏块。如果驱动器花费几秒钟执行大量重试，则可能会导致RAID控制器将驱动器标记为“掉盘”，而如果它只是迅速回复数据块有校验和错误，则RAID控制器将使用另一个驱动器上的冗余数据纠正错误并继续工作。这样的“NAS”SATA硬盘驱动器可以用作个人电脑的映射网络驱动器，因为它只支持附加选项，无需任何问题或调整，并且质量标准要高于普通消费者级的驱动器（特别是有更高的平均故障间隔和更高的价格的）。</p>
+</li>
+<li><a href="#3%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE"><strong>3.常见网络文件共享协议</strong></a>
+<ul>
+<li><a href="#31-smb%E5%8D%8F%E8%AE%AE"><strong>3.1 SMB协议</strong></a>
+<ul>
+<li><a href="#311%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><strong>3.1.1.技术特点</strong></a></li>
+<li><a href="#312-%E4%BC%98%E5%8A%BF"><strong>3.1.2. 优势</strong></a></li>
+<li><a href="#313-%E5%8A%A3%E5%8A%BF"><strong>3.1.3. 劣势</strong></a></li>
+</ul>
+</li>
+<li><a href="#32-nfs%E5%8D%8F%E8%AE%AE"><strong>3.2 NFS协议</strong></a>
+<ul>
+<li><a href="#321-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><strong>3.2.1 技术特点</strong></a></li>
+<li><a href="#322-%E4%BC%98%E5%8A%BF"><strong>3.2.2 优势</strong></a></li>
+<li><a href="#323-%E5%8A%A3%E5%8A%BF"><strong>3.2.3 劣势</strong></a></li>
+</ul>
+</li>
+<li><a href="#33-afp%E5%8D%8F%E8%AE%AE"><strong>3.3 AFP协议</strong></a>
+<ul>
+<li><a href="#331-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><strong>3.3.1 技术特点</strong></a></li>
+<li><a href="#332-%E4%BC%98%E5%8A%BF"><strong>3.3.2 优势</strong></a></li>
+<li><a href="#333-%E5%8A%A3%E5%8A%BF"><strong>3.3.3 劣势</strong></a></li>
+</ul>
+</li>
+<li><a href="#34-webdav%E5%8D%8F%E8%AE%AE"><strong>3.4 WebDAV协议</strong></a>
+<ul>
+<li><a href="#341-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><strong>3.4.1 技术特点</strong></a></li>
+<li><a href="#342-%E4%BC%98%E5%8A%BF"><strong>3.4.2 优势</strong></a></li>
+<li><a href="#343-%E5%8A%A3%E5%8A%BF"><strong>3.4.3 劣势</strong></a></li>
+</ul>
+</li>
+<li><a href="#35-ftp%E5%8D%8F%E8%AE%AE"><strong>3.5 FTP协议</strong></a>
+<ul>
+<li><a href="#351-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><strong>3.5.1 技术特点</strong></a></li>
+<li><a href="#352-%E4%BC%98%E5%8A%BF"><strong>3.5.2 优势</strong></a></li>
+<li><a href="#353-%E5%8A%A3%E5%8A%BF"><strong>3.5.3 劣势</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#4%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83"><strong>4.网络文件共享协议分析与比较</strong></a>
+<ul>
+<li><a href="#41%E5%8D%8F%E8%AE%AE%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83"><strong>4.1协议性能比较</strong></a></li>
+<li><a href="#42%E5%8D%8F%E8%AE%AE%E5%AE%89%E5%85%A8%E6%80%A7%E6%AF%94%E8%BE%83"><strong>4.2协议安全性比较</strong></a></li>
+<li><a href="#43%E5%8D%8F%E8%AE%AE%E7%9A%84%E9%80%89%E6%8B%A9%E5%BB%BA%E8%AE%AE"><strong>4.3协议的选择建议</strong></a></li>
+</ul>
+</li>
+</ul>
+<div style="page-break-after: always;"></div>
+<h2 id="1-引言"><strong>1. 引言</strong></h2>
+<p>  随着数据量的爆炸式增长，无论是在企业环境还是家庭中，高效、安全、便捷的数据存储和共享方案变得至关重要。网络附加存储（NAS，Network Attached Storage）正是在这种需求下应运而生并普及开来的一种专用数据存储技术。它本质上是一台连接到网络的、具备独立操作系统和文件系统的专用计算机，其唯一的功能就是提供文件存储和共享服务。</p>
+<p>  与直接附加存储（DAS，Direct Attached Storage，如电脑内置硬盘或外接USB硬盘）不同，NAS 并非隶属于某一台特定的计算机。它通过网络（通常是TCP/IP网络）为网络中的所有授权用户提供集中的数据访问。用户可以通过各自的设备（电脑、手机、平板等）像访问本地硬盘一样访问NAS上的文件。这种架构带来了极大的灵活性和可扩展性，使其成为现代数据管理的核心组件之一。</p>
+<p>  要实现跨平台、跨设备的文件访问，NAS 依赖于一系列标准化的网络协议。这些协议定义了客户端设备如何请求文件、如何读取/写入数据、如何管理文件权限等一系列通信规则。在众多协议中，SMB、NFS、AFP、WebDAV 和 FTP 是最为常见和重要的五种。它们各自诞生于不同的技术背景，服务于不同的应用场景，也因此具备了独特的特点、优势和局限性。接下来，我们将对这五种技术进行深入的剖析和比较。</p>
+<h2 id="2-NAS技术概述"><strong>2. NAS技术概述</strong></h2>
+<h3 id="2-1-NAS简介和特点"><strong>2.1 NAS简介和特点</strong></h3>
+<p>  网络附接存储（英语：Network Attached Storage，缩写：NAS）是一种文件级（与块级存储相对）的计算机数据存储服务器，它连接到计算机网络，并提供对异构网络用户的数据访问。它专门用于通过其硬件、软件或配置来提供文件服务。它通常作为专门制造的专用计算机设备制造。 NAS系统是包含一个或多个通常排列成逻辑存储器、冗余存储器或RAID存储驱动器的网络设备。NAS消除了从网络上的其他服务器提供文件服务的负担，它们通常使用网络文件共享协议（如NFS、SMB或AFP）提供对文件的访问。作为一种在多台计算机之间共享文件的便捷方法，NAS设备从1990年代中期开始开始流行起来。与同样提供文件服务的通用服务器相比，专用网络附加存储的潜在优势包括更快的数据访问、更简单的管理和简单的配置。</p>
+<p>  名称中带有“NAS”的硬盘驱动器在功能上与其他驱动器相似，但可能在固件、振动耐受性或功耗上有不同之处，以使其更适合在<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2304179" title="完全理解RAID阵列">RAID阵列</a>中使用，这些阵列通常用于NAS的实现当中。<a target="_blank" rel="noopener" href="https://web.archive.org/web/20220608223456/https://www.seagate.com/files/www-content/product-content/nas-fam/nas-hdd/en-us/docs/nas-vs-desktop-marketing-bulletin-mb633-1-1304us.pdf" title="seagate.com (PDF). [2021-10-23]. （原始内容 (PDF)存档于2022-06-08）.">[1]</a>例如，某些NAS版本的驱动器支持命令扩展以允许禁用扩展错误恢复。在非RAID应用中，磁盘驱动器竭尽全力成功读取有问题的存储块可能很重要，即使这一过程需要花费几秒钟。在适当配置的RAID阵列中，可以通过跨RAID集编码的冗余校验完全恢复单个驱动器上的单个坏块。如果驱动器花费几秒钟执行大量重试，则可能会导致RAID控制器将驱动器标记为“掉盘”，而如果它只是迅速回复数据块有校验和错误，则RAID控制器将使用另一个驱动器上的冗余数据纠正错误并继续工作。这样的“NAS”SATA硬盘驱动器可以用作个人电脑的映射网络驱动器，因为它只支持附加选项，无需任何问题或调整，并且质量标准要高于普通消费者级的驱动器（特别是有更高的平均故障间隔和更高的价格的）。</p>
 <p> NAS的特点</p>
-<ol type="1">
+<ol>
 <li>地域安装地点不受距离的限制，具备磁盘阵列高容量、高效能和高可靠的所有主要特征；</li>
 <li>方便使用简便，插上电源，接好网线，10min便可投入使用；在线增加设备，无需停顿网络而且与已建网络完全融合，保护原有投资；</li>
 <li>模式存储采用RAID模式；</li>
-<li>共享平台跨平台文件共享，支持Windows、NT、Unix
-或Linux等操作系统；</li>
-<li>操作系统独立的优化存储操作系统，完全不受服务器干预，有效释放带宽，可提高网络整体性能。集成本地备份软件，可实现无服务器备份。
-日志文件系统和检查点设计，使数据恢复准确及时，双引擎设计理念，即使服务器发生故
-障，用户仍可进行数据存取；</li>
-<li>集中管理将不同系统平台下文件存储在一
-台NAS中，方便网络管理员集中管理，降低维护成本。基于web的GUI管理界面使NAs设备的管理一目了然；自带支持多种协议的管理
-软件，功能多样，支持日志文件系统，并一般集成本地备份软件。</li>
+<li>共享平台跨平台文件共享，支持Windows、NT、Unix 或Linux等操作系统；</li>
+<li>操作系统独立的优化存储操作系统，完全不受服务器干预，有效释放带宽，可提高网络整体性能。集成本地备份软件，可实现无服务器备份。 日志文件系统和检查点设计，使数据恢复准确及时，双引擎设计理念，即使服务器发生故 障，用户仍可进行数据存取；</li>
+<li>集中管理将不同系统平台下文件存储在一 台NAS中，方便网络管理员集中管理，降低维护成本。基于web的GUI管理界面使NAs设备的管理一目了然；自带支持多种协议的管理 软件，功能多样，支持日志文件系统，并一般集成本地备份软件。</li>
 </ol>
 <img src="/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/1760348850505.png" class="" title="这里是图片的描述文字">
-<h3 id="nas基本存储原理"><strong>2.2 NAS基本存储原理</strong></h3>
+<h3 id="2-2-NAS基本存储原理"><strong>2.2 NAS基本存储原理</strong></h3>
 <p>NAS 是文件式数据的网络连接存储。它有三种主要存储方法：</p>
-<ol type="1">
-<li>文件存储
+<ol>
+<li>文件存储<br>
 如果是文件存储方法，您可以将数据存储在文件中，将文件整合进文件夹，并将这些文件置于目录和子目录的层次结构下。这是一种非常热门且广为人知的存储技术。</li>
-<li>数据块存储
+<li>数据块存储<br>
 数据块存储将文件分解为更小的数据块（或多个数据块），并将每个数据块单独存储在一个唯一地址下。计算机可以将数据块存储在设备上的任意位置。服务器的操作系统使用唯一地址将数据块重新组合到文件中。这比通过层次结构访问文件要快。</li>
-<li>对象存储
+<li>对象存储<br>
 对象是离散数据单元，存储时没有层次结构或结构。每个对象都包括数据、有关数据的描述性信息（元数据）和唯一标识号。根据此信息，系统软件可以找到并访问对象。</li>
 </ol>
-<p>文件、数据块和对象存储对比 ：
+<p>文件、数据块和对象存储对比 ：<br>
   每种存储类型都可以不同方式使用。例如，文件存储可用于本地文件共享，数据块存储可用于高性能应用程序。另一方面，您可以使用对象存储来存储非结构化数据，例如电子邮件、视频、图像文件、网页和物联网（IoT）产生的传感器数据。</p>
-<h3 id="nas工作原理"><strong>2.3 NAS工作原理</strong></h3>
-<p>  NAS的工作原理涉及多个层次，包括物理层、数据链路层、网络层和传输层。这些层次共同建立了网络连接，使得多个计算机能够通过网络访问同一个存储设备。NAS协议支持多种网络协议，如TCP/IP、FTP、HTTP等，因此可以在不同的操作系统和网络环境中使用。常见的NAS协议包括NFS（Network
-File System）、SMB/CIFS（Server Message Block/Common Internet File
-System）、AFP（Apple Filing
-Protocol）等。这些协议各有特点，用户可以根据需求选择合适的协议。 <a
-target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/419465218" title="知乎">[2]</a></p>
+<h3 id="2-3-NAS工作原理"><strong>2.3 NAS工作原理</strong></h3>
+<p>  NAS的工作原理涉及多个层次，包括物理层、数据链路层、网络层和传输层。这些层次共同建立了网络连接，使得多个计算机能够通过网络访问同一个存储设备。NAS协议支持多种网络协议，如TCP/IP、FTP、HTTP等，因此可以在不同的操作系统和网络环境中使用。常见的NAS协议包括NFS（Network File System）、SMB/CIFS（Server Message Block/Common Internet File System）、AFP（Apple Filing Protocol）等。这些协议各有特点，用户可以根据需求选择合适的协议。 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/419465218" title="知乎">[2]</a></p>
 <p>  NAS协议的框架结构包括基础架构、文件系统、存储协议、安全认证和管理接口。基础架构用于建立网络连接，文件系统用于管理NAS设备上的文件和目录，存储协议用于访问和管理NAS设备上的存储资源，安全认证用于对NAS设备上的资源进行身份验证和访问控制，管理接口用于管理和配置NAS设备。应用服务则提供文件共享、打印服务、数据备份、多媒体服务等功能。</p>
-<h2
-id="常见网络文件共享协议"><strong>3.常见网络文件共享协议</strong></h2>
-<h3 id="smb协议"><strong>3.1 SMB协议</strong></h3>
-<p>  SMB
-是一个历史悠久且应用最广泛的网络文件共享协议，最初由IBM开发，后来由微软进行了极大的扩展和推广，并将其更名为
-CIFS（Common Internet File System）。如今，SMB 已经成为 Windows
-生态系统的标准文件共享协议，并且在 macOS、Linux
-等其他操作系统中也得到了广泛支持（通过Samba等开源实现）。</p>
-<h4 id="技术特点"><strong>3.1.1.技术特点</strong></h4>
+<h2 id="3-常见网络文件共享协议"><strong>3.常见网络文件共享协议</strong></h2>
+<h3 id="3-1-SMB协议"><strong>3.1 SMB协议</strong></h3>
+<p>  SMB 是一个历史悠久且应用最广泛的网络文件共享协议，最初由IBM开发，后来由微软进行了极大的扩展和推广，并将其更名为 CIFS（Common Internet File System）。如今，SMB 已经成为 Windows 生态系统的标准文件共享协议，并且在 macOS、Linux 等其他操作系统中也得到了广泛支持（通过Samba等开源实现）。</p>
+<h4 id="3-1-1-技术特点"><strong>3.1.1.技术特点</strong></h4>
 <ul>
-<li>客户端/服务器模型： SMB
-采用请求-响应模式。客户端（如你的电脑）向服务器（NAS设备）发送命令请求（如“读取文件
-a.txt”），服务器处理请求后返回数据或状态。</li>
-<li>功能丰富： SMB
-不仅仅是文件传输协议。它提供了一整套丰富的网络服务，包括：
+<li>客户端/服务器模型： SMB 采用请求-响应模式。客户端（如你的电脑）向服务器（NAS设备）发送命令请求（如“读取文件 a.txt”），服务器处理请求后返回数据或状态。</li>
+<li>功能丰富： SMB 不仅仅是文件传输协议。它提供了一整套丰富的网络服务，包括：
 <ul>
-<li>文件和打印机共享：
-这是其核心功能，允许多个用户同时访问和修改文件，并共享网络打印机。
-网络浏览和命名：
-允许客户端发现网络上的可用资源（服务器和共享文件夹）。</li>
-<li>身份验证和授权：
-支持基于用户和组的权限管理，可以精确控制每个用户对不同文件和文件夹的访问级别（只读、读写、完全控制等）。</li>
-<li>文件锁定机制：
-支持机会性锁定（OpLocks），能有效防止多个用户同时修改同一文件导致的数据冲突，并能通过客户端缓存提升性能。</li>
-<li>变更通知：
-客户端可以向服务器注册，当文件或目录发生变化时，服务器会主动通知客户端，这对于需要实时同步的应用非常有用。</li>
-</ul></li>
-<li>有状态协议：
-客户端和服务器之间会维持一个持续的连接状态。服务器知道哪些客户端打开了哪些文件，这为实现高级功能（如文件锁定）提供了基础。
+<li>文件和打印机共享： 这是其核心功能，允许多个用户同时访问和修改文件，并共享网络打印机。<br>
+网络浏览和命名： 允许客户端发现网络上的可用资源（服务器和共享文件夹）。</li>
+<li>身份验证和授权： 支持基于用户和组的权限管理，可以精确控制每个用户对不同文件和文件夹的访问级别（只读、读写、完全控制等）。</li>
+<li>文件锁定机制： 支持机会性锁定（OpLocks），能有效防止多个用户同时修改同一文件导致的数据冲突，并能通过客户端缓存提升性能。</li>
+<li>变更通知： 客户端可以向服务器注册，当文件或目录发生变化时，服务器会主动通知客户端，这对于需要实时同步的应用非常有用。</li>
+</ul>
+</li>
+<li>有状态协议： 客户端和服务器之间会维持一个持续的连接状态。服务器知道哪些客户端打开了哪些文件，这为实现高级功能（如文件锁定）提供了基础。<br>
 持续演进： SMB 协议经历了多个版本的迭代：
 <ul>
-<li>SMB 1.0 (CIFS)：
-早期的版本，设计较为陈旧，性能和安全性较差，存在著名的“WannaCry”勒索病毒所利用的漏洞。现已基本被弃用。</li>
-<li>SMB 2.x： 随 Windows Vista
-引入的重大改进。大幅减少了协议的“话痨”（Chattiness）特性，将多个命令打包成一个请求发送，显著提升了在高延迟网络（如广域网）下的性能。</li>
-<li><a
-target="_blank" rel="noopener" href="https://webcitation.org/6AvNM8zRA?url=http://blogs.technet.com/b/windowsserver/archive/2012/04/19/smb-2-2-is-now-smb-3-0.aspx"
-title="SMB 3.0">SMB 3.x</a>： 随 Windows 8 和 Windows Server 2012
-引入，带来了革命性的新功能，使其成为现代化、高性能的协议。关键特性包括：
+<li>SMB 1.0 (CIFS)： 早期的版本，设计较为陈旧，性能和安全性较差，存在著名的“WannaCry”勒索病毒所利用的漏洞。现已基本被弃用。</li>
+<li>SMB 2.x： 随 Windows Vista 引入的重大改进。大幅减少了协议的“话痨”（Chattiness）特性，将多个命令打包成一个请求发送，显著提升了在高延迟网络（如广域网）下的性能。</li>
+<li><a target="_blank" rel="noopener" href="https://webcitation.org/6AvNM8zRA?url=http://blogs.technet.com/b/windowsserver/archive/2012/04/19/smb-2-2-is-now-smb-3-0.aspx" title="SMB 3.0">SMB 3.x</a>： 随 Windows 8 和 Windows Server 2012 引入，带来了革命性的新功能，使其成为现代化、高性能的协议。关键特性包括：
 <ul>
-<li>SMB Multichannel： 如果客户端和服务器之间有多条网络路径，SMB 3.x
-可以同时利用这些路径来传输数据，显著提高吞吐量和链路冗余。</li>
-<li>SMB Direct： 支持
-RDMA（远程直接内存访问）网卡，允许数据直接在服务器和客户端的内存之间传输，绕过CPU和操作系统内核，极大地降低了延迟和CPU占用率。</li>
-<li>端到端加密： 支持 AES-128/256
-算法对整个SMB通信会话进行加密，有效防止数据在传输过程中被窃听。</li>
-<li>透明故障转移：
-在集群环境中，如果一台NAS节点发生故障，客户端的连接可以无缝地自动切换到另一台节点，保证服务的连续性。</li>
-</ul></li>
-</ul></li>
+<li>SMB Multichannel： 如果客户端和服务器之间有多条网络路径，SMB 3.x 可以同时利用这些路径来传输数据，显著提高吞吐量和链路冗余。</li>
+<li>SMB Direct： 支持 RDMA（远程直接内存访问）网卡，允许数据直接在服务器和客户端的内存之间传输，绕过CPU和操作系统内核，极大地降低了延迟和CPU占用率。</li>
+<li>端到端加密： 支持 AES-128/256 算法对整个SMB通信会话进行加密，有效防止数据在传输过程中被窃听。</li>
+<li>透明故障转移： 在集群环境中，如果一台NAS节点发生故障，客户端的连接可以无缝地自动切换到另一台节点，保证服务的连续性。</li>
 </ul>
-<h4 id="优势"><strong>3.1.2. 优势</strong></h4>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-1-2-优势"><strong>3.1.2. 优势</strong></h4>
 <ul>
-<li><strong>原生兼容性与易用性：</strong> 在 Windows
-环境中是原生支持的，无需安装任何额外软件。用户只需在文件资源管理器中输入
-<code>\\NAS_IP</code> 即可访问，体验与本地磁盘无异。</li>
-<li><strong>强大的生态系统：</strong>
-作为事实上的标准，几乎所有的商用NAS设备、操作系统（通过Samba）和网络应用都支持SMB。</li>
-<li><strong>功能全面且强大：</strong>
-提供了精细的权限控制、文件锁定、打印服务等企业级功能，能够满足复杂的应用需求。</li>
-<li><strong>性能优越（SMB 3.x）：</strong>
-现代版本的SMB在性能上非常出色，尤其是在万兆以太网和RDMA技术的加持下，可以提供接近本地存储的性能。</li>
-<li><strong>安全性高（SMB 3.x）：</strong>
-端到端加密和安全的身份验证机制（如Kerberos）为数据安全提供了有力保障。</li>
+<li><strong>原生兼容性与易用性：</strong> 在 Windows 环境中是原生支持的，无需安装任何额外软件。用户只需在文件资源管理器中输入 <code>\\NAS_IP</code> 即可访问，体验与本地磁盘无异。</li>
+<li><strong>强大的生态系统：</strong> 作为事实上的标准，几乎所有的商用NAS设备、操作系统（通过Samba）和网络应用都支持SMB。</li>
+<li><strong>功能全面且强大：</strong> 提供了精细的权限控制、文件锁定、打印服务等企业级功能，能够满足复杂的应用需求。</li>
+<li><strong>性能优越（SMB 3.x）：</strong> 现代版本的SMB在性能上非常出色，尤其是在万兆以太网和RDMA技术的加持下，可以提供接近本地存储的性能。</li>
+<li><strong>安全性高（SMB 3.x）：</strong> 端到端加密和安全的身份验证机制（如Kerberos）为数据安全提供了有力保障。</li>
 </ul>
-<h4 id="劣势"><strong>3.1.3. 劣势</strong></h4>
+<h4 id="3-1-3-劣势"><strong>3.1.3. 劣势</strong></h4>
 <ul>
-<li><strong>历史包袱（SMB 1.0）：</strong> SMB 1.0
-的安全漏洞给整个协议族带来了负面声誉，尽管现代版本已完全修复，但仍需警惕旧设备或错误配置可能带来的风险。</li>
-<li><strong>配置复杂性：</strong>
-在混合操作系统环境中（如Windows、Linux、macOS共存），配置Samba服务器以实现完美的兼容性和权限统一可能相对复杂，需要一定的专业知识。</li>
-<li><strong>协议“话痨”问题（旧版本）：</strong> SMB 1.0
-在高延迟网络下性能急剧下降，因为它需要大量的请求-响应往返来完成一个简单的操作。虽然SMB
-2.x及以后版本已极大改善，但这个印象依然存在。</li>
+<li><strong>历史包袱（SMB 1.0）：</strong> SMB 1.0 的安全漏洞给整个协议族带来了负面声誉，尽管现代版本已完全修复，但仍需警惕旧设备或错误配置可能带来的风险。</li>
+<li><strong>配置复杂性：</strong> 在混合操作系统环境中（如Windows、Linux、macOS共存），配置Samba服务器以实现完美的兼容性和权限统一可能相对复杂，需要一定的专业知识。</li>
+<li><strong>协议“话痨”问题（旧版本）：</strong> SMB 1.0 在高延迟网络下性能急剧下降，因为它需要大量的请求-响应往返来完成一个简单的操作。虽然SMB 2.x及以后版本已极大改善，但这个印象依然存在。</li>
 </ul>
-<h3 id="nfs协议"><strong>3.2 NFS协议</strong></h3>
-<p>  NFS 是由 Sun Microsystems（现为Oracle）于1984年开发的，主要用于在
-Unix 和类 Unix 系统（如 Linux、BSD）之间共享文件。它是 Unix/Linux
-世界的“原生”文件共享协议，设计哲学与SMB有很大不同。</p>
-<h4 id="技术特点-1"><strong>3.2.1 技术特点</strong></h4>
-<p>  NFS（Network File System）是一种主要用于 Unix 和 Linux
-系统的分布式文件系统 <a
-target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"
-title="网络文件系统-维基百科">[3]</a>。NFS
-允许不同设备通过网络共享文件，使用户能够将远程文件系统挂载到本地系统中，像操作本地文件一样访问远程数据。</p>
-<p>  NFS目前有多个版本，最常用的是 NFSv3和
-NFSv4。NFSv3在性能和效率上具有良好的表现，而 NFSv4
-则增强了安全性，支持状态协议和内建的
-ACL（访问控制列表）管理。NFSv4还集成了对
-Kerberos身份认证的支持，提升了协议的安全性。NFS
-适合在局域网中进行大规模、高并发的数据共享，尤其在 Linux/Unix
-环境中表现出色。</p>
-<p>  NFS协议的发展始于1980年代，最早的NFSv2是基于无状态的设计，简单但功能有限。NFSv3
-对大文件支持进行了改进，并提高了性能，成为许多企业和个人的首选。而 NFSv4
-增加了状态管理，支持防火墙穿越以及更好的安全性，特别适合在互联网上的使用。</p>
-<h4 id="优势-1"><strong>3.2.2 优势</strong></h4>
+<h3 id="3-2-NFS协议"><strong>3.2 NFS协议</strong></h3>
+<p>  NFS 是由 Sun Microsystems（现为Oracle）于1984年开发的，主要用于在 Unix 和类 Unix 系统（如 Linux、BSD）之间共享文件。它是 Unix/Linux 世界的“原生”文件共享协议，设计哲学与SMB有很大不同。</p>
+<h4 id="3-2-1-技术特点"><strong>3.2.1 技术特点</strong></h4>
+<p>  NFS（Network File System）是一种主要用于 Unix 和 Linux 系统的分布式文件系统 <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F" title="网络文件系统-维基百科">[3]</a>。NFS 允许不同设备通过网络共享文件，使用户能够将远程文件系统挂载到本地系统中，像操作本地文件一样访问远程数据。</p>
+<p>  NFS目前有多个版本，最常用的是 NFSv3和 NFSv4。NFSv3在性能和效率上具有良好的表现，而 NFSv4 则增强了安全性，支持状态协议和内建的 ACL（访问控制列表）管理。NFSv4还集成了对 Kerberos身份认证的支持，提升了协议的安全性。NFS 适合在局域网中进行大规模、高并发的数据共享，尤其在 Linux/Unix 环境中表现出色。</p>
+<p>  NFS协议的发展始于1980年代，最早的NFSv2是基于无状态的设计，简单但功能有限。NFSv3 对大文件支持进行了改进，并提高了性能，成为许多企业和个人的首选。而 NFSv4 增加了状态管理，支持防火墙穿越以及更好的安全性，特别适合在互联网上的使用。</p>
+<h4 id="3-2-2-优势"><strong>3.2.2 优势</strong></h4>
 <ul>
-<li><strong>Unix/Linux环境下的王者：</strong>
-在纯Linux/Unix环境中，NFS的配置和使用非常简单直接，性能也经过了充分优化。它是高性能计算（HPC）、虚拟化（如VMware的数据存储）等场景的首选。</li>
-<li><strong>性能高效：</strong>
-特别是在处理大文件读写时，NFS通常表现出非常高的吞吐量。其设计开销相对较小。</li>
-<li><strong>资源消耗低：</strong>
-相对于功能复杂的SMB，NFS协议本身及其服务器实现（如Linux内核NFS服务器）通常更轻量，系统资源占用较少。</li>
-<li><strong>开源和标准化：</strong>
-NFS是一个开放的标准（RFC文档定义），有大量的开源实现，不存在厂商锁定的问题。</li>
+<li><strong>Unix/Linux环境下的王者：</strong> 在纯Linux/Unix环境中，NFS的配置和使用非常简单直接，性能也经过了充分优化。它是高性能计算（HPC）、虚拟化（如VMware的数据存储）等场景的首选。</li>
+<li><strong>性能高效：</strong> 特别是在处理大文件读写时，NFS通常表现出非常高的吞吐量。其设计开销相对较小。</li>
+<li><strong>资源消耗低：</strong> 相对于功能复杂的SMB，NFS协议本身及其服务器实现（如Linux内核NFS服务器）通常更轻量，系统资源占用较少。</li>
+<li><strong>开源和标准化：</strong> NFS是一个开放的标准（RFC文档定义），有大量的开源实现，不存在厂商锁定的问题。</li>
 </ul>
-<h4 id="劣势-1"><strong>3.2.3 劣势</strong></h4>
+<h4 id="3-2-3-劣势"><strong>3.2.3 劣势</strong></h4>
 <ul>
-<li><strong>Windows兼容性差：</strong>
-虽然Windows提供了NFS客户端和服务端功能（Services for
-NFS），但其配置复杂，性能和稳定性通常不如SMB。它不是Windows的首选方案。</li>
-<li><strong>默认安全性弱（旧版本）：</strong>
-NFSv3及之前的版本默认依赖于基于IP地址的
-<code>hosts.allow/deny</code>进行访问控制，并通过信任客户端传递的UID/GID来进行权限判断。这种机制很容易被伪造，安全性较差。要实现安全，必须配置复杂的Kerberos。</li>
-<li><strong>权限映射问题：</strong>
-在跨域或没有统一用户管理的网络中，客户端的UID/GID与服务器的UID/GID可能不匹配，导致权限混乱。例如，客户端的
-<code>UID 501</code>（可能是 <code>userA</code>）在服务器上可能对应
-<code>userB</code>，或者根本不存在。NFSv4通过ID-Mapping守护进程（idmapd）尝试解决这个问题，但配置依然不直观。</li>
-<li><strong>小文件性能问题：</strong>
-由于其设计，NFS在处理大量小文件时，性能可能不如SMB。</li>
+<li><strong>Windows兼容性差：</strong> 虽然Windows提供了NFS客户端和服务端功能（Services for NFS），但其配置复杂，性能和稳定性通常不如SMB。它不是Windows的首选方案。</li>
+<li><strong>默认安全性弱（旧版本）：</strong> NFSv3及之前的版本默认依赖于基于IP地址的 <code>hosts.allow/deny</code>进行访问控制，并通过信任客户端传递的UID/GID来进行权限判断。这种机制很容易被伪造，安全性较差。要实现安全，必须配置复杂的Kerberos。</li>
+<li><strong>权限映射问题：</strong> 在跨域或没有统一用户管理的网络中，客户端的UID/GID与服务器的UID/GID可能不匹配，导致权限混乱。例如，客户端的 <code>UID 501</code>（可能是 <code>userA</code>）在服务器上可能对应 <code>userB</code>，或者根本不存在。NFSv4通过ID-Mapping守护进程（idmapd）尝试解决这个问题，但配置依然不直观。</li>
+<li><strong>小文件性能问题：</strong> 由于其设计，NFS在处理大量小文件时，性能可能不如SMB。</li>
 </ul>
-<h3 id="afp协议"><strong>3.3 AFP协议</strong></h3>
-<h4 id="技术特点-2"><strong>3.3.1 技术特点</strong></h4>
-<p><strong>  苹果归档协议</strong> （英语：<strong>Apple Filing
-Protocol</strong>，缩写 <strong>AFP</strong> ）也称
-<strong>Apple文件协议</strong> 、 <strong>Apple归档协议</strong>
-，以前称为<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/AppleTalk"
-title="AppleTalk">AppleTalk</a> Filing Protocol，它是一个<a
-target="_blank" rel="noopener" href="https://zh.wikipedia.org/w/index.php?title=%E4%B8%93%E6%9C%89%E5%8D%8F%E8%AE%AE&amp;action=edit&amp;redlink=1"
-title="专有协议（页面不存在）">专有</a><a
-target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE"
-title="网络传输协议">网络协议</a>，并且是 <strong>Apple File
-Service</strong> （苹果文件服务，缩写 <strong>AFS</strong>
-）的一部分，为Mac OS和经典Mac
-OS提供文件服务。在macOS中，AFP是受支持的数种文件服务之一。AFP目前支持Unicode文件名、POSIX和访问控制表权限、<a
-target="_blank" rel="noopener" href="https://zh.wikipedia.org/w/index.php?title=%E8%B5%84%E6%BA%90%E5%88%86%E6%94%AF&amp;action=edit&amp;redlink=1"
-title="资源分支（页面不存在）">资源分支</a>、扩展属性名称、高级文件锁定。在MAC
-OS 9及更早版本中，AFP是文件服务的主要协议。</p>
-<p>  在安全与权限管理方面，AFP
-提供了较完善的认证机制，从早期的用户名密码认证发展到支持 DHX2 加密认证和
-Kerberos 网络身份验证协议，同时与 macOS 的
-ACL（访问控制列表）集成，可实现细粒度的权限控制。AFP
-也支持文件级与记录级锁定，使多个用户能够在网络上协同处理文件而不产生冲突。此外，它支持断点续传功能，文件传输中断后可以自动恢复，提高了网络使用的稳定性。在性能方面，AFP
-对 Mac
-系统的缓存机制进行了优化，尤其在局域网环境下具有较高的传输效率。同时，它与
-macOS 的 Spotlight
-搜索系统紧密集成，允许用户在网络卷上进行快速文件搜索，也正因这种深度整合，AFP
-曾是 Time Machine（苹果系统自带的备份工具）所使用的默认网络协议。</p>
-<p>  然而，随着网络环境的演进和跨平台需求的增加，AFP
-的局限性逐渐显现。它主要服务于苹果生态系统，对 Windows、Linux
-等系统兼容性较差。自 macOS 10.9（Mavericks）开始，苹果逐步用 SMB2/SMB3
-协议取代 AFP，后者成为默认的文件共享协议。相比 AFP，SMB
-具有更好的跨平台支持、更高的安全性以及更高的传输效率。目前 AFP
-已基本被淘汰，仅在某些旧版本 macOS 系统或老款 Time Machine
-设备上仍被使用。总体而言，AFP 的主要特点可以概括为：专为 Mac
-文件系统设计、完整支持资源叉和元数据、支持 Unicode
-文件名、提供强大的权限与锁定机制、支持断点续传和网络搜索。虽然它如今的使用范围逐渐缩小，但在苹果生态发展的历史中，AFP
-曾是 Mac 网络文件共享的重要支柱。</p>
-<h4 id="优势-2"><strong>3.3.2 优势</strong></h4>
+<h3 id="3-3-AFP协议"><strong>3.3 AFP协议</strong></h3>
+<h4 id="3-3-1-技术特点"><strong>3.3.1 技术特点</strong></h4>
+<p><strong>  苹果归档协议</strong> （英语：<strong>Apple Filing Protocol</strong>，缩写 <strong>AFP</strong> ）也称 <strong>Apple文件协议</strong> 、 <strong>Apple归档协议</strong> ，以前称为<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/AppleTalk" title="AppleTalk">AppleTalk</a> Filing Protocol，它是一个<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/w/index.php?title=%E4%B8%93%E6%9C%89%E5%8D%8F%E8%AE%AE&amp;action=edit&amp;redlink=1" title="专有协议（页面不存在）">专有</a><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE" title="网络传输协议">网络协议</a>，并且是 <strong>Apple File Service</strong> （苹果文件服务，缩写 <strong>AFS</strong> ）的一部分，为Mac OS和经典Mac OS提供文件服务。在macOS中，AFP是受支持的数种文件服务之一。AFP目前支持Unicode文件名、POSIX和访问控制表权限、<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/w/index.php?title=%E8%B5%84%E6%BA%90%E5%88%86%E6%94%AF&amp;action=edit&amp;redlink=1" title="资源分支（页面不存在）">资源分支</a>、扩展属性名称、高级文件锁定。在MAC OS 9及更早版本中，AFP是文件服务的主要协议。</p>
+<p>  在安全与权限管理方面，AFP 提供了较完善的认证机制，从早期的用户名密码认证发展到支持 DHX2 加密认证和 Kerberos 网络身份验证协议，同时与 macOS 的 ACL（访问控制列表）集成，可实现细粒度的权限控制。AFP 也支持文件级与记录级锁定，使多个用户能够在网络上协同处理文件而不产生冲突。此外，它支持断点续传功能，文件传输中断后可以自动恢复，提高了网络使用的稳定性。在性能方面，AFP 对 Mac 系统的缓存机制进行了优化，尤其在局域网环境下具有较高的传输效率。同时，它与 macOS 的 Spotlight 搜索系统紧密集成，允许用户在网络卷上进行快速文件搜索，也正因这种深度整合，AFP 曾是 Time Machine（苹果系统自带的备份工具）所使用的默认网络协议。</p>
+<p>  然而，随着网络环境的演进和跨平台需求的增加，AFP 的局限性逐渐显现。它主要服务于苹果生态系统，对 Windows、Linux 等系统兼容性较差。自 macOS 10.9（Mavericks）开始，苹果逐步用 SMB2/SMB3 协议取代 AFP，后者成为默认的文件共享协议。相比 AFP，SMB 具有更好的跨平台支持、更高的安全性以及更高的传输效率。目前 AFP 已基本被淘汰，仅在某些旧版本 macOS 系统或老款 Time Machine 设备上仍被使用。总体而言，AFP 的主要特点可以概括为：专为 Mac 文件系统设计、完整支持资源叉和元数据、支持 Unicode 文件名、提供强大的权限与锁定机制、支持断点续传和网络搜索。虽然它如今的使用范围逐渐缩小，但在苹果生态发展的历史中，AFP 曾是 Mac 网络文件共享的重要支柱。</p>
+<h4 id="3-3-2-优势"><strong>3.3.2 优势</strong></h4>
 <ul>
-<li><strong>完美的Mac兼容性（历史）：</strong> 在macOS 10.8 (Mountain
-Lion)及之前的时代，AFP在性能、稳定性和功能完整性上全面优于当时Mac上的SMB实现（Samba）。</li>
-<li><strong>无缝的用户体验：</strong>
-对于Mac用户来说，连接AFP服务器非常直观，且所有Finder的功能都能得到完美支持。</li>
-<li><strong>可靠的Time Machine备份：</strong>
-长期以来，是唯一被官方完全支持的网络Time Machine备份方案</li>
+<li><strong>完美的Mac兼容性（历史）：</strong> 在macOS 10.8 (Mountain Lion)及之前的时代，AFP在性能、稳定性和功能完整性上全面优于当时Mac上的SMB实现（Samba）。</li>
+<li><strong>无缝的用户体验：</strong> 对于Mac用户来说，连接AFP服务器非常直观，且所有Finder的功能都能得到完美支持。</li>
+<li><strong>可靠的Time Machine备份：</strong> 长期以来，是唯一被官方完全支持的网络Time Machine备份方案</li>
 </ul>
-<h4 id="劣势-2"><strong>3.3.3 劣势</strong></h4>
+<h4 id="3-3-3-劣势"><strong>3.3.3 劣势</strong></h4>
 <ul>
-<li><strong>已被苹果弃用：</strong> 这是AFP最大的“劣势”。从macOS 10.9
-(Mavericks)开始，苹果将默认的文件共享协议从AFP转向了SMB2。从macOS 11
-(Big
-Sur)开始，苹果官方已明确宣布弃用AFP。虽然仍可连接，但不再是推荐或积极开发的技术。</li>
-<li><strong>专有协议与跨平台性差：</strong>
-AFP是苹果的私有协议。虽然有开源实现如Netatalk，使得Linux服务器可以提供AFP服务，但其配置和维护相对小众。Windows平台几乎不支持AFP。</li>
-<li><strong>性能不再领先：</strong>
-随着苹果对自家SMB客户端的不断优化和SMB
-3.x协议的成熟，现代macOS通过SMB连接NAS的性能和稳定性已经追上甚至超越了AFP。</li>
-<li><strong>未来不确定：</strong>
-由于官方弃用，该协议不会再有新的功能更新，且未来可能在macOS中被彻底移除。</li>
+<li><strong>已被苹果弃用：</strong> 这是AFP最大的“劣势”。从macOS 10.9 (Mavericks)开始，苹果将默认的文件共享协议从AFP转向了SMB2。从macOS 11 (Big Sur)开始，苹果官方已明确宣布弃用AFP。虽然仍可连接，但不再是推荐或积极开发的技术。</li>
+<li><strong>专有协议与跨平台性差：</strong> AFP是苹果的私有协议。虽然有开源实现如Netatalk，使得Linux服务器可以提供AFP服务，但其配置和维护相对小众。Windows平台几乎不支持AFP。</li>
+<li><strong>性能不再领先：</strong> 随着苹果对自家SMB客户端的不断优化和SMB 3.x协议的成熟，现代macOS通过SMB连接NAS的性能和稳定性已经追上甚至超越了AFP。</li>
+<li><strong>未来不确定：</strong> 由于官方弃用，该协议不会再有新的功能更新，且未来可能在macOS中被彻底移除。</li>
 </ul>
-<h3 id="webdav协议"><strong>3.4 WebDAV协议</strong></h3>
-<h4 id="技术特点-3"><strong>3.4.1 技术特点</strong></h4>
-<p>  WebDAV，全称为 Web-based Distributed Authoring and
-Versioning，是一种基于<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/45173862"
-title="深入理解http协议">HTTP
-协议</a>的扩展协议，旨在通过网络实现分布式文件管理与协作。WebDAV
-协议最初由互联网工程任务组（IETF）提出，并在 RFC 4918
-中正式定义。它的设计目标包括提供对文件的创建、编辑、删除和读取等基本操作的支持，同时解决多用户协作中的同步和冲突问题。</p>
-<p>  具体来说，WebDAV 通过增强 HTTP
-协议，加入了一些额外的方法与头信息，使得用户能够在远程服务器上执行文件操作。这些扩展包括
-PROPFIND、PROPPATCH、MKCOL、COPY、MOVE
-等方法，用于支持元<strong>数据管理</strong>、目录操作和文件移动等功能。</p>
+<h3 id="3-4-WebDAV协议"><strong>3.4 WebDAV协议</strong></h3>
+<h4 id="3-4-1-技术特点"><strong>3.4.1 技术特点</strong></h4>
+<p>  WebDAV，全称为 Web-based Distributed Authoring and Versioning，是一种基于<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/45173862" title="深入理解http协议"> HTTP 协议</a>的扩展协议，旨在通过网络实现分布式文件管理与协作。WebDAV 协议最初由互联网工程任务组（IETF）提出，并在 RFC 4918 中正式定义。它的设计目标包括提供对文件的创建、编辑、删除和读取等基本操作的支持，同时解决多用户协作中的同步和冲突问题。</p>
+<p>  具体来说，WebDAV 通过增强 HTTP 协议，加入了一些额外的方法与头信息，使得用户能够在远程服务器上执行文件操作。这些扩展包括 PROPFIND、PROPPATCH、MKCOL、COPY、MOVE 等方法，用于支持元<strong>数据管理</strong>、目录操作和文件移动等功能。</p>
 <p>WebDAV 的功能集中在以下几个方面：</p>
-<ol type="1">
-<li><p><strong>文件管理</strong>
-：支持在远程服务器上创建、读取、更新和删除文件。</p>
-<p>举例来说，一家设计公司通过 WebDAV
-实现了设计文档的集中存储与管理。设计师在本地编辑后，可以直接将修改的文件上传到
-WebDAV 服务器，其他团队成员即时获取更新版本。</p></li>
-<li><p><strong>目录管理</strong>
-：提供对目录结构的操作能力，包括创建、删除和检索目录。</p>
-<p>假设一个在线教育平台通过 WebDAV
-管理课程素材，管理员能够轻松创建新的课程文件夹，上传讲义和视频资源。</p></li>
-<li><p><strong>文件版本控制</strong> ：虽然原生 WebDAV
-协议并未内置复杂的版本控制，但与 DeltaV
-等扩展协议结合使用，可以支持文件的版本管理。</p>
-<p>某<strong>软件开发</strong>团队利用 WebDAV+DeltaV
-实现了代码文档的版本控制，每次提交更改都会生成新的版本，方便回溯历史记录。</p></li>
-<li><p><strong>元数据支持</strong>
-：允许用户定义和操作文件的元数据。例如，设置文件的标题、作者或自定义标签。</p>
-<p>在一个数字图书馆中，WebDAV
-被用来存储电子书，同时为每本书附加元数据（如作者、出版年份），便于快速检索。</p></li>
+<ol>
+<li>
+<p><strong>文件管理</strong> ：支持在远程服务器上创建、读取、更新和删除文件。</p>
+<p>举例来说，一家设计公司通过 WebDAV 实现了设计文档的集中存储与管理。设计师在本地编辑后，可以直接将修改的文件上传到 WebDAV 服务器，其他团队成员即时获取更新版本。</p>
+</li>
+<li>
+<p><strong>目录管理</strong> ：提供对目录结构的操作能力，包括创建、删除和检索目录。</p>
+<p>假设一个在线教育平台通过 WebDAV 管理课程素材，管理员能够轻松创建新的课程文件夹，上传讲义和视频资源。</p>
+</li>
+<li>
+<p><strong>文件版本控制</strong> ：虽然原生 WebDAV 协议并未内置复杂的版本控制，但与 DeltaV 等扩展协议结合使用，可以支持文件的版本管理。</p>
+<p>某<strong>软件开发</strong>团队利用 WebDAV+DeltaV 实现了代码文档的版本控制，每次提交更改都会生成新的版本，方便回溯历史记录。</p>
+</li>
+<li>
+<p><strong>元数据支持</strong> ：允许用户定义和操作文件的元数据。例如，设置文件的标题、作者或自定义标签。</p>
+<p>在一个数字图书馆中，WebDAV 被用来存储电子书，同时为每本书附加元数据（如作者、出版年份），便于快速检索。</p>
+</li>
 </ol>
-<h4 id="优势-3"><strong>3.4.2 优势</strong></h4>
+<h4 id="3-4-2-优势"><strong>3.4.2 优势</strong></h4>
 <ul>
-<li><strong>极佳的互联网可访问性：</strong>
-这是WebDAV最突出的优点。无论你身在何处，只要能上网，就能通过一个URL访问你的文件，无需配置复杂的VPN或端口转发。</li>
-<li><strong>安全性：</strong>
-因为可以运行在HTTPS之上，所有传输的数据都可以通过TLS/SSL进行加密，保证了在公共网络上传输的安全性。</li>
-<li><strong>跨平台兼容性好：</strong>
-几乎所有现代操作系统都内置了或可以轻易获得WebDAV客户端支持。</li>
-<li><strong>配置简单：</strong> 在服务器端，许多Web服务器（如Apache,
-Nginx）通过模块即可轻松开启WebDAV服务。</li>
+<li><strong>极佳的互联网可访问性：</strong> 这是WebDAV最突出的优点。无论你身在何处，只要能上网，就能通过一个URL访问你的文件，无需配置复杂的VPN或端口转发。</li>
+<li><strong>安全性：</strong> 因为可以运行在HTTPS之上，所有传输的数据都可以通过TLS/SSL进行加密，保证了在公共网络上传输的安全性。</li>
+<li><strong>跨平台兼容性好：</strong> 几乎所有现代操作系统都内置了或可以轻易获得WebDAV客户端支持。</li>
+<li><strong>配置简单：</strong> 在服务器端，许多Web服务器（如Apache, Nginx）通过模块即可轻松开启WebDAV服务。</li>
 </ul>
-<h4 id="劣势-3"><strong>3.4.3 劣势</strong></h4>
+<h4 id="3-4-3-劣势"><strong>3.4.3 劣势</strong></h4>
 <ul>
-<li><strong>性能相对较低：</strong>
-由于每次操作都涉及到HTTP请求的开销（头部解析、状态码处理等），WebDAV在处理大量小文件或需要高吞吐量的场景下，性能远不如SMB或NFS这类二进制协议。它更适合文档管理，而非大规模数据传输。</li>
-<li><strong>功能相对基础：</strong>
-相比SMB和NFS，WebDAV提供的文件系统语义较为有限。例如，它没有等同于SMB机会锁或NFS租约的高级缓存机制，这进一步影响了其性能。</li>
-<li><strong>客户端支持不一：</strong>
-虽然各平台都有客户端，但其实现质量和用户体验参差不齐。例如，Windows的“网络位置”对WebDAV的支持就不如商业客户端（如RaiDrive,
-NetDrive）稳定和高效。</li>
-<li><strong>不适合作为系统级文件共享：</strong>
-WebDAV通常不用于挂载为系统盘或运行需要高性能I/O的应用程序（如数据库、虚拟机），它更像一个“网络驱动器”或同步工具的后端。</li>
+<li><strong>性能相对较低：</strong> 由于每次操作都涉及到HTTP请求的开销（头部解析、状态码处理等），WebDAV在处理大量小文件或需要高吞吐量的场景下，性能远不如SMB或NFS这类二进制协议。它更适合文档管理，而非大规模数据传输。</li>
+<li><strong>功能相对基础：</strong> 相比SMB和NFS，WebDAV提供的文件系统语义较为有限。例如，它没有等同于SMB机会锁或NFS租约的高级缓存机制，这进一步影响了其性能。</li>
+<li><strong>客户端支持不一：</strong> 虽然各平台都有客户端，但其实现质量和用户体验参差不齐。例如，Windows的“网络位置”对WebDAV的支持就不如商业客户端（如RaiDrive, NetDrive）稳定和高效。</li>
+<li><strong>不适合作为系统级文件共享：</strong> WebDAV通常不用于挂载为系统盘或运行需要高性能I/O的应用程序（如数据库、虚拟机），它更像一个“网络驱动器”或同步工具的后端。</li>
 </ul>
-<h3 id="ftp协议"><strong>3.5 FTP协议</strong></h3>
-<h4 id="技术特点-4"><strong>3.5.1 技术特点</strong></h4>
-<p>  FTP（File Transfer
-Protocol，文件传输协议）是一种基于客户端/服务器（C/S）模式的应用层协议，用于在网络中的主机之间可靠地传输文件。它是互联网上最早使用、最广泛的文件传输协议之一，运行在
-TCP 协议之上，默认使用端口 <strong>21</strong> 和 <strong>20</strong>
-。</p>
-<p>  FTP 使用 <strong>TCP 协议</strong>
-进行数据传输，保证了文件传输过程中的数据可靠、有序、不丢失。与 UDP
-相比，FTP 通过 TCP
-的三次握手、流量控制与重传机制确保传输的完整性。FTP使用了两个并行的TCP来传输文件：一个是控制连接（port:21），一个是数据连接(port:20)。控制连接用于在两个主机之间传输控制信息，如口令，用户标识，存放、获取文件等命令。数据连接用于实际发送一个文件,发送完文件之后数据连接会关闭。因为FTP协议使用一个独立的控制连接，所以，也称FTP的控制信息是带外（out-of-band）传送的。</p>
-<figure>
-<img src="1760360849691.png" alt="这里是图片的描述文字" />
-<figcaption aria-hidden="true">这里是图片的描述文字</figcaption>
-</figure>
+<h3 id="3-5-FTP协议"><strong>3.5 FTP协议</strong></h3>
+<h4 id="3-5-1-技术特点"><strong>3.5.1 技术特点</strong></h4>
+<p>  FTP（File Transfer Protocol，文件传输协议）是一种基于客户端/服务器（C/S）模式的应用层协议，用于在网络中的主机之间可靠地传输文件。它是互联网上最早使用、最广泛的文件传输协议之一，运行在 TCP 协议之上，默认使用端口  <strong>21</strong> 和  <strong>20</strong> 。</p>
+<p>  FTP 使用 <strong>TCP 协议</strong> 进行数据传输，保证了文件传输过程中的数据可靠、有序、不丢失。与 UDP 相比，FTP 通过 TCP 的三次握手、流量控制与重传机制确保传输的完整性。FTP使用了两个并行的TCP来传输文件：一个是控制连接（port:21），一个是数据连接(port:20)。控制连接用于在两个主机之间传输控制信息，如口令，用户标识，存放、获取文件等命令。数据连接用于实际发送一个文件,发送完文件之后数据连接会关闭。因为FTP协议使用一个独立的控制连接，所以，也称FTP的控制信息是带外（out-of-band）传送的。</p>
+<p><img src="1760360849691.png" alt="这里是图片的描述文字"></p>
 <p>  FTP支持两种方式的传输：文本（ASCII）方式和二进制（Binary）方式。通常文本文件的传输采用ASCII方式；而图象、声音文件、加密和压缩文件等非文本文件采用二进制方式传输；如果为了从一个系统上传输文件而使用了与本地系统不同的计算机字节位数，那么就必须使用Tenex模式。FTP以ASCII方式作为默认的文件传输方式。</p>
-<p>  FTP有两种传输模式——主动（FTP Port）模式和被动（FTP
-Passive）模式。主动模式（Active Mode）：
-服务器主动从其20端口连接到客户端指定的一个高位端口。这种模式在客户端位于NAT或防火墙后时会遇到问题。被动模式（Passive
-Mode）：
-客户端主动连接到服务器指定的一个高位端口。这是目前更常用的模式，因为它对客户端侧的防火墙更友好。</p>
-<figure>
-<img src="1760361613403.png" width="500" alt="主动模式" />
-<figcaption aria-hidden="true">主动模式</figcaption>
-</figure>
-<figure>
-<img src="1760362269309.png" width="500" alt="被动模式" />
-<figcaption aria-hidden="true">被动模式</figcaption>
-</figure>
-<h4 id="优势-4"><strong>3.5.2 优势</strong></h4>
+<p>  FTP有两种传输模式——主动（FTP Port）模式和被动（FTP Passive）模式。主动模式（Active Mode）： 服务器主动从其20端口连接到客户端指定的一个高位端口。这种模式在客户端位于NAT或防火墙后时会遇到问题。被动模式（Passive Mode）： 客户端主动连接到服务器指定的一个高位端口。这是目前更常用的模式，因为它对客户端侧的防火墙更友好。</p>
+<p><img src="1760361613403.png" alt="主动模式" width="500px"></p>
+<p><img src="1760362269309.png" alt="被动模式" width="500px"></p>
+<h4 id="3-5-2-优势"><strong>3.5.2 优势</strong></h4>
 <ul>
-<li><strong>简单、直接、高效：</strong>
-对于批量传输大文件，FTP非常高效。其协议开销相对较小，能够很好地利用网络带宽。</li>
-<li><strong>广泛支持：</strong>
-几乎所有可以联网的设备，从PC到嵌入式系统，都有FTP客户端或服务器的实现。它是跨平台文件交换的一个“通用语言”。</li>
-<li><strong>成熟稳定：</strong>
-作为一个存在了半个世纪的协议，FTP的实现非常成熟和稳定。</li>
+<li><strong>简单、直接、高效：</strong> 对于批量传输大文件，FTP非常高效。其协议开销相对较小，能够很好地利用网络带宽。</li>
+<li><strong>广泛支持：</strong> 几乎所有可以联网的设备，从PC到嵌入式系统，都有FTP客户端或服务器的实现。它是跨平台文件交换的一个“通用语言”。</li>
+<li><strong>成熟稳定：</strong> 作为一个存在了半个世纪的协议，FTP的实现非常成熟和稳定。</li>
 </ul>
-<h4 id="劣势-4"><strong>3.5.3 劣势</strong></h4>
+<h4 id="3-5-3-劣势"><strong>3.5.3 劣势</strong></h4>
 <ul>
-<li><strong>安全性极差：</strong>
-标准的FTP在传输用户名、密码和文件内容时，全部使用明文！在任何不受信任的网络上使用FTP都等同于将你的数据和凭证公之于众。这是一个致命的缺陷。
+<li><strong>安全性极差：</strong> 标准的FTP在传输用户名、密码和文件内容时，全部使用明文！在任何不受信任的网络上使用FTP都等同于将你的数据和凭证公之于众。这是一个致命的缺陷。
 <ul>
-<li><strong>解决方案：</strong> 为了解决安全问题，出现了<a
-target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/FTPS"
-title="FTPS-维基百科">FTPS</a>（FTP over SSL/TLS）和<a
-target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/SSH%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE"
-title="SSH文件传输协议">SFTP</a>（SSH File Transfer
-Protocol）。FTPS为FTP添加了SSL/TLS加密层。而SFTP则完全不同，它是在SSH协议之上实现的另一个安全文件传输协议，与FTP没有任何关系，但提供了类似的功能，且更为安全和现代。</li>
-</ul></li>
-<li><strong>对NAT和防火墙不友好：</strong>
-双通道架构，特别是主动模式，使得FTP很难穿越现代网络中普遍存在的NAT设备和防火墙。被动模式虽有所改善，但仍需在防火墙上开放一个端口范围。</li>
-<li><strong>功能单一：</strong>
-FTP只是一个“文件传输”协议，而不是“文件系统”协议。你无法像使用SMB或NFS那样直接在FTP服务器上编辑文件或运行程序。你必须先下载文件，在本地编辑，然后再上传回去。</li>
+<li><strong>解决方案：</strong> 为了解决安全问题，出现了<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/FTPS" title="FTPS-维基百科">FTPS</a>（FTP over SSL/TLS）和<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/SSH%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE" title="SSH文件传输协议">SFTP</a>（SSH File Transfer Protocol）。FTPS为FTP添加了SSL/TLS加密层。而SFTP则完全不同，它是在SSH协议之上实现的另一个安全文件传输协议，与FTP没有任何关系，但提供了类似的功能，且更为安全和现代。</li>
 </ul>
-<h2
-id="网络文件共享协议分析与比较"><strong>4.网络文件共享协议分析与比较</strong></h2>
+</li>
+<li><strong>对NAT和防火墙不友好：</strong> 双通道架构，特别是主动模式，使得FTP很难穿越现代网络中普遍存在的NAT设备和防火墙。被动模式虽有所改善，但仍需在防火墙上开放一个端口范围。</li>
+<li><strong>功能单一：</strong> FTP只是一个“文件传输”协议，而不是“文件系统”协议。你无法像使用SMB或NFS那样直接在FTP服务器上编辑文件或运行程序。你必须先下载文件，在本地编辑，然后再上传回去。</li>
+</ul>
+<h2 id="4-网络文件共享协议分析与比较"><strong>4.网络文件共享协议分析与比较</strong></h2>
 <table>
-<colgroup>
-<col style="width: 13%" />
-<col style="width: 19%" />
-<col style="width: 13%" />
-<col style="width: 17%" />
-<col style="width: 18%" />
-<col style="width: 17%" />
-</colgroup>
 <thead>
 <tr>
 <th>对比项目</th>
@@ -700,74 +523,19 @@ id="网络文件共享协议分析与比较"><strong>4.网络文件共享协议�
 </tr>
 </tbody>
 </table>
-<h3 id="协议性能比较"><strong>4.1协议性能比较</strong></h3>
-<p>  在文件共享与传输领域，常用的协议包括 SMB、NFS、AFP、WebDAV 和
-FTP，它们在性能方面各具特点。总体来说，性能从高到低大致可排为 NFS ≈ SMB
-&gt; AFP &gt; FTP &gt; WebDAV 。其中，NFS 与 SMB 的传输效率最高，AFP
-次之，而 WebDAV 和 FTP 则相对较慢，更适合轻量级或远程访问场景。</p>
-<p>  NFS的性能通常被认为是五者中最强的。它是 Linux/Unix
-系统的原生文件共享协议，直接集成在内核层，I/O
-调度开销极低，能以接近本地磁盘的速度进行文件访问。NFS
-支持客户端缓存、异步 I/O
-与高并发读写，网络带宽利用率极高，非常适合服务器集群、高性能计算和容器化环境。在局域网中，NFS
-的延迟极低，文件操作几乎无感。</p>
-<p>  SMB 的性能与 NFS 不相上下，是 Windows
-系统默认的文件共享协议，同时兼容 macOS 和 Linux。随着 SMB2 和 SMB3
-的引入，协议增加了流水线传输、多通道并行、异步请求和数据压缩机制，使其在千兆局域网中可接近物理网速上限。SMB
-支持客户端缓存（oplock 与 leasing
-机制），在多用户环境下能保持良好的响应速度和稳定性，非常适合企业内部文件服务器和
-NAS 存储。</p>
-<p>  AFP是苹果公司为 macOS
-文件系统（HFS+、APFS）设计的协议，针对资源叉、元数据和 Spotlight
-索引等特性进行了优化。在苹果生态内（如两台 Mac 之间或 Time Machine
-备份）性能表现良好，延迟低、传输稳定。但 AFP
-的并发性能和跨平台兼容性不如 SMB 与 NFS，且在新版本 macOS 中已逐渐被 SMB
-替代。</p>
-<p>  FTP
-性能处于中等水平，它通过独立的数据连接传输文件，单文件传输效率较高，但在传输大量小文件时性能下降明显。FTP
-在每次传输前都需重新建立数据连接，导致延迟偏高；同时由于缺乏缓存机制和持久连接，其带宽利用率不如
-SMB 和 NFS。FTP
-适用于一般的上传、下载和网站文件分发场景，但不适合高频或大规模文件访问。</p>
-<p>  WebDAV的性能在五者中最低。它基于 HTTP/HTTPS
-协议，虽然跨平台兼容性极佳且易于通过防火墙，但由于每个操作都需通过 HTTP
-请求封装，开销较大，延迟高、吞吐量低。WebDAV
-更适合互联网文件访问、文档协作、云盘服务等场景，而非高性能局域网传输。</p>
-<p>  综合来看，NFS 与 SMB
-是性能最优的协议，适合在局域网和企业内部部署；AFP
-在苹果环境中表现良好但局限性强；FTP 简单实用但效率一般；而 WebDAV
-则以易用性取胜，在性能上相对落后。对于性能要求高的本地或服务器环境，应优先选择
-NFS 或 SMB ，而在需要跨平台或远程访问时，可选择 WebDAV 或 SFTP
-等方案。</p>
-<h3 id="协议安全性比较"><strong>4.2协议安全性比较</strong></h3>
-<p>  在文件共享协议中，SMB、NFS、AFP、WebDAV 与 FTP
-各有其优势与适用场景。从性能角度来看，SMB（Server Message Block）
-在局域网环境下性能较为优秀，尤其在 Windows
-系统中表现最佳，文件传输速度快且支持文件锁定与断点续传；NFS（Network
-File System） 则在类 Unix 或 Linux
-系统上拥有更高的效率与较低的传输延迟，适合大规模服务器之间的文件共享；AFP（Apple
-Filing Protocol） 是 macOS 原生的文件共享协议，针对 HFS+/APFS
-文件系统进行了优化，在苹果设备间共享时具有最好的兼容性与性能；WebDAV（Web
-Distributed Authoring and Versioning） 基于 HTTP/HTTPS
-协议，跨平台性强，适用于通过互联网进行文档协作和远程文件访问，但性能较
-SMB 和 NFS 略低；而 FTP（File Transfer Protocol）
-是最早期的文件传输协议，结构简单、支持范围广，但其传输效率受网络延迟与连接数限制影响较大。</p>
-<p>  在安全性方面，SMB3 与 NFSv4
-已支持数据加密与用户身份验证机制，相对较安全；AFP 也可通过 TLS
-加密连接保护传输数据；WebDAV 通常运行在 HTTPS
-之上，因此可以提供较强的数据传输安全性与访问控制能力；而传统 FTP
-默认明文传输，存在较高的安全风险，除非使用 FTPS（FTP over SSL/TLS） 或
-SFTP（SSH File Transfer Protocol）
-扩展才具备可靠的加密保护。因此，在现代系统中，若要求性能与安全性兼顾，Windows
-环境常选择 SMB3，Linux/Unix 环境多采用
-NFSv4，而跨平台或互联网访问则倾向使用 WebDAV 或 SFTP；AFP
-则更适合苹果生态内部的文件共享与备份使用。</p>
-<h3 id="协议的选择建议"><strong>4.3协议的选择建议</strong></h3>
+<h3 id="4-1协议性能比较"><strong>4.1协议性能比较</strong></h3>
+<p>  在文件共享与传输领域，常用的协议包括 SMB、NFS、AFP、WebDAV 和 FTP，它们在性能方面各具特点。总体来说，性能从高到低大致可排为  NFS ≈ SMB &gt; AFP &gt; FTP &gt; WebDAV 。其中，NFS 与 SMB 的传输效率最高，AFP 次之，而 WebDAV 和 FTP 则相对较慢，更适合轻量级或远程访问场景。</p>
+<p>  NFS的性能通常被认为是五者中最强的。它是 Linux/Unix 系统的原生文件共享协议，直接集成在内核层，I/O 调度开销极低，能以接近本地磁盘的速度进行文件访问。NFS 支持客户端缓存、异步 I/O 与高并发读写，网络带宽利用率极高，非常适合服务器集群、高性能计算和容器化环境。在局域网中，NFS 的延迟极低，文件操作几乎无感。</p>
+<p>  SMB 的性能与 NFS 不相上下，是 Windows 系统默认的文件共享协议，同时兼容 macOS 和 Linux。随着 SMB2 和 SMB3 的引入，协议增加了流水线传输、多通道并行、异步请求和数据压缩机制，使其在千兆局域网中可接近物理网速上限。SMB 支持客户端缓存（oplock 与 leasing 机制），在多用户环境下能保持良好的响应速度和稳定性，非常适合企业内部文件服务器和 NAS 存储。</p>
+<p>  AFP是苹果公司为 macOS 文件系统（HFS+、APFS）设计的协议，针对资源叉、元数据和 Spotlight 索引等特性进行了优化。在苹果生态内（如两台 Mac 之间或 Time Machine 备份）性能表现良好，延迟低、传输稳定。但 AFP 的并发性能和跨平台兼容性不如 SMB 与 NFS，且在新版本 macOS 中已逐渐被 SMB 替代。</p>
+<p>  FTP 性能处于中等水平，它通过独立的数据连接传输文件，单文件传输效率较高，但在传输大量小文件时性能下降明显。FTP 在每次传输前都需重新建立数据连接，导致延迟偏高；同时由于缺乏缓存机制和持久连接，其带宽利用率不如 SMB 和 NFS。FTP 适用于一般的上传、下载和网站文件分发场景，但不适合高频或大规模文件访问。</p>
+<p>  WebDAV的性能在五者中最低。它基于 HTTP/HTTPS 协议，虽然跨平台兼容性极佳且易于通过防火墙，但由于每个操作都需通过 HTTP 请求封装，开销较大，延迟高、吞吐量低。WebDAV 更适合互联网文件访问、文档协作、云盘服务等场景，而非高性能局域网传输。</p>
+<p>  综合来看，NFS 与 SMB 是性能最优的协议，适合在局域网和企业内部部署；AFP 在苹果环境中表现良好但局限性强；FTP 简单实用但效率一般；而 WebDAV 则以易用性取胜，在性能上相对落后。对于性能要求高的本地或服务器环境，应优先选择  NFS 或 SMB ，而在需要跨平台或远程访问时，可选择 WebDAV 或 SFTP 等方案。</p>
+<h3 id="4-2协议安全性比较"><strong>4.2协议安全性比较</strong></h3>
+<p>  在文件共享协议中，SMB、NFS、AFP、WebDAV 与 FTP 各有其优势与适用场景。从性能角度来看，SMB（Server Message Block） 在局域网环境下性能较为优秀，尤其在 Windows 系统中表现最佳，文件传输速度快且支持文件锁定与断点续传；NFS（Network File System） 则在类 Unix 或 Linux 系统上拥有更高的效率与较低的传输延迟，适合大规模服务器之间的文件共享；AFP（Apple Filing Protocol） 是 macOS 原生的文件共享协议，针对 HFS+/APFS 文件系统进行了优化，在苹果设备间共享时具有最好的兼容性与性能；WebDAV（Web Distributed Authoring and Versioning） 基于 HTTP/HTTPS 协议，跨平台性强，适用于通过互联网进行文档协作和远程文件访问，但性能较 SMB 和 NFS 略低；而 FTP（File Transfer Protocol） 是最早期的文件传输协议，结构简单、支持范围广，但其传输效率受网络延迟与连接数限制影响较大。</p>
+<p>  在安全性方面，SMB3 与 NFSv4 已支持数据加密与用户身份验证机制，相对较安全；AFP 也可通过 TLS 加密连接保护传输数据；WebDAV 通常运行在 HTTPS 之上，因此可以提供较强的数据传输安全性与访问控制能力；而传统 FTP 默认明文传输，存在较高的安全风险，除非使用 FTPS（FTP over SSL/TLS） 或 SFTP（SSH File Transfer Protocol） 扩展才具备可靠的加密保护。因此，在现代系统中，若要求性能与安全性兼顾，Windows 环境常选择 SMB3，Linux/Unix 环境多采用 NFSv4，而跨平台或互联网访问则倾向使用 WebDAV 或 SFTP；AFP 则更适合苹果生态内部的文件共享与备份使用。</p>
+<h3 id="4-3协议的选择建议"><strong>4.3协议的选择建议</strong></h3>
 <table>
-<colgroup>
-<col style="width: 41%" />
-<col style="width: 25%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>使用场景</th>
@@ -813,7 +581,7 @@ NFSv4，而跨平台或互联网访问则倾向使用 WebDAV 或 SFTP；AFP
 </tr>
 </tbody>
 </table>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/">https://kjore.github.io/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%BD%9C%E4%B8%9A%E6%8A%A5%E5%91%8A/">作业报告</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">数据库设计</div></div><div class="info-2"><div class="info-item-1">数据库设计 概念模式设计 E-R模型 实体集 entity sets 具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。 下图为实体集的E-R图  属性 attributes  简单属性（Simple）：不可再分的属性 复合属性（composite）：可在分的属性 用缩进表示  根据用户需求来确定属性是简单的还是复杂的。比如姓名这个属性，根据用户需求可看成一整个名字的简单属性，也可以看成姓和名的复合属性。  单值属性（Single-valued）：在这个属性上的取值只有一个。比如性别，要么是男，要么是女，不可能同时是男和女。 多值属性（multivalued）：比如联系方式，可以填多个电话或邮箱 用{}表示 导出属性（Derived）：可以由其他属性推导出来。比如年龄可以根据生日算出。导出属性可以在数据库中存也可以不存，存的话得到属性比较快，但是，不仅占空间，而且需要维护它和其他属性的一致性。所以对于一些简单的逻辑关系，就不保存了。 用（）表示    1760940007162...</div></div></div></a><a class="pagination-related" href="/2025/10/19/hello-world/" title="Hello World"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Hello World</div></div><div class="info-2"><div class="info-item-1">Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick Start Create a new post 1$ hexo new &quot;My New Post&quot; More info: Writing Run server 1$ hexo server More info: Server Generate static files 1$ hexo generate More info: Generating Deploy to remote sites 1$ hexo deploy More info: Deployment </div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">1. 引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nas%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">2. NAS技术概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#nas%E7%AE%80%E4%BB%8B%E5%92%8C%E7%89%B9%E7%82%B9"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 NAS简介和特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nas%E5%9F%BA%E6%9C%AC%E5%AD%98%E5%82%A8%E5%8E%9F%E7%90%86"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 NAS基本存储原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nas%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 NAS工作原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.</span> <span class="toc-text">3.常见网络文件共享协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#smb%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 SMB协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><span class="toc-number">4.1.1.</span> <span class="toc-text">3.1.1.技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8A%BF"><span class="toc-number">4.1.2.</span> <span class="toc-text">3.1.2. 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A3%E5%8A%BF"><span class="toc-number">4.1.3.</span> <span class="toc-text">3.1.3. 劣势</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nfs%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 NFS协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9-1"><span class="toc-number">4.2.1.</span> <span class="toc-text">3.2.1 技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8A%BF-1"><span class="toc-number">4.2.2.</span> <span class="toc-text">3.2.2 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A3%E5%8A%BF-1"><span class="toc-number">4.2.3.</span> <span class="toc-text">3.2.3 劣势</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#afp%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 AFP协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9-2"><span class="toc-number">4.3.1.</span> <span class="toc-text">3.3.1 技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8A%BF-2"><span class="toc-number">4.3.2.</span> <span class="toc-text">3.3.2 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A3%E5%8A%BF-2"><span class="toc-number">4.3.3.</span> <span class="toc-text">3.3.3 劣势</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#webdav%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.4.</span> <span class="toc-text">3.4 WebDAV协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9-3"><span class="toc-number">4.4.1.</span> <span class="toc-text">3.4.1 技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8A%BF-3"><span class="toc-number">4.4.2.</span> <span class="toc-text">3.4.2 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A3%E5%8A%BF-3"><span class="toc-number">4.4.3.</span> <span class="toc-text">3.4.3 劣势</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ftp%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.5.</span> <span class="toc-text">3.5 FTP协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9-4"><span class="toc-number">4.5.1.</span> <span class="toc-text">3.5.1 技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8A%BF-4"><span class="toc-number">4.5.2.</span> <span class="toc-text">3.5.2 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A3%E5%8A%BF-4"><span class="toc-number">4.5.3.</span> <span class="toc-text">3.5.3 劣势</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83"><span class="toc-number">5.</span> <span class="toc-text">4.网络文件共享协议分析与比较</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83"><span class="toc-number">5.1.</span> <span class="toc-text">4.1协议性能比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E5%AE%89%E5%85%A8%E6%80%A7%E6%AF%94%E8%BE%83"><span class="toc-number">5.2.</span> <span class="toc-text">4.2协议安全性比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E7%9A%84%E9%80%89%E6%8B%A9%E5%BB%BA%E8%AE%AE"><span class="toc-number">5.3.</span> <span class="toc-text">4.3协议的选择建议</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="死锁">死锁</a><time datetime="2025-10-28T09:22:03.000Z" title="发表于 2025-10-28 17:22:03">2025-10-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型">关系模型</a><time datetime="2025-10-22T09:22:03.000Z" title="发表于 2025-10-22 17:22:03">2025-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计">数据库设计</a><time datetime="2025-10-21T15:28:51.114Z" title="发表于 2025-10-21 23:28:51">2025-10-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/" title="NAS技术概述及常见网络文件共享协议分析与比较">NAS技术概述及常见网络文件共享协议分析与比较</a><time datetime="2025-10-19T13:21:10.000Z" title="发表于 2025-10-19 21:21:10">2025-10-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/19/hello-world/" title="Hello World">Hello World</a><time datetime="2025-10-19T08:15:47.981Z" title="发表于 2025-10-19 16:15:47">2025-10-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/">https://kjore.github.io/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%BD%9C%E4%B8%9A%E6%8A%A5%E5%91%8A/">作业报告</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">数据库设计</div></div><div class="info-2"><div class="info-item-1">数据库设计 概念模式设计 E-R模型 实体集 entity sets 具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。 下图为实体集的E-R图  属性 attributes  简单属性（Simple）：不可再分的属性 复合属性（composite）：可在分的属性  用缩进表示  根据用户需求来确定属性是简单的还是复杂的。比如姓名这个属性，根据用户需求可看成一整个名字的简单属性，也可以看成姓和名的复合属性。  单值属性（Single-valued）：在这个属性上的取值只有一个。比如性别，要么是男，要么是女，不可能同时是男和女。 多值属性（multivalued）：比如联系方式，可以填多个电话或邮箱 用{}表示 导出属性（Derived）：可以由其他属性推导出来。比如年龄可以根据生日算出。导出属性可以在数据库中存也可以不存，存的话得到属性比较快，但是，不仅占空间，而且需要维护它和其他属性的一致性。所以对于一些简单的逻辑关系，就不保存了。 用（）表示   联系集 relationship sets 实体集之间存在的某种语义关...</div></div></div></a><a class="pagination-related" href="/2025/10/19/hello-world/" title="Hello World"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Hello World</div></div><div class="info-2"><div class="info-item-1">Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick Start Create a new post 1$ hexo new &quot;My New Post&quot; More info: Writing Run server 1$ hexo server More info: Server Generate static files 1$ hexo generate More info: Generating Deploy to remote sites 1$ hexo deploy More info: Deployment </div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%BC%95%E8%A8%80"><span class="toc-number">2.</span> <span class="toc-text">1. 引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">2. NAS技术概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-NAS%E7%AE%80%E4%BB%8B%E5%92%8C%E7%89%B9%E7%82%B9"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 NAS简介和特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-NAS%E5%9F%BA%E6%9C%AC%E5%AD%98%E5%82%A8%E5%8E%9F%E7%90%86"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 NAS基本存储原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-NAS%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 NAS工作原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.</span> <span class="toc-text">3.常见网络文件共享协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-SMB%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 SMB协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-1-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><span class="toc-number">4.1.1.</span> <span class="toc-text">3.1.1.技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-2-%E4%BC%98%E5%8A%BF"><span class="toc-number">4.1.2.</span> <span class="toc-text">3.1.2. 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-3-%E5%8A%A3%E5%8A%BF"><span class="toc-number">4.1.3.</span> <span class="toc-text">3.1.3. 劣势</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-NFS%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 NFS协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><span class="toc-number">4.2.1.</span> <span class="toc-text">3.2.1 技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-%E4%BC%98%E5%8A%BF"><span class="toc-number">4.2.2.</span> <span class="toc-text">3.2.2 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-%E5%8A%A3%E5%8A%BF"><span class="toc-number">4.2.3.</span> <span class="toc-text">3.2.3 劣势</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-AFP%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 AFP协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-1-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><span class="toc-number">4.3.1.</span> <span class="toc-text">3.3.1 技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-2-%E4%BC%98%E5%8A%BF"><span class="toc-number">4.3.2.</span> <span class="toc-text">3.3.2 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-3-%E5%8A%A3%E5%8A%BF"><span class="toc-number">4.3.3.</span> <span class="toc-text">3.3.3 劣势</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-WebDAV%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.4.</span> <span class="toc-text">3.4 WebDAV协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-1-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><span class="toc-number">4.4.1.</span> <span class="toc-text">3.4.1 技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-2-%E4%BC%98%E5%8A%BF"><span class="toc-number">4.4.2.</span> <span class="toc-text">3.4.2 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-3-%E5%8A%A3%E5%8A%BF"><span class="toc-number">4.4.3.</span> <span class="toc-text">3.4.3 劣势</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-FTP%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.5.</span> <span class="toc-text">3.5 FTP协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-1-%E6%8A%80%E6%9C%AF%E7%89%B9%E7%82%B9"><span class="toc-number">4.5.1.</span> <span class="toc-text">3.5.1 技术特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-2-%E4%BC%98%E5%8A%BF"><span class="toc-number">4.5.2.</span> <span class="toc-text">3.5.2 优势</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-3-%E5%8A%A3%E5%8A%BF"><span class="toc-number">4.5.3.</span> <span class="toc-text">3.5.3 劣势</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83"><span class="toc-number">5.</span> <span class="toc-text">4.网络文件共享协议分析与比较</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1%E5%8D%8F%E8%AE%AE%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83"><span class="toc-number">5.1.</span> <span class="toc-text">4.1协议性能比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2%E5%8D%8F%E8%AE%AE%E5%AE%89%E5%85%A8%E6%80%A7%E6%AF%94%E8%BE%83"><span class="toc-number">5.2.</span> <span class="toc-text">4.2协议安全性比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3%E5%8D%8F%E8%AE%AE%E7%9A%84%E9%80%89%E6%8B%A9%E5%BB%BA%E8%AE%AE"><span class="toc-number">5.3.</span> <span class="toc-text">4.3协议的选择建议</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="死锁">死锁</a><time datetime="2025-10-28T09:22:03.000Z" title="发表于 2025-10-28 17:22:03">2025-10-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型">关系模型</a><time datetime="2025-10-22T09:22:03.000Z" title="发表于 2025-10-22 17:22:03">2025-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计">数据库设计</a><time datetime="2025-10-21T15:28:51.114Z" title="发表于 2025-10-21 23:28:51">2025-10-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/" title="NAS技术概述及常见网络文件共享协议分析与比较">NAS技术概述及常见网络文件共享协议分析与比较</a><time datetime="2025-10-19T13:21:10.000Z" title="发表于 2025-10-19 21:21:10">2025-10-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/19/hello-world/" title="Hello World">Hello World</a><time datetime="2025-10-19T08:15:47.981Z" title="发表于 2025-10-19 16:15:47">2025-10-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
   const loadMathjax = () => {
     if (!window.MathJax) {
       window.MathJax = {
