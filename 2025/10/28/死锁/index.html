@@ -1,0 +1,381 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>kjore's blog | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="死锁 deadlock 概念 定义 在计算机科学中，死锁（Deadlock）是指两个或多个进程在执行过程中，由于竞争资源而造成的一种互相等待的现象，从而导致这些进程无法继续执行。 死锁与饥饿的区别  发生饥饿的进程只有一个，发生死锁的进程有两个或两个以上。 发生饥饿的进程可能处于就绪态，比如SJF调度算法中，优先级低的进程可能一直得不到执行机会而处于就绪态，也可能处于阻塞态，如长期得">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kjore&#39;s blog">
+<meta property="og:url" content="https://kjore.github.io/2025/10/28/%E6%AD%BB%E9%94%81/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="死锁 deadlock 概念 定义 在计算机科学中，死锁（Deadlock）是指两个或多个进程在执行过程中，由于竞争资源而造成的一种互相等待的现象，从而导致这些进程无法继续执行。 死锁与饥饿的区别  发生饥饿的进程只有一个，发生死锁的进程有两个或两个以上。 发生饥饿的进程可能处于就绪态，比如SJF调度算法中，优先级低的进程可能一直得不到执行机会而处于就绪态，也可能处于阻塞态，如长期得">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2025-10-28T10:18:17.745Z">
+<meta property="article:modified_time" content="2025-10-28T10:19:33.345Z">
+<meta property="article:author" content="kjore">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "",
+  "url": "https://kjore.github.io/2025/10/28/%E6%AD%BB%E9%94%81/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2025-10-28T10:18:17.745Z",
+  "dateModified": "2025-10-28T10:19:33.345Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2025/10/28/%E6%AD%BB%E9%94%81/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'kjore\'s blog',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">kjore's blog</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">无标题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-28T10:18:17.745Z" title="发表于 2025-10-28 18:18:17">2025-10-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-28T10:19:33.345Z" title="更新于 2025-10-28 18:19:33">2025-10-28</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="死锁-deadlock">死锁 deadlock</h1>
+<h2 id="概念">概念</h2>
+<h3 id="定义">定义</h3>
+<p>在计算机科学中，死锁（Deadlock）是指两个或多个进程在执行过程中，由于竞争资源而造成的一种互相等待的现象，从而导致这些进程无法继续执行。</p>
+<h3 id="死锁与饥饿的区别">死锁与饥饿的区别</h3>
+<ol type="1">
+<li>发生饥饿的进程只有一个，发生死锁的进程有两个或两个以上。</li>
+<li>发生<strong>饥饿</strong>的进程可能处于就绪态，比如SJF调度算法中，优先级低的进程可能一直得不到执行机会而处于就绪态，也可能处于阻塞态，如长期得不到I/O设备。而发生<strong>死锁</strong>的进程一般都处于阻塞态，等待其他进程释放资源。</li>
+</ol>
+<h3 id="死锁的必要条件">死锁的必要条件</h3>
+<ol type="1">
+<li>互斥条件（mutual
+exclusion）：至少有一个资源必须处于非共享模式，即某个资源一次只能被一个进程占用。</li>
+<li>占有且等待条件（hold and
+wait）：持有至少一种资源的进程正在等待获取其他进程持有的其他资源</li>
+<li>非抢占式（no
+preemption）：进程已获得的资源在未使用完之前，不能被强制剥夺，只能在进程完成其任务后由进程自己释放。</li>
+<li>循环等待条件（circular
+wait）：存在一种进程资源的循环等待关系，即P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源。
+四者缺一不可</li>
+</ol>
+<h3 id="死锁处理原则">死锁处理原则</h3>
+<p>只要破坏上述四个必要条件中的一个，就可以防止死锁的发生。实际系统中主要采取破坏hold
+and wait 和circular wait的方法，常用的方法有以下三种：</p>
+<ol type="1">
+<li>死锁预防（Deadlock
+Prevention）：通过确保系统永远不会同时满足死锁的四个必要条件之一来防止死锁的发生。</li>
+<li>死锁避免（Deadlock Avoidance）：通过动态地检查资源分配</li>
+<li>死锁检测与解除（Deadlock Detection and
+Recovery）：允许系统进入死锁状态，但通过检测算法来识别死锁，并采取措施来解除死锁。</li>
+</ol>
+<h3
+id="资源分配图resource-allocation-graph">资源分配图（Resource-allocation
+Graph）</h3>
+<ul>
+<li><p>进程 <img src="1761646401319.png" width="200" height="50"
+alt="进程结点" /></p></li>
+<li><p>资源 <img src="1761646421160.png" width="200" height="50"
+alt="有几个资源实例" /></p></li>
+<li><p>申请边 <img src="1761646446440.png" width="200" height="50"
+alt="进程申请资源" /></p></li>
+<li><p>分配边 <img src="1761646474413.png" width="200" height="50"
+alt="进程已拥有资源" /></p></li>
+<li><p>需求边 申请边变为虚线 <img src="1761646554727.png" width="50"
+height="50" alt="进程需求资源" /> ### 环与死锁</p></li>
+<li><p>无环无死锁 <img src="1761642289112.png" width="400" height="300"
+alt="1" /></p></li>
+<li><p>有环有死锁（单实例资源） <img src="1761642376207.png" width="400"
+height="300" alt="2" /></p></li>
+<li><p>有环无死锁（多实例资源） <img src="1761642399730.png" width="400"
+height="300" alt="3" /></p></li>
+</ul>
+<p>结论： 1.无环一定无死锁
+2.有环不一定有死锁，如果每种资源类型只有一个实例（instance），则死锁，每种资源类型有多个实例，可能出现死锁。</p>
+<h3 id="deadlock-occurrence-vs-resource-quantity">Deadlock Occurrence vs
+Resource Quantity</h3>
+<ul>
+<li>在进程数目<strong>n</strong>、资源种类<strong>m</strong>固定情况下,已知所有进程对资源的最大总需求数<strong>L</strong>,导致
+发生死锁的资源实例总数<strong>K</strong>的最大值 <strong>K= L –
+n</strong></li>
+<li>保证无死锁的最少实例总数: <strong>K + 1</strong> <img
+src="1761642926030.png" width="500" height="300" alt="例题1" /> <img
+src="1761642985831.png" width="500" height="300" alt="例题2" /></li>
+</ul>
+<h2 id="处理死锁方法">处理死锁方法</h2>
+<ol type="1">
+<li>确保进程不会进入死锁状态</li>
+</ol>
+<ul>
+<li>死锁预防</li>
+<li>死锁避免</li>
+</ul>
+<ol start="2" type="1">
+<li>允许进程进入死锁状态，但系统能检测到死锁并采取措施恢复</li>
+</ol>
+<ul>
+<li>死锁检测与解除 操作系统不会处理死锁，用户自己解决</li>
+</ul>
+<h2 id="死锁预防">死锁预防</h2>
+<ol type="1">
+<li><p>互斥：对于可共享资源（例如只读文件）可以放宽互斥约束，即允许多个进程同时访问可共享资源。然而，互斥约束必须适用于不可共享资源（例如打印机）。
+eg: 2 MVCC (多版本控制协议) in database systems
+很难改变，不现实</p></li>
+<li><p>占有且等待：要求进程在请求资源之前，必须释放它当前持有的所有资源。这样，进程就不会同时持有资源并等待其他资源，从而避免了死锁的发生。</p>
+<ul>
+<li>协议一：该进程只能在开始执行之前请求并分配所有所需的资源</li>
+<li>协议二: 允许进程在其生命周期内多次请求资源 可行性高 缺点：</li>
+</ul></li>
+</ol>
+<ul>
+<li>资源利用率低，进程可能因为无法获得所有资源而被阻塞，导致系统性能下降。</li>
+<li>可能导致饥饿</li>
+</ul>
+<ol start="3" type="1">
+<li>非抢占：允许进程抢占处于waiting态的进程占有的资源,或进入waiting态进程应先释放资源。
+<img src="1761644034640.png" alt="非抢占的两种情况" /></li>
+</ol>
+<p>该方法适用于状态可以方便地保存和稍后恢复的资源，例如CPU寄存器和内存</p>
+<ol start="4" type="1">
+<li>循环等待：为每种资源类型分配一个唯一的优先级编号，要求进程按照递增的顺序请求资源。这样可以防止循环等待的发生，因为进程只能请求比它当前持有的资源优先级更高的资源。</li>
+</ol>
+<ul>
+<li>如果Pi请求或持有Ri的实例，那么之后它只能请求资源Rj，使得F(Rj) &gt;
+F(Ri)</li>
+<li>每当 Pi 请求 Rj 的实例时，它必须释放所有资源 Ri 使得 F(Ri) ≥ F(Rj)
+<img src="1761644463255.png" width="300" height="300" alt="循环等待" />
+根据这两个协议，循环等待条件不能成立，并且可以防止死锁，更常用，作为死锁避免和检测的基础</li>
+</ul>
+<h2 id="死锁避免">死锁避免</h2>
+<p>避免死锁同样属于预防死锁的一种方法，但并不是事先采取某种限制措施来避免死锁，而是在资源分配时动态地检查系统状态，确保系统始终处于安全状态，从而避免死锁的发生。
+资源分配状态由可用和已分配资源的数量以及进程的最大需求来定义。</p>
+<h3 id="安全状态">安全状态</h3>
+<p>直观上，如果系统能够为进程分配资源并且仍然避免死锁，则系统处于安全状态。当进程请求可用资源时，系统必须决定立即分配是否使系统处于安全状态
+所谓安全状态，是指系统能够按照某种进程推进顺序，为每个进程分配所需的资源，从而使所有进程都能顺利完成执行。
+系统处于安全状态一定不会发生死锁，系统不处于安全状态，可能发生死锁</p>
+<h3 id="资源分配图算法">资源分配图算法</h3>
+<p>该算法只能应用于每种资源类型<strong>只有一个实例</strong>的系统
+该算法通过在资源分配图中引入一种新的边——需求边 (Claim
+Edge)，来在分配资源前预测分配后系统是否会进入不安全状态（即是否会形成环路），从而避免死锁的发生。
+#### 算法工作流程 1.
+初始状态：当一个进程开始执行时，它会声明所有可能需要用到的资源。在资源分配图中，会为该进程到它可能需要的每个资源画一条需求边。</p>
+<ol start="2" type="1">
+<li>请求资源：当进程 P 实际请求资源 R 时：</li>
+</ol>
+<ul>
+<li>首先，图中必须已经存在从 P 到 R 的需求边。</li>
+<li>系统会假装把这条需求边转换成一条分配边 (R → P)。</li>
+</ul>
+<ol start="3" type="1">
+<li>安全性检查：在假装分配后，系统会检查新的资源分配图是否形成了环路。</li>
+</ol>
+<ul>
+<li>如果形成环路：说明这次分配会导致系统进入不安全状态，可能引发死落。因此，系统不会执行这次分配，进程
+P 必须等待。</li>
+<li>如果没有形成环路：说明这次分配是安全的。系统会正式将需求边转换为分配边，将资源
+R 分配给进程 P。</li>
+</ul>
+<ol start="4" type="1">
+<li>释放资源：当进程 P 使用完资源 R
+并将其释放时，对应的分配边会被转换回需求边。 <img
+src="1761646294687.png" width="400" height="300"
+alt="资源分配图" /></li>
+</ol>
+<h3 id="银行家算法">银行家算法</h3>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2025/10/28/%E6%AD%BB%E9%94%81/">https://kjore.github.io/2025/10/28/%E6%AD%BB%E9%94%81/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">关系模型</div></div><div class="info-2"><div class="info-item-1">关系模型 Relational Model 关系模型的结构 Relational Model Structure 关系：笛卡尔乘积的有意义的有限子集 属性：关系的列，属性的顺序不重要，属性必须是原子的 元组：关系的行，或者一条记录，元组的顺序不重要 域(domain)：属性的取值范围 关系模式：关系的结构描述，一个属性列表及属性所对应的域 关系实例：关系在某一时刻的具体数据，快照 关系模型的约束 Constraints of Relational Model 超键(superkey)：能唯一标识元组的属性集合。如学号加姓名 候选键(candidate key)：最小超键，不能再去掉任何属性的超键。如学号。候选键不唯一，比如学号可以是候选键，身份证号也可以是候选键  唯一性 最小性  主键(primary key)：从候选键中选出的用于唯一标识元组的属性集合。如学号 外键(foreign key)：一个关系中的属性，其值引用另一个关系的主键或候选键 完整性约束： 实体完整性：主键属性不能为空 参照完整性：外键值要么为空，要么必须在引用的...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%AD%BB%E9%94%81-deadlock"><span class="toc-number">1.</span> <span class="toc-text">死锁 deadlock</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.</span> <span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%BB%E9%94%81%E4%B8%8E%E9%A5%A5%E9%A5%BF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.1.2.</span> <span class="toc-text">死锁与饥饿的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%BB%E9%94%81%E7%9A%84%E5%BF%85%E8%A6%81%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.1.3.</span> <span class="toc-text">死锁的必要条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%BB%E9%94%81%E5%A4%84%E7%90%86%E5%8E%9F%E5%88%99"><span class="toc-number">1.1.4.</span> <span class="toc-text">死锁处理原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D%E5%9B%BEresource-allocation-graph"><span class="toc-number">1.1.5.</span> <span class="toc-text">资源分配图（Resource-allocation
+Graph）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#deadlock-occurrence-vs-resource-quantity"><span class="toc-number">1.1.6.</span> <span class="toc-text">Deadlock Occurrence vs
+Resource Quantity</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E6%AD%BB%E9%94%81%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.</span> <span class="toc-text">处理死锁方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%BB%E9%94%81%E9%A2%84%E9%98%B2"><span class="toc-number">1.3.</span> <span class="toc-text">死锁预防</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%BB%E9%94%81%E9%81%BF%E5%85%8D"><span class="toc-number">1.4.</span> <span class="toc-text">死锁避免</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E7%8A%B6%E6%80%81"><span class="toc-number">1.4.1.</span> <span class="toc-text">安全状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D%E5%9B%BE%E7%AE%97%E6%B3%95"><span class="toc-number">1.4.2.</span> <span class="toc-text">资源分配图算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%B6%E8%A1%8C%E5%AE%B6%E7%AE%97%E6%B3%95"><span class="toc-number">1.4.3.</span> <span class="toc-text">银行家算法</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="无标题">无标题</a><time datetime="2025-10-28T10:18:17.745Z" title="发表于 2025-10-28 18:18:17">2025-10-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型">关系模型</a><time datetime="2025-10-22T09:22:03.000Z" title="发表于 2025-10-22 17:22:03">2025-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计">数据库设计</a><time datetime="2025-10-21T15:28:51.114Z" title="发表于 2025-10-21 23:28:51">2025-10-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/" title="NAS技术概述及常见网络文件共享协议分析与比较">NAS技术概述及常见网络文件共享协议分析与比较</a><time datetime="2025-10-19T13:21:10.000Z" title="发表于 2025-10-19 21:21:10">2025-10-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/19/hello-world/" title="Hello World">Hello World</a><time datetime="2025-10-19T08:15:47.981Z" title="发表于 2025-10-19 16:15:47">2025-10-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
