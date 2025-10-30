@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>数据库设计 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="数据库设计 概念模式设计 E-R模型 实体集 entity sets 具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。 下图为实体集的E-R图  属性 attributes  简单属性（Simple）：不可再分的属性 复合属性（composite）：可在分的属性  用缩进表示  根据用户需求来确定属性是简单的还是复杂的。比如姓名这个属性">
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>数据库设计 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="数据库设计 概念模式设计 E-R模型 实体集 entity sets 具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。 下图为实体集的E-R图  属性 attributes  简单属性（Simple）：不可再分的属性 复合属性（composite）：可在分的属性 用缩进表示  根据用户需求来确定属性是简单的还是复杂">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据库设计">
 <meta property="og:url" content="https://kjore.github.io/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/index.html">
 <meta property="og:site_name" content="kjore&#39;s blog">
-<meta property="og:description" content="数据库设计 概念模式设计 E-R模型 实体集 entity sets 具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。 下图为实体集的E-R图  属性 attributes  简单属性（Simple）：不可再分的属性 复合属性（composite）：可在分的属性  用缩进表示  根据用户需求来确定属性是简单的还是复杂的。比如姓名这个属性">
+<meta property="og:description" content="数据库设计 概念模式设计 E-R模型 实体集 entity sets 具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。 下图为实体集的E-R图  属性 attributes  简单属性（Simple）：不可再分的属性 复合属性（composite）：可在分的属性 用缩进表示  根据用户需求来确定属性是简单的还是复杂">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kjore.github.io/img/head.png">
 <meta property="article:published_time" content="2025-10-21T15:28:51.114Z">
@@ -159,104 +159,131 @@
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">数据库设计</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">数据库设计</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-21T15:28:51.114Z" title="发表于 2025-10-21 23:28:51">2025-10-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-29T14:06:00.995Z" title="更新于 2025-10-29 22:06:00">2025-10-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>数据库设计</h1>
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">数据库设计</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">数据库设计</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-21T15:28:51.114Z" title="发表于 2025-10-21 23:28:51">2025-10-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-29T14:06:00.995Z" title="更新于 2025-10-29 22:06:00">2025-10-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="数据库设计">数据库设计</h1>
 <h2 id="概念模式设计">概念模式设计</h2>
-<h3 id="E-R模型">E-R模型</h3>
+<h3 id="e-r模型">E-R模型</h3>
 <h4 id="实体集-entity-sets">实体集 entity sets</h4>
-<p>具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。<br>
-下图为实体集的E-R图<br>
-<img src="1760938365752.png" alt="1760938365752"></p>
+<p>具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。
+下图为实体集的E-R图 <img src="1760938365752.png"
+alt="1760938365752" /></p>
 <h4 id="属性-attributes">属性 attributes</h4>
 <ul>
 <li>简单属性（Simple）：不可再分的属性</li>
-<li>复合属性（composite）：可在分的属性  用缩进表示</li>
+<li>复合属性（composite）：可在分的属性 用缩进表示</li>
 </ul>
 <p>根据用户需求来确定属性是简单的还是复杂的。比如姓名这个属性，根据用户需求可看成一整个名字的简单属性，也可以看成姓和名的复合属性。</p>
 <ul>
 <li>单值属性（Single-valued）：在这个属性上的取值只有一个。比如性别，要么是男，要么是女，不可能同时是男和女。</li>
-<li>多值属性（multivalued）：比如联系方式，可以填多个电话或邮箱 用{}表示</li>
-<li>导出属性（Derived）：可以由其他属性推导出来。比如年龄可以根据生日算出。导出属性可以在数据库中存也可以不存，存的话得到属性比较快，但是，不仅占空间，而且需要维护它和其他属性的一致性。所以对于一些简单的逻辑关系，就不保存了。 用（）表示</li>
+<li>多值属性（multivalued）：比如联系方式，可以填多个电话或邮箱
+用{}表示</li>
+<li>导出属性（Derived）：可以由其他属性推导出来。比如年龄可以根据生日算出。导出属性可以在数据库中存也可以不存，存的话得到属性比较快，但是，不仅占空间，而且需要维护它和其他属性的一致性。所以对于一些简单的逻辑关系，就不保存了。
+用（）表示</li>
 </ul>
-<p><img src="1760940007162.png" alt="1760940007162"></p>
+<figure>
+<img src="1760940007162.png" alt="1760940007162" />
+<figcaption aria-hidden="true">1760940007162</figcaption>
+</figure>
 <h4 id="联系集-relationship-sets">联系集 relationship sets</h4>
-<p>实体集之间存在的某种语义关系。<br>
-联系集也可能有属性。比如，老师开始指导学生的开始时间，这个时间既不是老师的，又不是学生的，是联系集的。<br>
-再换一种说法，一个订单要购买几种产品，那么这几种产品的数量是订单的属性吗？是产品的属性吗？都不是，是下单这个关系的属性<br>
+<p>实体集之间存在的某种语义关系。
+联系集也可能有属性。比如，老师开始指导学生的开始时间，这个时间既不是老师的，又不是学生的，是联系集的。
+再换一种说法，一个订单要购买几种产品，那么这几种产品的数量是订单的属性吗？是产品的属性吗？都不是，是下单这个关系的属性
 张三的数据库成绩是90分，而不是张三的成绩是90分，数据库的成绩是90分，而是这个选课关系上的属性</p>
-<p>联系集用菱形框表示<br>
-<img src="1760938402141.png" alt="1760938402141"><br>
-虚线上的表示联系集的属性<br>
-<img src="1760938572619.png" alt="1760938572619"></p>
-<p><strong>联系集的度（drgree）</strong> ：联系实体集的个数<br>
+<p>联系集用菱形框表示 <img src="1760938402141.png"
+alt="1760938402141" /> 虚线上的表示联系集的属性 <img
+src="1760938572619.png" alt="1760938572619" /></p>
+<p><strong>联系集的度（drgree）</strong> ：联系实体集的个数
 相同的实体集可以产生不同的联系，所以E-R图要标出来联系的名字</p>
-<p><strong>映射基数 Mapping Cardinality Constraints</strong> ：在数据库设计和关系映射中用于定义实体之间关系的约束。描述了两个实体之间的关系可以有多少个实例。</p>
-<ol>
+<p><strong>映射基数 Mapping Cardinality Constraints</strong>
+：在数据库设计和关系映射中用于定义实体之间关系的约束。描述了两个实体之间的关系可以有多少个实例。</p>
+<ol type="1">
 <li><strong>一对一</strong>：A一个实体只能与B至多一个实体相关联
 <ul>
 <li>eg：男人集和女人集，联系为夫妻，一个丈夫只有一个妻子，一个妻子只有一个丈夫。</li>
-</ul>
-</li>
+</ul></li>
 <li><strong>一对多</strong>：A一个实体可以与任意数量的B实体关联
 <ul>
-<li>eg: 班级和学生，联系为从属，一个班级可有多个学生，一个学生只属于一个班级</li>
-</ul>
-</li>
+<li>eg:
+班级和学生，联系为从属，一个班级可有多个学生，一个学生只属于一个班级</li>
+</ul></li>
 <li><strong>多对一</strong>：B一个实体可以与任意数量A实体关联</li>
-<li><strong>多对多</strong>：A一个实体可以与任意数量的B实体关联, B一个实体可以与任意数量的A实体关联
+<li><strong>多对多</strong>：A一个实体可以与任意数量的B实体关联,
+B一个实体可以与任意数量的A实体关联
 <ul>
-<li>eg: 老师和学生，联系为师生，一个老师可以教多个学生，一个学生可有多个老师</li>
-</ul>
-</li>
+<li>eg:
+老师和学生，联系为师生，一个老师可以教多个学生，一个学生可有多个老师</li>
+</ul></li>
 </ol>
 <ul>
-<li>用 $\rightarrow$表示一</li>
-<li>用 <code>——</code>表示多<br>
+<li>用 <span class="math inline">→</span>表示一</li>
+<li>用 <code>——</code>表示多
 一个老师能指导多个学生，但一个学生只能一个老师指导</li>
 </ul>
-<p><img src="1761058830151.png" alt="1761058830151"></p>
+<figure>
+<img src="1761058830151.png" alt="1761058830151" />
+<figcaption aria-hidden="true">1761058830151</figcaption>
+</figure>
 <h4 id="弱实体集-weak-entity-sets">弱实体集 weak entity sets</h4>
-<p>实体集没有主键。如在企业员工管理系统中，要存家属的信息，我们只关心家属姓名，年龄，与该员工的关系。只需要关注这三个属性，但这三个属性有可能有重复，所以家属的实体集就是弱实体集。弱实体集必定依赖于一个强实体集（标识实体集），比如员工集。<br>
+<p>实体集没有主键。如在企业员工管理系统中，要存家属的信息，我们只关心家属姓名，年龄，与该员工的关系。只需要关注这三个属性，但这三个属性有可能有重复，所以家属的实体集就是弱实体集。弱实体集必定依赖于一个强实体集（标识实体集），比如员工集。
 <strong>弱实体集部分键</strong>与强实体集一些属性确定一个特定的弱实体，下方有虚下划线</p>
-<p>弱实体集用双矩形框表示<br>
-<img src="1760940129293.png" alt="1760940129293"></p>
+<p>弱实体集用双矩形框表示 <img src="1760940129293.png"
+alt="1760940129293" /></p>
 <h4 id="角色-roles">角色 roles</h4>
-<p>表示一元联系，course_id和prereq_id这样的标签就是角色<br>
-<img src="1760938774817.png" alt="1760938774817"></p>
+<p>表示一元联系，course_id和prereq_id这样的标签就是角色 <img
+src="1760938774817.png" alt="1760938774817" /></p>
 <h4 id="全参与和部分参与">全参与和部分参与</h4>
-<p>用单线表示部分参与，用双线表示全参与<br>
-有些老师不指导学生，但学生肯定有老师<br>
-<img src="1760939231289.png" alt="1760939231289"></p>
-<h4 id="（l-h）">（l,h）</h4>
-<p>l表示全参与还是部分参与，&gt;=1时表示全参与，=0时表示部分参与<br>
-h表示一对多还是多对多，一对一，‘*’/N表示多，1表示至多一个实体参与联系集<br>
-这个图中（0，*）表示部分教师参与指导学生，一名教师可以有不定量学生<br>
+<p>用单线表示部分参与，用双线表示全参与
+有些老师不指导学生，但学生肯定有老师 <img src="1760939231289.png"
+alt="1760939231289" /></p>
+<h4 id="lh">（l,h）</h4>
+<p>l表示全参与还是部分参与，&gt;=1时表示全参与，=0时表示部分参与
+h表示一对多还是多对多，一对一，‘*’/N表示多，1表示至多一个实体参与联系集
+这个图中（0，*）表示部分教师参与指导学生，一名教师可以有不定量学生
 （1，1）表示每个学生都要有老师，且至多只有一个老师指导</p>
-<p><img src="1760939813309.png" alt="1760939813309"></p>
-<p><img src="1761060257351.png" alt="1761060257351"></p>
-<h4 id="三元关系上的基数约束-ternary-relationship-cardinality">三元关系上的基数约束 ternary relationship cardinality</h4>
-<p>核心规则：一个三元或更高的关系，最多只能有一个箭头指出去，用来表示基数约束。<br>
-假设我们有一个三元关系，叫做<strong>学生选课</strong> ，它连接了三个实体：</p>
-<ol>
+<figure>
+<img src="1760939813309.png" alt="1760939813309" />
+<figcaption aria-hidden="true">1760939813309</figcaption>
+</figure>
+<figure>
+<img src="1761060257351.png" alt="1761060257351" />
+<figcaption aria-hidden="true">1761060257351</figcaption>
+</figure>
+<h4
+id="三元关系上的基数约束-ternary-relationship-cardinality">三元关系上的基数约束
+ternary relationship cardinality</h4>
+<p>核心规则：一个三元或更高的关系，最多只能有一个箭头指出去，用来表示基数约束。
+假设我们有一个三元关系，叫做<strong>学生选课</strong>
+，它连接了三个实体：</p>
+<ol type="1">
 <li>学生 (Student)</li>
 <li>课程 (Course)</li>
 <li>教授 (Professor)</li>
 </ol>
 <p>这个“学生选课”关系（菱形）就表示：某个学生选了某个教授开的某门课程。</p>
-<p>我们只画 1个箭头，比如从“学生选课”这个关系指向 教授。这代表什么？含义是：</p>
+<p>我们只画 1个箭头，比如从“学生选课”这个关系指向
+教授。这代表什么？含义是：</p>
 <ul>
 <li>剩下的两个实体（学生 和 课程）的组合，最多只能对应一个教授。</li>
-<li>说人话就是： 对于一个特定的学生（比如你）和一门特定的课程（比如“数据库”），你最多只能有一个教授。</li>
-<li>这很合理： 你选“数据库”这门课，要么是张三教授教，要么是李四教授教，你不能同时有两个教授给你上这同一门课。</li>
-<li>用公式表达就是： (学生, 课程) $\rightarrow$ 教授。这个含义是非常清晰、没有歧义的。</li>
+<li>说人话就是：
+对于一个特定的学生（比如你）和一门特定的课程（比如“数据库”），你最多只能有一个教授。</li>
+<li>这很合理：
+你选“数据库”这门课，要么是张三教授教，要么是李四教授教，你不能同时有两个教授给你上这同一门课。</li>
+<li>用公式表达就是： (学生, 课程) <span class="math inline">→</span>
+教授。这个含义是非常清晰、没有歧义的。</li>
 </ul>
-<p>现在我们来看看如果我们画了多个箭头会发生什么：<br>
-假设我们在“学生选课”关系上画了两个箭头：一个指向 教授，另一个指向 课程。这就意味着：<br>
-歧义 1 (PPT 里的第 1 种解释):</p>
+<p>现在我们来看看如果我们画了多个箭头会发生什么：
+假设我们在“学生选课”关系上画了两个箭头：一个指向 教授，另一个指向
+课程。这就意味着： 歧义 1 (PPT 里的第 1 种解释):</p>
 <p>是不是指“学生”是核心？</p>
-<p>意思是：“每一个学生，最多只能关联一个教授（一辈子只能有一个教授？），并且 最多只能关联一个课程（一辈子只能选一门课？）”</p>
+<p>意思是：“每一个学生，最多只能关联一个教授（一辈子只能有一个教授？），并且
+最多只能关联一个课程（一辈子只能选一门课？）”</p>
 <p>这个解释显然很荒谬，但它是一种可能的“语法”解释。</p>
-<p>歧义 2 (PPT 里的第 2 种解释):是不是指两个独立的规则？规则 A (来自指向教授的箭头): (学生, 课程) $\rightarrow$ 教授。（你选的数据库课，只有一个教授）。规则 B (来自指向课程的箭头): (学生, 教授) $\rightarrow$ 课程。（你选了张三教授，那么你只能上他开的一门课吗？比如你不能同时选张三教授的“数据库”和“操作系统”？）。</p>
-<h4 id="特化-specialization-与-概化-generalization">特化 specialization 与 概化 generalization</h4>
+<p>歧义 2 (PPT 里的第 2 种解释):是不是指两个独立的规则？规则 A
+(来自指向教授的箭头): (学生, 课程) <span class="math inline">→</span>
+教授。（你选的数据库课，只有一个教授）。规则 B (来自指向课程的箭头):
+(学生, 教授) <span class="math inline">→</span>
+课程。（你选了张三教授，那么你只能上他开的一门课吗？比如你不能同时选张三教授的“数据库”和“操作系统”？）。</p>
+<h4 id="特化-specialization-与-概化-generalization">特化 specialization
+与 概化 generalization</h4>
 <p><strong>正交与重叠</strong></p>
 <ul>
 <li>正交：一个教师只能是教授或讲师中的一个，这叫做<strong>不重叠/正交</strong>（disjointness）</li>
@@ -268,55 +295,67 @@ h表示一对多还是多对多，一对一，‘*’/N表示多，1表示至多
 <li>部分：子实体集的属性不完全包含在父实体集中，且父实体集的实例可以不属于任何子实体集。</li>
 </ul>
 <p>所以有四种组合：</p>
-<ol>
+<ol type="1">
 <li>正交完全特化/概化</li>
 <li>重叠完全特化/概化</li>
 <li>正交部分特化/概化</li>
 <li>重叠部分特化/概化</li>
 </ol>
-<p>特化是一种自顶向下的过程，从一个较大的实体集派生出更小的实体集。<br>
-概化是一种自底向上的过程，将多个较小的实体集合并成一个较大的实体集。<br>
+<p>特化是一种自顶向下的过程，从一个较大的实体集派生出更小的实体集。
+概化是一种自底向上的过程，将多个较小的实体集合并成一个较大的实体集。
 特化和概化只是一种思想，E-R图中只表示最后设计的结果，不表示设计的过程。</p>
 <h4 id="聚集-aggregation">聚集 aggregation</h4>
-<p><strong>步骤 1</strong>：一个基本关系<br>
-首先，我们有两个实体：</p>
+<p><strong>步骤 1</strong>：一个基本关系 首先，我们有两个实体：</p>
 <ul>
 <li>学生 (Student)</li>
-<li>项目 (Project)<br>
-它们之间有一个多对多（M:N）的关系：</li>
-<li>参与 (Participates_In)<br>
-一个学生可以参与多个项目，一个项目可以有多个学生参与。<br>
-[学生] $\longleftrightarrow$ (参与) $\longleftrightarrow$ [项目]</li>
+<li>项目 (Project) 它们之间有一个多对多（M:N）的关系：</li>
+<li>参与 (Participates_In)
+一个学生可以参与多个项目，一个项目可以有多个学生参与。 [学生] <span
+class="math inline">↔︎</span> (参与) <span class="math inline">↔︎</span>
+[项目]</li>
 </ul>
-<p><strong>步骤 2</strong>：出现的问题<br>
+<p><strong>步骤 2</strong>：出现的问题
 现在，我们想引入一个新的实体：</p>
 <ul>
-<li>教授 (Professor)<br>
-教授的职责是“评审”（Evaluates）某个学生在某个项目上的工作。<br>
+<li>教授 (Professor)
+教授的职责是“评审”（Evaluates）某个学生在某个项目上的工作。
 问题来了：这个“评审”关系，应该连接谁？</li>
-<li>连接 <strong>教授</strong> 和 <strong>学生</strong>？不行。教授不是评审一个“学生”（这个人），而是评审他在某个项目上的工作。</li>
-<li>连接 <strong>教授</strong> 和 <strong>项目</strong>？不行。教授不是评审一个“项目”（比如项目经费），而是评审某个学生在该项目上的工作。</li>
-<li>这个 评审 关系，它真正要连接的对象是：教授 和 “学生参与项目”这件事情本身。<br>
-但是“学生参与项目”是一个关系 (参与)，而不是一个实体。我们不能直接把 教授 实体连接到 参与 这个菱形上。</li>
+<li>连接 <strong>教授</strong> 和
+<strong>学生</strong>？不行。教授不是评审一个“学生”（这个人），而是评审他在某个项目上的工作。</li>
+<li>连接 <strong>教授</strong> 和
+<strong>项目</strong>？不行。教授不是评审一个“项目”（比如项目经费），而是评审某个学生在该项目上的工作。</li>
+<li>这个 评审 关系，它真正要连接的对象是：教授 和
+“学生参与项目”这件事情本身。 但是“学生参与项目”是一个关系
+(参与)，而不是一个实体。我们不能直接把 教授 实体连接到 参与
+这个菱形上。</li>
 </ul>
 <p><strong>步骤 3</strong>：使用“聚集”解决“聚集”允许我们这样做：</p>
 <ul>
-<li>我们先把 [学生] $\longleftrightarrow$ (参与)$\longleftrightarrow$ [项目] 这个整体结构，用一个大的虚线框给“打包”起来。</li>
-<li>这个“大虚线框”现在就被视作一个单一的、抽象的实体。我们可以给它起个名字，比如叫 项目工作 (Project_Work)。</li>
+<li>我们先把 [学生] <span class="math inline">↔︎</span> (参与)<span
+class="math inline">↔︎</span> [项目]
+这个整体结构，用一个大的虚线框给“打包”起来。</li>
+<li>这个“大虚线框”现在就被视作一个单一的、抽象的实体。我们可以给它起个名字，比如叫
+项目工作 (Project_Work)。</li>
 <li>这个 项目工作 实体，就代表了“一个学生参与一个项目”的具体实例。</li>
-<li>现在，我们就可以创建一个新的关系，比如叫 评审 (Evaluates)，来连接 [教授] 实体和这个新的 [项目工作]（大虚线框）了。</li>
+<li>现在，我们就可以创建一个新的关系，比如叫 评审 (Evaluates)，来连接
+[教授] 实体和这个新的 [项目工作]（大虚线框）了。</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">                + - - - - - - - - - - - - - - - +</span><br><span class="line">                |                               |</span><br><span class="line">[教授] &lt;-----&gt; (评审) &lt;-----&gt; | [学生] &lt;---&gt; (参与) &lt;---&gt; [项目] |</span><br><span class="line">                |                               |</span><br><span class="line">                + - - - - - - - - - - - - - - - +</span><br><span class="line">                   (聚集后的抽象实体 &quot;项目工作&quot;)</span><br></pre></td></tr></table></figure>
-<p><img src="1761057024596.png" alt="1761057024596"></p>
+<figure>
+<img src="1761057024596.png" alt="1761057024596" />
+<figcaption aria-hidden="true">1761057024596</figcaption>
+</figure>
 <p>上图解释了如何使用聚集解决联系中的联系</p>
-<h1>E-R图转关系模型</h1>
+<h1 id="e-r图转关系模型">E-R图转关系模型</h1>
 <p>一对一：在任意一方加入另一方主键和关系属性</p>
 <p>一对多：在多的那一方加入一的那方的主键和关系属性</p>
 <p>多对多：将联系单独作为一个关系模型，加入双方主键</p>
 <p>弱实体集：将强实体集的主键加入自己</p>
 <p>多值属性：将主键和该属性单独作为一个关系模型，两个主键</p>
 <p>分段属性：按分段的来填入属性</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/">https://kjore.github.io/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">关系模型</div></div><div class="info-2"><div class="info-item-1">关系模型 Relational Model 关系模型的结构 Relational Model Structure 关系：笛卡尔乘积的有意义的有限子集 属性：关系的列，属性的顺序不重要，属性必须是原子的 元组：关系的行，或者一条记录，元组的顺序不重要 域(domain)：属性的取值范围 关系模式：关系的结构描述，一个属性列表及属性所对应的域 关系实例：关系在某一时刻的具体数据，快照 关系模型的约束  Constraints of Relational Model 超键(superkey)：能唯一标识元组的属性集合。如学号加姓名 候选键(candidate key)：最小超键，不能再去掉任何属性的超键。如学号。候选键不唯一，比如学号可以是候选键，身份证号也可以是候选键  唯一性 最小性  主键(primary key)：从候选键中选出的用于唯一标识元组的属性集合。如学号 外键(foreign key)：一个关系中的属性，其值引用另一个关系的主键或候选键 完整性约束： 实体完整性：主键属性不能为空 参照完整性：外键值要么为空，要么必须在引用的关系中存在对应的主键值（外键作为主键的那个表...</div></div></div></a><a class="pagination-related" href="/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/" title="NAS技术概述及常见网络文件共享协议分析与比较"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">NAS技术概述及常见网络文件共享协议分析与比较</div></div><div class="info-2"><div class="info-item-1">目录  目录 1. 引言 2. NAS技术概述  2.1 NAS简介和特点 2.2 NAS基本存储原理 2.3 NAS工作原理   3.常见网络文件共享协议  3.1 SMB协议  3.1.1.技术特点 3.1.2. 优势 3.1.3. 劣势   3.2 NFS协议  3.2.1 技术特点 3.2.2 优势 3.2.3 劣势   3.3 AFP协议  3.3.1 技术特点 3.3.2 优势 3.3.3 劣势   3.4 WebDAV协议  3.4.1 技术特点 3.4.2 优势 3.4.3 劣势   3.5 FTP协议  3.5.1 技术特点 3.5.2 优势 3.5.3 劣势     4.网络文件共享协议分析与比较  4.1协议性能比较 4.2协议安全性比较 4.3协议的选择建议     1. 引言   随着数据量的爆炸式增长，无论是在企业环境还是家庭中，高效、安全、便捷的数据存储和共享方案变得至关重要。网络附加存储（NAS，Network Attached Storage）正是在这种需求下应运而生并普及开来的一种专用数据存储技术。它本质上是一台连接到网络的、具备独立操作系统和...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="死锁"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-28</div><div class="info-item-2">死锁</div></div><div class="info-2"><div class="info-item-1">死锁 deadlock 概念 定义 在计算机科学中，死锁（Deadlock）是指两个或多个进程在执行过程中，由于竞争资源而造成的一种互相等待的现象，从而导致这些进程无法继续执行。 死锁与饥饿的区别  发生饥饿的进程只有一个，发生死锁的进程有两个或两个以上。 发生饥饿的进程可能处于就绪态，比如SJF调度算法中，优先级低的进程可能一直得不到执行机会而处于就绪态，也可能处于阻塞态，如长期得不到I/O设备。而发生死锁的进程一般都处于阻塞态，等待其他进程释放资源。  死锁的必要条件  互斥条件（mutual exclusion）：至少有一个资源必须处于非共享模式，即某个资源一次只能被一个进程占用。 占有且等待条件（hold and wait）：持有至少一种资源的进程正在等待获取其他进程持有的其他资源 非抢占式（no preemption）：进程已获得的资源在未使用完之前，不能被强制剥夺，只能在进程完成其任务后由进程自己释放。 循环等待条件（circular wait）：存在一种进程资源的循环等待关系，即P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源。 四者缺一不...</div></div></div></a><a class="pagination-related" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-22</div><div class="info-item-2">关系模型</div></div><div class="info-2"><div class="info-item-1">关系模型 Relational Model 关系模型的结构 Relational Model Structure 关系：笛卡尔乘积的有意义的有限子集 属性：关系的列，属性的顺序不重要，属性必须是原子的 元组：关系的行，或者一条记录，元组的顺序不重要 域(domain)：属性的取值范围 关系模式：关系的结构描述，一个属性列表及属性所对应的域 关系实例：关系在某一时刻的具体数据，快照 关系模型的约束  Constraints of Relational Model 超键(superkey)：能唯一标识元组的属性集合。如学号加姓名 候选键(candidate key)：最小超键，不能再去掉任何属性的超键。如学号。候选键不唯一，比如学号可以是候选键，身份证号也可以是候选键  唯一性 最小性  主键(primary key)：从候选键中选出的用于唯一标识元组的属性集合。如学号 外键(foreign key)：一个关系中的属性，其值引用另一个关系的主键或候选键 完整性约束： 实体完整性：主键属性不能为空 参照完整性：外键值要么为空，要么必须在引用的关系中存在对应的主键值（外键作为主键的那个表...</div></div></div></a><a class="pagination-related" href="/2025/10/30/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" title="进程与线程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-30</div><div class="info-item-2">进程与线程</div></div><div class="info-2"><div class="info-item-1">进程 进程的概念 进程包括：  程序代码，也叫文本段 数据段全局变量 程序计数器，处理机寄存器 栈：局部变量，函数参数，返回地址 堆：动态分配的内存 进程是资源分配的基本单位， 不同的进程虽然可能执行同一段程序代码，但它们拥有各自独立的地址空间和资源。  程序是静态的，进程是动态的。 程序是被动的，而进程是主动的。 一个程序可以对应多个进程。 进程的状态 进程的状态包括：  新建态：进程正在创建 就绪态：进程已分配到必要的资源，等待CPU时间片 运行态：进程正在使用CPU 阻塞态：进程等待某个事件发生（如I/O完成） 终止态：进程执行完毕或被强制终止  进程时间片用完后进入就绪态 进程等待I/O等事件进入阻塞态 缺页会进入阻塞态  进程控制块 PCB 内核中用于操作系统管理进程的数据结构 包含：  进程标识符 PID 进程状态 程序计数器 CPU寄存器 CPU调度信息:进程优先级，调度队列的指针等 内存管理信息 I/O状态信息：I/O设备列表，打开文件列表 记账信息：用户CPU时间，系统CPU时间，内存使用情况等  进程调度 长期调度程序：决定哪些进程进入就绪队列，从磁盘的缓冲区...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">数据库设计</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5%E6%A8%A1%E5%BC%8F%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.1.</span> <span class="toc-text">概念模式设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#E-R%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">E-R模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E4%BD%93%E9%9B%86-entity-sets"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">实体集 entity sets</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7-attributes"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">属性 attributes</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%94%E7%B3%BB%E9%9B%86-relationship-sets"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">联系集 relationship sets</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%B1%E5%AE%9E%E4%BD%93%E9%9B%86-weak-entity-sets"><span class="toc-number">1.1.1.4.</span> <span class="toc-text">弱实体集 weak entity sets</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%92%E8%89%B2-roles"><span class="toc-number">1.1.1.5.</span> <span class="toc-text">角色 roles</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A8%E5%8F%82%E4%B8%8E%E5%92%8C%E9%83%A8%E5%88%86%E5%8F%82%E4%B8%8E"><span class="toc-number">1.1.1.6.</span> <span class="toc-text">全参与和部分参与</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%88l-h%EF%BC%89"><span class="toc-number">1.1.1.7.</span> <span class="toc-text">（l,h）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E5%85%83%E5%85%B3%E7%B3%BB%E4%B8%8A%E7%9A%84%E5%9F%BA%E6%95%B0%E7%BA%A6%E6%9D%9F-ternary-relationship-cardinality"><span class="toc-number">1.1.1.8.</span> <span class="toc-text">三元关系上的基数约束 ternary relationship cardinality</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E5%8C%96-specialization-%E4%B8%8E-%E6%A6%82%E5%8C%96-generalization"><span class="toc-number">1.1.1.9.</span> <span class="toc-text">特化 specialization 与 概化 generalization</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%9A%E9%9B%86-aggregation"><span class="toc-number">1.1.1.10.</span> <span class="toc-text">聚集 aggregation</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">E-R图转关系模型</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/30/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" title="进程与线程">进程与线程</a><time datetime="2025-10-29T16:00:00.000Z" title="发表于 2025-10-30 00:00:00">2025-10-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/29/%E6%BB%A1%E5%B1%8F%E9%A3%98%E5%AD%97/" title="满屏飘字.md">满屏飘字.md</a><time datetime="2025-10-29T12:31:12.000Z" title="发表于 2025-10-29 20:31:12">2025-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="死锁">死锁</a><time datetime="2025-10-28T09:22:03.000Z" title="发表于 2025-10-28 17:22:03">2025-10-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型">关系模型</a><time datetime="2025-10-22T09:22:03.000Z" title="发表于 2025-10-22 17:22:03">2025-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计">数据库设计</a><time datetime="2025-10-21T15:28:51.114Z" title="发表于 2025-10-21 23:28:51">2025-10-21</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/">https://kjore.github.io/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">关系模型</div></div><div class="info-2"><div class="info-item-1">关系模型 Relational Model 关系模型的结构 Relational Model Structure 关系：笛卡尔乘积的有意义的有限子集 属性：关系的列，属性的顺序不重要，属性必须是原子的 元组：关系的行，或者一条记录，元组的顺序不重要 域(domain)：属性的取值范围 关系模式：关系的结构描述，一个属性列表及属性所对应的域 关系实例：关系在某一时刻的具体数据，快照 关系模型的约束 Constraints of Relational Model 超键(superkey)：能唯一标识元组的属性集合。如学号加姓名 候选键(candidate key)：最小超键，不能再去掉任何属性的超键。如学号。候选键不唯一，比如学号可以是候选键，身份证号也可以是候选键  唯一性 最小性  主键(primary key)：从候选键中选出的用于唯一标识元组的属性集合。如学号 外键(foreign key)：一个关系中的属性，其值引用另一个关系的主键或候选键 完整性约束： 实体完整性：主键属性不能为空 参照完整性：外键值要么为空，要么必须在引用的...</div></div></div></a><a class="pagination-related" href="/2025/10/19/NAS%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0%E5%8F%8A%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%AF%94%E8%BE%83/" title="NAS技术概述及常见网络文件共享协议分析与比较"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">NAS技术概述及常见网络文件共享协议分析与比较</div></div><div class="info-2"><div class="info-item-1">目录  目录 1. 引言 2. NAS技术概述  2.1 NAS简介和特点 2.2 NAS基本存储原理 2.3 NAS工作原理  3.常见网络文件共享协议  3.1 SMB协议  3.1.1.技术特点 3.1.2. 优势 3.1.3. 劣势  3.2 NFS协议  3.2.1 技术特点 3.2.2 优势 3.2.3 劣势  3.3 AFP协议  3.3.1 技术特点 3.3.2 优势 3.3.3 劣势  3.4 WebDAV协议  3.4.1 技术特点 3.4.2 优势 3.4.3 劣势  3.5 FTP协议  3.5.1 技术特点 3.5.2 优势 3.5.3 劣势   4.网络文件共享协议分析与比较  4.1协议性能比较 4.2协议安全性比较 4.3协议的选择建议      1. 引言   随着数据量的爆炸式增长，无论是在企业环境还是家庭中，高效、安全、便捷的数据存储和共享方案变得至关重要。网络附加存储（NAS，Network Attached Storage）...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="死锁"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-28</div><div class="info-item-2">死锁</div></div><div class="info-2"><div class="info-item-1">死锁 deadlock 概念 定义 在计算机科学中，死锁（Deadlock）是指两个或多个进程在执行过程中，由于竞争资源而造成的一种互相等待的现象，从而导致这些进程无法继续执行。 死锁与饥饿的区别  发生饥饿的进程只有一个，发生死锁的进程有两个或两个以上。 发生饥饿的进程可能处于就绪态，比如SJF调度算法中，优先级低的进程可能一直得不到执行机会而处于就绪态，也可能处于阻塞态，如长期得不到I/O设备。而发生死锁的进程一般都处于阻塞态，等待其他进程释放资源。  死锁的必要条件  互斥条件（mutual exclusion）：至少有一个资源必须处于非共享模式，即某个资源一次只能被一个进程占用。 占有且等待条件（hold and wait）：持有至少一种资源的进程正在等待获取其他进程持有的其他资源 非抢占式（no preemption）：进程已获得的资源在未使用完之前，不能被强制剥夺，只能在进程完成其任务后由进程自己释放。 循环等待条件（circular wait）：存在一种进程资源的循环等待关系，即P1等待P2占有的资源，P2等待P3占有的资源，…，...</div></div></div></a><a class="pagination-related" href="/2025/10/30/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" title="进程与线程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-30</div><div class="info-item-2">进程与线程</div></div><div class="info-2"><div class="info-item-1">进程 进程的概念 进程包括： * 程序代码，也叫文本段 * 数据段全局变量 * 程序计数器，处理机寄存器 * 栈：局部变量，函数参数，返回地址 * 堆：动态分配的内存 进程是资源分配的基本单位， 不同的进程虽然可能执行同一段程序代码，但它们拥有各自独立的地址空间和资源。 程序是静态的，进程是动态的。 程序是被动的，而进程是主动的。 一个程序可以对应多个进程。 进程的状态 进程的状态包括： * 新建态：进程正在创建 * 就绪态：进程已分配到必要的资源，等待CPU时间片 * 运行态：进程正在使用CPU * 阻塞态：进程等待某个事件发生（如I/O完成） * 终止态：进程执行完毕或被强制终止  进程时间片用完后进入就绪态 进程等待I/O等事件进入阻塞态 缺页会进入阻塞态 ## 进程控制块 PCB 内核中用于操作系统管理进程的数据结构 包含： * 进程标识符 PID * 进程状态 * 程序计数器 * CPU寄存器 * CPU调度信息:进程优先级，调度队列的指针等 * 内存管理信息 * I/O状态信息：I/O设备列表，打开文件列表 * 记账信息：用户CPU...</div></div></div></a><a class="pagination-related" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-22</div><div class="info-item-2">关系模型</div></div><div class="info-2"><div class="info-item-1">关系模型 Relational Model 关系模型的结构 Relational Model Structure 关系：笛卡尔乘积的有意义的有限子集 属性：关系的列，属性的顺序不重要，属性必须是原子的 元组：关系的行，或者一条记录，元组的顺序不重要 域(domain)：属性的取值范围 关系模式：关系的结构描述，一个属性列表及属性所对应的域 关系实例：关系在某一时刻的具体数据，快照 关系模型的约束 Constraints of Relational Model 超键(superkey)：能唯一标识元组的属性集合。如学号加姓名 候选键(candidate key)：最小超键，不能再去掉任何属性的超键。如学号。候选键不唯一，比如学号可以是候选键，身份证号也可以是候选键  唯一性 最小性  主键(primary key)：从候选键中选出的用于唯一标识元组的属性集合。如学号 外键(foreign key)：一个关系中的属性，其值引用另一个关系的主键或候选键 完整性约束： 实体完整性：主键属性不能为空 参照完整性：外键值要么为空，要么必须在引用的...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.</span> <span class="toc-text">数据库设计</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5%E6%A8%A1%E5%BC%8F%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.1.</span> <span class="toc-text">概念模式设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#e-r%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">E-R模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E4%BD%93%E9%9B%86-entity-sets"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">实体集 entity sets</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7-attributes"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">属性 attributes</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%94%E7%B3%BB%E9%9B%86-relationship-sets"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">联系集 relationship sets</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%B1%E5%AE%9E%E4%BD%93%E9%9B%86-weak-entity-sets"><span class="toc-number">1.1.1.4.</span> <span class="toc-text">弱实体集 weak entity sets</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%92%E8%89%B2-roles"><span class="toc-number">1.1.1.5.</span> <span class="toc-text">角色 roles</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A8%E5%8F%82%E4%B8%8E%E5%92%8C%E9%83%A8%E5%88%86%E5%8F%82%E4%B8%8E"><span class="toc-number">1.1.1.6.</span> <span class="toc-text">全参与和部分参与</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#lh"><span class="toc-number">1.1.1.7.</span> <span class="toc-text">（l,h）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E5%85%83%E5%85%B3%E7%B3%BB%E4%B8%8A%E7%9A%84%E5%9F%BA%E6%95%B0%E7%BA%A6%E6%9D%9F-ternary-relationship-cardinality"><span class="toc-number">1.1.1.8.</span> <span class="toc-text">三元关系上的基数约束
+ternary relationship cardinality</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E5%8C%96-specialization-%E4%B8%8E-%E6%A6%82%E5%8C%96-generalization"><span class="toc-number">1.1.1.9.</span> <span class="toc-text">特化 specialization
+与 概化 generalization</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%9A%E9%9B%86-aggregation"><span class="toc-number">1.1.1.10.</span> <span class="toc-text">聚集 aggregation</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#e-r%E5%9B%BE%E8%BD%AC%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">E-R图转关系模型</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/30/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" title="进程与线程">进程与线程</a><time datetime="2025-10-29T16:00:00.000Z" title="发表于 2025-10-30 00:00:00">2025-10-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/29/%E6%BB%A1%E5%B1%8F%E9%A3%98%E5%AD%97/" title="满屏飘字">满屏飘字</a><time datetime="2025-10-29T12:31:12.000Z" title="发表于 2025-10-29 20:31:12">2025-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="死锁">死锁</a><time datetime="2025-10-28T09:22:03.000Z" title="发表于 2025-10-28 17:22:03">2025-10-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型">关系模型</a><time datetime="2025-10-22T09:22:03.000Z" title="发表于 2025-10-22 17:22:03">2025-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计">数据库设计</a><time datetime="2025-10-21T15:28:51.114Z" title="发表于 2025-10-21 23:28:51">2025-10-21</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
   const loadMathjax = () => {
     if (!window.MathJax) {
       window.MathJax = {
