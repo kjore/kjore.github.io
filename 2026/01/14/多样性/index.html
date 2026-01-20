@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kjore.github.io/img/head.png">
 <meta property="article:published_time" content="2026-01-13T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-01-20T04:03:18.753Z">
+<meta property="article:modified_time" content="2026-01-20T04:14:11.220Z">
 <meta property="article:author" content="kjore">
 <meta property="article:tag" content="综述">
 <meta name="twitter:card" content="summary">
@@ -18,7 +18,7 @@
   "url": "https://kjore.github.io/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/",
   "image": "https://kjore.github.io/img/head.png",
   "datePublished": "2026-01-13T16:00:00.000Z",
-  "dateModified": "2026-01-20T04:03:18.753Z",
+  "dateModified": "2026-01-20T04:14:11.220Z",
   "author": [
     {
       "@type": "Person",
@@ -159,14 +159,14 @@
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">提高大模型生成多样性的方法综述</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">提高大模型生成多样性的方法综述</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-13T16:00:00.000Z" title="发表于 2026-01-14 00:00:00">2026-01-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-20T04:03:18.753Z" title="更新于 2026-01-20 12:03:18">2026-01-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">大模型</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="temperature和top-p采样">temperature和top-p采样</h1>
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">提高大模型生成多样性的方法综述</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">提高大模型生成多样性的方法综述</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-13T16:00:00.000Z" title="发表于 2026-01-14 00:00:00">2026-01-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-20T04:14:11.220Z" title="更新于 2026-01-20 12:14:11">2026-01-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">大模型</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="temperature和top-p采样">temperature和top-p采样</h1>
 <p>在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。
 temperature和Top-p都是</p>
 <p>高-&gt;随机，有创造力。</p>
 <p>低-&gt;确定，偏向保守。</p>
 <h2 id="原理">原理</h2>
 <p>大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。
-<img src="1768549672040.png" alt="1768549672040" /></p>
+<img src="1768549672040.png" /></p>
 <h3 id="生成分数"><strong>生成分数</strong></h3>
 <p>大模型会为其词汇表中所有词（数量通常为几万到几十万）打分，该分数在 AI
 领域称为 logit。以用户问题 “可以给我推荐一个讲 ai 的技术频道吗？”
@@ -180,17 +180,11 @@ $$</span></p>
 class="math inline"><em>z</em><sub><em>i</em></sub></span>为第 i
 个词的分数，K
 为词的总量。转换后得到每个词的输出概率，使模型能按概率预测下一个词。</p>
-<figure>
-<img src="1768549921177.png" alt="1768549921177" />
-<figcaption aria-hidden="true">1768549921177</figcaption>
-</figure>
+<p><img src="1768549921177.png" /></p>
 <h3 id="加权采样">加权采样</h3>
 <p>根据概率生成预测值的过程称为加权采样。将每个词的概率对应分配到 0-100
 的数轴区间，生成随机数，随机数落到哪个区间就选择对应词，以实现按概率输出。</p>
-<figure>
-<img src="1768550058295.png" alt="1768550058295" />
-<figcaption aria-hidden="true">1768550058295</figcaption>
-</figure>
+<p><img src="1768550058295.png" /></p>
 <h3 id="temperature-的作用">temperature 的作用</h3>
 <p>temperature（温度）与 softmax 函数相关，完整公式为</p>
 <p><span class="math display">$$
@@ -199,18 +193,14 @@ $$</span></p>
 <p>T为 temperature 值。T
 值改变会影响不同词的概率差距，T越小，高分词与低分词概率差距越大，模型回答越保守稳定；T越大，概率差距越小，输出越随机多样。</p>
 <p>如下图所示，T值越小，会将每个词之间概率差距拉大，更容易选到原先概率最高的那个词。所以低温稳定。</p>
-<figure>
-<img src="1768550552531.png" alt="1768550552531" />
-<figcaption aria-hidden="true">1768550552531</figcaption>
-</figure>
+<p><img src="1768550552531.png" /></p>
 <h3 id="topp-的作用">topp 的作用</h3>
 <p>topp 全称 top cumulative
 probability（最高累加概率），是概率阈值。从概率最高的词开始累加，当累加概率达到设定阈值
 p 时，保留这些词，丢弃剩余长尾词，再将保留词的概率按比例放大至总和为 1
 后进行采样，用于切断低概率长尾词，保证回答不跑题。</p>
 <p>如图，当top_p=0.9时，“自行车”和“hello”这两个词就被丢弃掉了。接着需要将剩下的三个词按比例重新放大成100，再进行采样。如此一来，top_p越大，保留的词就越多，输出越多样。</p>
-<p><img src="1768550706523.png" alt="1768550706523" /> <img
-src="1768550732680.png" alt="1768550732680" /></p>
+<p><img src="1768550706523.png" /> <img src="1768550732680.png" /></p>
 <h1
 id="通过自适应解码改进开放式文本生成">通过自适应解码改进开放式文本生成</h1>
 <p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.18223">[2402.18223]
