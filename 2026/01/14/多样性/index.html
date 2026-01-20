@@ -1,0 +1,705 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>提高大模型生成多样性的方法综述 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="temperature和top-p采样 在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。 temperature和Top-p都是 高-&gt;随机，有创造力。 低-&gt;确定，偏向保守。 原理 大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。  生成分数 大模型会为其词">
+<meta property="og:type" content="article">
+<meta property="og:title" content="提高大模型生成多样性的方法综述">
+<meta property="og:url" content="https://kjore.github.io/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="temperature和top-p采样 在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。 temperature和Top-p都是 高-&gt;随机，有创造力。 低-&gt;确定，偏向保守。 原理 大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。  生成分数 大模型会为其词">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-01-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-20T04:03:18.753Z">
+<meta property="article:author" content="kjore">
+<meta property="article:tag" content="综述">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "提高大模型生成多样性的方法综述",
+  "url": "https://kjore.github.io/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-01-13T16:00:00.000Z",
+  "dateModified": "2026-01-20T04:03:18.753Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '提高大模型生成多样性的方法综述',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">提高大模型生成多样性的方法综述</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">提高大模型生成多样性的方法综述</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-13T16:00:00.000Z" title="发表于 2026-01-14 00:00:00">2026-01-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-20T04:03:18.753Z" title="更新于 2026-01-20 12:03:18">2026-01-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">大模型</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="temperature和top-p采样">temperature和top-p采样</h1>
+<p>在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。
+temperature和Top-p都是</p>
+<p>高-&gt;随机，有创造力。</p>
+<p>低-&gt;确定，偏向保守。</p>
+<h2 id="原理">原理</h2>
+<p>大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。
+<img src="1768549672040.png" alt="1768549672040" /></p>
+<h3 id="生成分数"><strong>生成分数</strong></h3>
+<p>大模型会为其词汇表中所有词（数量通常为几万到几十万）打分，该分数在 AI
+领域称为 logit。以用户问题 “可以给我推荐一个讲 ai 的技术频道吗？”
+为例，模型会对相关词进行打分，实际应用中通常展示分数最高的前几个词。</p>
+<h3 id="转换概率">转换概率</h3>
+<p>通过 softmax 函数将分数转换为概率，公式为</p>
+<p><span class="math display">$$
+\sigma(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}
+$$</span></p>
+<p><strong>其中</strong><span
+class="math inline"><em>z</em><sub><em>i</em></sub></span>为第 i
+个词的分数，K
+为词的总量。转换后得到每个词的输出概率，使模型能按概率预测下一个词。</p>
+<figure>
+<img src="1768549921177.png" alt="1768549921177" />
+<figcaption aria-hidden="true">1768549921177</figcaption>
+</figure>
+<h3 id="加权采样">加权采样</h3>
+<p>根据概率生成预测值的过程称为加权采样。将每个词的概率对应分配到 0-100
+的数轴区间，生成随机数，随机数落到哪个区间就选择对应词，以实现按概率输出。</p>
+<figure>
+<img src="1768550058295.png" alt="1768550058295" />
+<figcaption aria-hidden="true">1768550058295</figcaption>
+</figure>
+<h3 id="temperature-的作用">temperature 的作用</h3>
+<p>temperature（温度）与 softmax 函数相关，完整公式为</p>
+<p><span class="math display">$$
+\sigma(z_i) = \frac{e^{z_i / t}}{\sum_{j=1}^{K} e^{z_j / t}}
+$$</span></p>
+<p>T为 temperature 值。T
+值改变会影响不同词的概率差距，T越小，高分词与低分词概率差距越大，模型回答越保守稳定；T越大，概率差距越小，输出越随机多样。</p>
+<p>如下图所示，T值越小，会将每个词之间概率差距拉大，更容易选到原先概率最高的那个词。所以低温稳定。</p>
+<figure>
+<img src="1768550552531.png" alt="1768550552531" />
+<figcaption aria-hidden="true">1768550552531</figcaption>
+</figure>
+<h3 id="topp-的作用">topp 的作用</h3>
+<p>topp 全称 top cumulative
+probability（最高累加概率），是概率阈值。从概率最高的词开始累加，当累加概率达到设定阈值
+p 时，保留这些词，丢弃剩余长尾词，再将保留词的概率按比例放大至总和为 1
+后进行采样，用于切断低概率长尾词，保证回答不跑题。</p>
+<p>如图，当top_p=0.9时，“自行车”和“hello”这两个词就被丢弃掉了。接着需要将剩下的三个词按比例重新放大成100，再进行采样。如此一来，top_p越大，保留的词就越多，输出越多样。</p>
+<p><img src="1768550706523.png" alt="1768550706523" /> <img
+src="1768550732680.png" alt="1768550732680" /></p>
+<h1
+id="通过自适应解码改进开放式文本生成">通过自适应解码改进开放式文本生成</h1>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.18223">[2402.18223]
+通过自适应解码改进开放式文本生成 — [2402.18223] Improving Open-Ended
+Text Generation via Adaptive Decoding</a></p>
+<h2 id="工作原理">工作原理</h2>
+<h3 id="hx熵-entropy-衡量模型有多懵"><strong><span
+class="math inline"><em>H</em>(<em>X</em>)</span></strong>：熵 (Entropy)
+—— 衡量“模型有多懵”</h3>
+<p><span
+class="math display"><em>H</em>(<em>X</em>) = −∑<sub><em>x</em> ∈ <em>V</em></sub><em>p</em>(<em>x</em>)log <em>p</em>(<em>x</em>)</span></p>
+<ul>
+<li><strong>直观理解</strong>
+：熵是信息论中衡量“不确定性”的指标。p(x)是x归一化后的概率。</li>
+<li><strong>在 LLM 中意味着什么</strong> ：
+<ul>
+<li><strong>高熵（High Entropy）</strong>
+：模型预测的概率分布很“平”，很多词的概率差不多（比如在写小说时，下一个词可能有几十种选法），模型处于“纠结”状态。</li>
+<li><strong>低熵（Low Entropy）</strong>
+：分布很“尖”，某个词的概率极大（比如填空“一加一等于_”），模型非常笃定。</li>
+</ul></li>
+<li><strong>局限性</strong> ：熵的绝对值受词表大小 <strong><span
+class="math inline">|<em>V</em>|</span></strong> 的影响。一个拥有 10
+万词表的模型和一个 3 万词表的模型，即便它们一样“懵”，算出来的
+<strong><span class="math inline"><em>H</em>(<em>X</em>)</span></strong>
+也不一样，无法直接比较。</li>
+</ul>
+<hr />
+<h3 id="confx置信度-把确定性标准化"><strong><span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em>(<em>X</em>)</span></strong>：置信度
+—— 把“确定性”标准化</h3>
+<p><span class="math display">$$
+Conf(X) = 1 + \frac{\sum p(x) \log p(x)}{\log|V|} = 1 -
+\frac{H(X)}{\log|V|}
+$$</span></p>
+<ul>
+<li><strong>为什么这么改写</strong> ：注意公式后半部分 <strong><span
+class="math inline">$\frac{H(X)}{\log|V|}$</span></strong>。在词表为
+<strong><span class="math inline">|<em>V</em>|</span></strong>
+的情况下，最大可能的熵是 <strong><span
+class="math inline">log |<em>V</em>|</span></strong>（即所有词概率均等）。用当前的熵除以最大熵，得到的是一个
+<strong>0 到 1 之间的比例</strong> 。</li>
+<li><strong>物理意义</strong> ：</li>
+<li><strong><span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em>(<em>X</em>) ≈ 1</span></strong>
+：模型极其确定。</li>
+<li><strong><span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em>(<em>X</em>) ≈ 0</span></strong>
+：模型完全在瞎猜（随机分布）。</li>
+<li><strong>核心作用</strong>
+：它消除不同模型、不同词表大小之间的差异。无论你用 Llama-3 还是
+Qwen，置信度 0.9
+的含义是统一的，这为设置<strong>统一的阈值</strong>打下了基础。</li>
+</ul>
+<hr />
+<h3 id="delta-conf增量置信度-寻找性价比的拐点"><strong><span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em></span></strong>：增量置信度
+—— 寻找“性价比”的拐点</h3>
+<p>这是这篇论文最精妙的地方。在解码的每一步，我们按概率从大到小逐个把
+token 加入候选集 <strong><span
+class="math inline"><em>S</em></span></strong>。</p>
+<p><span class="math display">$$
+\Delta Conf = \frac{Conf_k(X) - Conf_{k-1}(X)}{\log|V|}
+$$</span></p>
+<blockquote>
+<p><strong>注意这里的隐含操作</strong> ：当候选集里有 <strong><span
+class="math inline"><em>k</em></span></strong> 个词时，我们需要对这
+<strong><span class="math inline"><em>k</em></span></strong>
+个词的概率进行 <strong>重新归一化</strong> （让它们的和等于
+1），然后再计算这个局部集合的 <strong><span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em><sub><em>k</em></sub></span></strong>。</p>
+</blockquote>
+<ul>
+<li><strong>它在衡量什么？</strong>
+<ul>
+<li>它是“边际收益”。当我们把第 <strong><span
+class="math inline"><em>k</em></span></strong>
+个词放入候选筐里时，这个动作是让整体意图更清晰了，还是让分布变得更混乱（注水）了？</li>
+</ul></li>
+<li><strong>决策逻辑</strong> ：</li>
+</ul>
+<ol type="1">
+<li><strong>初始状态</strong> ：候选集只有概率最高的词 <strong><span
+class="math inline"><em>x</em><sub>1</sub></span></strong>，此时置信度很高。</li>
+<li><strong>添加词语</strong> ：如果我们继续添加 <strong><span
+class="math inline"><em>x</em><sub>2</sub>, <em>x</em><sub>3</sub></span></strong>，如果这些词的概率也比较可观，它们和
+<strong><span class="math inline"><em>x</em><sub>1</sub></span></strong>
+共同构成了一个有意义的“候选区间”，此时置信度可能还会上升或保持高位。</li>
+<li><strong>停止信号</strong>
+：当我们遇到一个概率很低的词（长尾词）时，把它强行塞进候选集会导致重新归一化后的分布迅速变“平”，此时
+<strong><span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em><sub><em>k</em></sub></span></strong>
+会显著下降，导致 <strong><span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em></span></strong>
+变成负值或极小值。</li>
+</ol>
+<h3 id="举例说明">举例说明</h3>
+<p>我们假设词表大小 <span
+class="math inline">|<em>V</em>| = 4</span>（为了计算方便），因此 <span
+class="math inline">ln |<em>V</em>| = ln (4) ≈ 1.386</span>。</p>
+<p>模型预测的原始概率分布为：</p>
+<ul>
+<li><strong><span
+class="math inline"><em>w</em><sub>1</sub></span></strong>: 0.80
+(最想说的词)</li>
+<li><strong><span
+class="math inline"><em>w</em><sub>2</sub></span></strong>: 0.15
+(备选词)</li>
+<li><strong><span
+class="math inline"><em>w</em><sub>3</sub></span></strong>: 0.04
+(噪声)</li>
+<li><strong><span
+class="math inline"><em>w</em><sub>4</sub></span></strong>: 0.01
+(无意义)</li>
+</ul>
+<hr />
+<p>第一步：计算 <strong><span
+class="math inline"><em>k</em> = 1</span></strong> 时的状态</p>
+<p>此时候选集 <strong><span
+class="math inline"><em>S</em><sub>1</sub> = {<em>w</em><sub>1</sub>}</span></strong>。</p>
+<ol type="1">
+<li>局部归一化： 由于只有一个词，它的概率变成 <span
+class="math inline"><em>P</em><sup>′</sup>(<em>w</em><sub>1</sub>) = 0.80/0.80 = 1.0</span>。</li>
+<li>计算熵 <span class="math inline"><em>H</em><sub>1</sub></span>：
+<span
+class="math inline"><em>H</em><sub>1</sub> = −(1.0 × ln 1.0) = 0</span></li>
+<li>计算置信度 <span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em><sub>1</sub></span>：
+<span class="math inline">$Conf_1 = 1 - \frac{H_1}{\ln|V|} = 1 - 0/1.386
+= \mathbf{1.0}$</span> （即：只选一个词时，模型处于“绝对自信”状态）</li>
+</ol>
+<hr />
+<p>第二步：计算 <strong><span
+class="math inline"><em>k</em> = 2</span></strong> 时的状态</p>
+<p>我们尝试把 <strong><span
+class="math inline"><em>w</em><sub>2</sub></span></strong>
+加入候选集，此时 <strong><span
+class="math inline"><em>S</em><sub>2</sub> = {<em>w</em><sub>1</sub>, <em>w</em><sub>2</sub>}</span></strong>。</p>
+<ol type="1">
+<li>局部归一化（让这俩词概率和为 1）： 总和 <span
+class="math inline"><em>S</em><em>u</em><em>m</em> = 0.80 + 0.15 = 0.95</span>
+<span
+class="math inline"><em>P</em><sup>′</sup>(<em>w</em><sub>1</sub>) = 0.80/0.95 ≈ 0.842</span>
+<span
+class="math inline"><em>P</em><sup>′</sup>(<em>w</em><sub>2</sub>) = 0.15/0.95 ≈ 0.158</span></li>
+<li>计算局部熵 <span class="math inline"><em>H</em><sub>2</sub></span>：
+<span
+class="math inline"><em>H</em><sub>2</sub> = −(0.842 × ln 0.842 + 0.158 × ln 0.158)</span>
+<span
+class="math inline"><em>H</em><sub>2</sub> ≈ −(−0.145 − 0.292) = <strong>0.437</strong></span></li>
+<li>计算局部置信度 <span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em><sub>2</sub></span>：
+<span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em><sub>2</sub> = 1 − 0.437/1.386 ≈ <strong>0.685</strong></span></li>
+<li>计算增量置信度 <span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em></span>：
+<span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em> = (<em>C</em><em>o</em><em>n</em><em>f</em><sub>2</sub> − <em>C</em><em>o</em><em>n</em><em>f</em><sub>1</sub>)/ln |<em>V</em>|</span>
+<span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em> = (0.685 − 1.0)/1.386 ≈ <strong>−</strong><strong>0.227</strong></span></li>
+</ol>
+<hr />
+<p>第三步：计算 <strong><span
+class="math inline"><em>k</em> = 3</span></strong>
+时的状态（加入噪声词）</p>
+<p>此时 <strong><span
+class="math inline"><em>S</em><sub>3</sub> = {<em>w</em><sub>1</sub>, <em>w</em><sub>2</sub>, <em>w</em><sub>3</sub>}</span></strong>。</p>
+<ol type="1">
+<li>局部归一化： 总和 <span
+class="math inline"><em>S</em><em>u</em><em>m</em> = 0.80 + 0.15 + 0.04 = 0.99</span>
+<span
+class="math inline"><em>P</em><sup>′</sup>(<em>w</em><sub>1</sub>) ≈ 0.808,  <em>P</em><sup>′</sup>(<em>w</em><sub>2</sub>) ≈ 0.152,  <em>P</em><sup>′</sup>(<em>w</em><sub>3</sub>) ≈ 0.040</span></li>
+<li>计算局部熵 <span class="math inline"><em>H</em><sub>3</sub></span>：
+<span
+class="math inline"><em>H</em><sub>3</sub> = −(0.808ln 0.808 + 0.152ln 0.152 + 0.040ln 0.040) ≈ <strong>0.584</strong></span></li>
+<li>计算局部置信度 <span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em><sub>3</sub></span>：
+<span
+class="math inline"><em>C</em><em>o</em><em>n</em><em>f</em><sub>3</sub> = 1 − 0.584/1.386 ≈ <strong>0.579</strong></span></li>
+<li>计算增量置信度 <span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em></span>：
+<span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em> = (<em>C</em><em>o</em><em>n</em><em>f</em><sub>3</sub> − <em>C</em><em>o</em><em>n</em><em>f</em><sub>2</sub>)/ln |<em>V</em>|</span>
+<span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em> = (0.579 − 0.685)/1.386 ≈ <strong>−</strong><strong>0.076</strong></span></li>
+</ol>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 24%" />
+<col style="width: 15%" />
+<col style="width: 20%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th><strong>候选集大小 k</strong></th>
+<th><strong>包含词</strong></th>
+<th><strong>局部熵 Hk</strong></th>
+<th><strong>局部置信度 Confk</strong></th>
+<th><strong>ΔConf (边际代价)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td><strong><span
+class="math inline">{<em>w</em><sub>1</sub>}</span></strong></td>
+<td>0</td>
+<td>1.0</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td><strong><span
+class="math inline">{<em>w</em><sub>1</sub>, <em>w</em><sub>2</sub>}</span></strong></td>
+<td>0.437</td>
+<td>0.685</td>
+<td><strong>-0.227</strong></td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong><span
+class="math inline">{<em>w</em><sub>1</sub>, <em>w</em><sub>2</sub>, <em>w</em><sub>3</sub>}</span></strong></td>
+<td>0.584</td>
+<td>0.579</td>
+<td><strong>-0.076</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>斜率变化</strong> ：当从 <strong><span
+class="math inline"><em>k</em> = 1</span></strong> 到 <strong><span
+class="math inline"><em>k</em> = 2</span></strong> 时，由于
+<strong><span class="math inline"><em>w</em><sub>2</sub></span></strong>
+有 15%
+的概率，它是一个很强的竞争者，加入它会导致置信度“剧烈跳水”（<strong><span
+class="math inline">−0.227</span></strong>）。</li>
+<li><strong>信息饱和</strong> ：当加入 <strong><span
+class="math inline"><em>w</em><sub>3</sub></span></strong>
+时，由于它概率只有
+4%，虽然它也会让置信度下降，但下降的幅度（<strong><span
+class="math inline">−0.076</span></strong>）远没有加入 <strong><span
+class="math inline"><em>w</em><sub>2</sub></span></strong>
+时那么夸张。</li>
+<li><strong>决策边界</strong> ：算法会设定一个阈值 <strong><span
+class="math inline"><em>η</em></span></strong>。
+<ul>
+<li>如果你希望模型 <strong>严谨</strong> （如
+Text-to-SQL），你会设定一个较小的 <strong><span
+class="math inline"><em>η</em></span></strong>，一旦 <strong><span
+class="math inline"><em>Δ</em><em>C</em><em>o</em><em>n</em><em>f</em></span></strong>
+的跌幅超过阈值，就停止添加。</li>
+<li>如果你希望模型 <strong>发散</strong> ，你会允许更深的跌幅。</li>
+</ul></li>
+</ul>
+<p>与固定大小的Top-k或固定概率和的Top-p相比，自适应解码根据实际情况动态调整候选集大小：</p>
+<ul>
+<li>对于高熵（低确定性）分布，候选集会较大，增加文本多样性</li>
+<li>对于低熵（高确定性）分布，候选集会较小，保持文本连贯性</li>
+</ul>
+<p>这种动态适应能力使得生成的文本既有多样性又保持连贯性，更接近人类写作风格。</p>
+<p>实验中，<span
+class="math inline"><em>η</em></span>=0.0005到0.001之间能平衡多样性和连贯性</p>
+<h1 id="dqodiversity-quality-optimization多样性质量优化">DQO（Diversity
+Quality Optimization，多样性质量优化）</h1>
+<p><a
+target="_blank" rel="noopener" href="https://openreview.net/pdf?id=v74LJpeUYX">openreview.net/pdf?id=v74LJpeUYX</a></p>
+<p>核心思路是利用数学中的
+<strong>行列式点过程（DPP）</strong>，将“多样性”转化为几何上的“体积”来衡量
+。</p>
+<p>在大模型后训练阶段，常用的强化学习（如 PPO 或
+GRPO）会引导模型去追逐最高奖励的那个“标准答案”
+。结果就是模型虽然变聪明了，但说话越来越像机器人，失去了创造力和多样性
+。</p>
+<h3 id="如何量化多样性">如何量化“多样性”？</h3>
+<p>这是 DQO
+的数学基础。它将一组回答的相似度矩阵化，然后计算其行列式。</p>
+<p><span
+class="math display"><em>D</em><em>i</em><em>v</em>(<em>y</em><sub>1 : <em>k</em></sub>) = det (<em>L</em><sub><em>ϕ</em></sub>(<em>y</em><sub>1 : <em>k</em></sub>))  </span></p>
+<ul>
+<li><strong><span
+class="math inline"><em>y</em><sub>1 : <em>k</em></sub></span></strong>
+：模型对同一个问题生成的 <strong><span
+class="math inline"><em>k</em></span></strong> 个不同的回答 。</li>
+<li><strong><span
+class="math inline"><em>L</em><sub><em>ϕ</em></sub></span></strong>
+：相似度矩阵（Gram 矩阵）。矩阵中的每个元素 <strong><span
+class="math inline"><em>L</em><sub><em>i</em><em>j</em></sub></span></strong>
+表示第 <strong><span class="math inline"><em>i</em></span></strong>
+个回答和第 <strong><span class="math inline"><em>j</em></span></strong>
+个回答之间的语义相似度。</li>
+<li><strong><span class="math inline">det (⋅)</span></strong>
+<strong>：行列式。在几何上，这个行列式代表了这些回答的向量在语义空间中所围成的平行多面体的体积</strong>。</li>
+</ul>
+<blockquote>
+<p>💡 具体数据示例：</p>
+<p>假设模型收到的提示词是：“推荐一个旅游城市”。模型生成了 3 个回答：</p>
+<ol type="1">
+<li><strong><span
+class="math inline"><em>y</em><sub>1</sub></span></strong>:
+“东京（繁华，美食多）”</li>
+<li><strong><span
+class="math inline"><em>y</em><sub>2</sub></span></strong>:
+“大阪（热情，文化浓）”</li>
+<li><strong><span
+class="math inline"><em>y</em><sub>3</sub></span></strong>:
+“巴黎（浪漫，艺术之都）”</li>
+</ol>
+<p>场景 A（缺乏多样性）： 如果 <span
+class="math inline"><em>y</em><sub>1</sub></span> 和 <span
+class="math inline"><em>y</em><sub>2</sub></span>
+的语义向量非常接近（都在描述日本城市），那么它们在空间中几乎重合。这时，它们围成的“体积”（行列式值）就会非常小，甚至接近
+0 。</p>
+<p>场景 B（高多样性）：
+如果回答涵盖了亚洲、欧洲等完全不同的文化特征，向量在空间中指向不同方向，围成的“体积”就会很大。DQO
+的目标就是让这个体积最大化</p>
+</blockquote>
+<h3 id="训练目标函数">训练目标函数</h3>
+<p>这是模型学习时的“指挥棒”。它要求模型同时优化质量、多样性和稳定性
+。</p>
+<p><span class="math display">$$
+J_{Div}(\pi_{\theta}) = \mathbb{E}_{x, y_{1:k}} \left[ \sum_{i=1}^{k}
+r(x, y_i) + \alpha \log \det(L_\phi(y_{1:k})) - \beta KL(\pi_\theta ||
+\pi_{ref}) \right] \quad \text{}
+$$</span></p>
+<ul>
+<li><strong><span
+class="math inline">∑<em>r</em>(<em>x</em>, <em>y</em><sub><em>i</em></sub>)</span></strong>
+<strong>：</strong> <strong>质量项</strong> 。希望这 <strong><span
+class="math inline"><em>k</em></span></strong>
+个回答的奖励值（得分）尽可能高 。</li>
+<li><strong><span
+class="math inline"><em>α</em>log det (⋅)</span></strong>
+<strong>：</strong> <strong>多样性项</strong> <strong>。</strong><span
+class="math inline"><em>α</em></span>
+是调节参数。这部分强制要求这组回答之间不能太像 。</li>
+<li><strong><span
+class="math inline"><em>β</em><em>K</em><em>L</em>(⋅)</span></strong>
+<strong>：</strong> <strong>稳定性项</strong>
+。防止模型跑偏，不要离原始模型太远 。</li>
+</ul>
+<h3 id="leave-one-out-loo-梯度估计">Leave-one-out (loo) 梯度估计</h3>
+<p><strong>在实际训练中，直接计算行列式的梯度很不稳定（如果回答完全一样，行列式为
+0，</strong><span class="math inline">log (0)</span>
+会爆炸）。作者引入了一个极其精妙的稳定化技巧：</p>
+<p><span
+class="math inline"><em>y</em><sub>1</sub>, ..., <em>y</em><sub><em>k</em></sub></span>
+by <strong><span
+class="math inline"><em>y</em><sub>1 : <em>k</em></sub></span></strong>
+$ {y_1, . . . , y_{i-1}, y_{i+1}, . . . , y_k}$ by <strong><span
+class="math inline"><em>y</em><sub>−<em>i</em></sub></span></strong>.</p>
+<p><span class="math display">$$
+\nabla^{loo} J_{Div}(\pi_{\theta}) = \mathbb{E} \left[ \sum_{i=1}^{k}
+\nabla \log \pi_{\theta}(y_i|x) \left( r(x, y_i) + \alpha \log
+\frac{\det(L(y_{1:k}) + I_k)}{\det(L(y_{-i}) + I_{k-1})} \right) \right]
+\quad \text{}
+$$</span></p>
+<ul>
+<li><strong><span
+class="math inline"><em>L</em> + <em>I</em></span></strong>
+：给矩阵加上单位阵。这相当于给多样性设了一个“底线”，避免数值崩溃 。</li>
+<li><strong><span
+class="math inline">$\frac{\det(L_{全部})}{\det(L_{除去当前项})}$</span></strong>
+<strong>：这被称为“留一法”。它衡量的是：“如果把第 </strong><span
+class="math inline"><em>i</em></span>**
+个回答加入这组回答，它能贡献多少额外的新信息（体积增量）？”**。</li>
+</ul>
+<blockquote>
+<p>💡 数据逻辑：</p>
+<p>如果模型已经生成了“东京”和“京都”，现在要生成第三个。</p>
+<ul>
+<li>如果第三个又是“大阪”，它带来的新“体积”很小，这一项的分值就低。</li>
+<li>如果第三个是“巴黎”，它带来了巨大的新“体积”，分值就高，模型就会倾向于生成这种回答。</li>
+</ul>
+</blockquote>
+<h1 id="ddprompt-差异化多样性提示策略">DDPrompt
+差异化多样性提示策略</h1>
+<p><a
+target="_blank" rel="noopener" href="https://aclanthology.org/2024.acl-short.17">https://aclanthology.org/2024.acl-short.17</a></p>
+<h2 id="核心思想">核心思想</h2>
+<p>传统的 Zero-Shot-CoT 往往使用统一的提示词（如 “Let’s think step by
+step”）来处理所有问题，但这种“一刀切”的方法忽略了不同类型题目（如算术、逻辑、常识）对引导语的敏感度差异
+。<strong>DDPrompt</strong>
+的核心在于：<strong>针对不同特性的问题，自动匹配最适合的提示语集合，并通过多路径推理提高准确率</strong>。</p>
+<h2 id="技术架构">技术架构</h2>
+<p>论文将该方法分为两个主要阶段：</p>
+<ul>
+<li><strong>阶段一：GOTSS (生成最优触发句集)</strong>
+<ul>
+<li><strong>问题聚类</strong> ：利用 <strong>Sentence-BERT</strong>
+将题目转化为语义向量，再通过 <strong>K-Means</strong> 算法将题目分为
+<strong><span class="math inline"><em>m</em></span></strong>
+个簇（Clusters） 。</li>
+<li><strong>策略筛选</strong> ：从预设的 14
+个触发句中，针对每个簇测试并挑选出准确率最高的 <strong><span
+class="math inline"><em>k</em></span></strong>
+个触发句（Top-k），形成该类题目的“最优集合” 。</li>
+</ul></li>
+<li><strong>阶段二：推理 (Inference)</strong>
+<ul>
+<li><strong>动态匹配</strong>
+<strong>：对于新输入的问题，计算其与各聚类中心的</strong>
+<strong>余弦相似度</strong> ，将其归入最相似的类别 。</li>
+<li><strong>并行推理</strong> ：调用该类别对应的 <strong><span
+class="math inline"><em>k</em></span></strong>
+个最优触发句，让大模型生成 <strong><span
+class="math inline"><em>k</em></span></strong> 个不同的推理路径 。</li>
+<li><strong>多数投票</strong> ：通过 <strong>Majority Voting</strong>
+从多个结果中选出最终答案，增强预测的鲁棒性 。</li>
+</ul></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/">https://kjore.github.io/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BB%BC%E8%BF%B0/">综述</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/" title="线性回归与梯度下降"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">线性回归与梯度下降</div></div><div class="info-2"><div class="info-item-1">线性回归基础 基本术语与符号 以一个波特兰市的房价预测模型作为例子，假设我们有如下数据：  输入特征 (x(i))：例如房子的建筑面积。 输出/目标变量 (y(i))：我们要预测的值，例如房价。 训练示例 ((x(i), y(i)))：一组输入和输出的配对。 训练集：包含 n 个训练示例的数据集。 假设 (h)：我们要学习的预测函数，输入 x 并输出预测值。 回归问题：当预测的目标变量是连续值（如价格）时。 分类问题：当预测目标是离散值（如判断是“住宅”还是“公寓”）时。          概念 常见维度符号 在 d 个特征、n 个样本下的具体维度     单条输入特征x x ∈ ℝd + 1 (d + 1) × 1(列向量)   单条输出变量y y ∈ ℝ 1 × 1(标量)   参数θ θ ∈ ℝd + 1 (d + 1) × 1(列向量)   设计矩阵X X ∈ ℝn × (d + 1) n × (d + 1)(矩阵)   目标向量y⃗ y⃗ ∈ ℝn n × 1(向量) ...</div></div></div></a><a class="pagination-related" href="/2025/12/29/%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90%E4%B8%8E%E8%AE%BE%E8%AE%A1/" title="算法分析与设计"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">算法分析与设计</div></div><div class="info-2"><div class="info-item-1">第一章 算法概述 五种算法渐进界 1. O (Big-O) —— 渐近上界 设 f(n) 和 g(n) 是定义在非负整数上的正函数。 如果存在正常数 c 和 n0，使得对于所有的 n ≥ n0，都有： 0 ≤ f(n) ≤ c ⋅ g(n) 则称 f(n) = O(g(n))。 2. Ω (Big-Omega) —— 渐近下界 设 f(n) 和 g(n) 是定义在非负整数上的正函数。 如果存在正的常数 c 和 n0，使得对于所有的 n ≥ n0，都有： 0 ≤ c ⋅ g(n) ≤ f(n) 则称 f(n) = Ω(g(n))。 3. Θ (Big-Theta) —— 渐近紧确界 设 f(n) 和 g(n) 是定义在非负整数上的正函数。 如果存在正的常数 c1, c2 和 n0，使得对于所有的 n ≥ n0，都有： 0 ≤ c1 ⋅ g(n) ≤ f(n) ≤ c2 ⋅ g(n) 则称 f(n) = Θ(g(n))。 4. o (Little-o) —— 非紧确上界 设 f(n) 和 g(n) 是定义在非负整数上的正函数。 如果对于任意正...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#temperature%E5%92%8Ctop-p%E9%87%87%E6%A0%B7"><span class="toc-number">1.</span> <span class="toc-text">temperature和top-p采样</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E5%88%86%E6%95%B0"><span class="toc-number">1.1.1.</span> <span class="toc-text">生成分数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2%E6%A6%82%E7%8E%87"><span class="toc-number">1.1.2.</span> <span class="toc-text">转换概率</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E6%9D%83%E9%87%87%E6%A0%B7"><span class="toc-number">1.1.3.</span> <span class="toc-text">加权采样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#temperature-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.4.</span> <span class="toc-text">temperature 的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#topp-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.5.</span> <span class="toc-text">topp 的作用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E8%87%AA%E9%80%82%E5%BA%94%E8%A7%A3%E7%A0%81%E6%94%B9%E8%BF%9B%E5%BC%80%E6%94%BE%E5%BC%8F%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90"><span class="toc-number">2.</span> <span class="toc-text">通过自适应解码改进开放式文本生成</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#hx%E7%86%B5-entropy-%E8%A1%A1%E9%87%8F%E6%A8%A1%E5%9E%8B%E6%9C%89%E5%A4%9A%E6%87%B5"><span class="toc-number">2.1.1.</span> <span class="toc-text">H(X)：熵 (Entropy)
+—— 衡量“模型有多懵”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#confx%E7%BD%AE%E4%BF%A1%E5%BA%A6-%E6%8A%8A%E7%A1%AE%E5%AE%9A%E6%80%A7%E6%A0%87%E5%87%86%E5%8C%96"><span class="toc-number">2.1.2.</span> <span class="toc-text">Conf(X)：置信度
+—— 把“确定性”标准化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#delta-conf%E5%A2%9E%E9%87%8F%E7%BD%AE%E4%BF%A1%E5%BA%A6-%E5%AF%BB%E6%89%BE%E6%80%A7%E4%BB%B7%E6%AF%94%E7%9A%84%E6%8B%90%E7%82%B9"><span class="toc-number">2.1.3.</span> <span class="toc-text">ΔConf：增量置信度
+—— 寻找“性价比”的拐点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B%E8%AF%B4%E6%98%8E"><span class="toc-number">2.1.4.</span> <span class="toc-text">举例说明</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dqodiversity-quality-optimization%E5%A4%9A%E6%A0%B7%E6%80%A7%E8%B4%A8%E9%87%8F%E4%BC%98%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">DQO（Diversity
+Quality Optimization，多样性质量优化）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%87%8F%E5%8C%96%E5%A4%9A%E6%A0%B7%E6%80%A7"><span class="toc-number">3.0.1.</span> <span class="toc-text">如何量化“多样性”？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E7%9B%AE%E6%A0%87%E5%87%BD%E6%95%B0"><span class="toc-number">3.0.2.</span> <span class="toc-text">训练目标函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#leave-one-out-loo-%E6%A2%AF%E5%BA%A6%E4%BC%B0%E8%AE%A1"><span class="toc-number">3.0.3.</span> <span class="toc-text">Leave-one-out (loo) 梯度估计</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ddprompt-%E5%B7%AE%E5%BC%82%E5%8C%96%E5%A4%9A%E6%A0%B7%E6%80%A7%E6%8F%90%E7%A4%BA%E7%AD%96%E7%95%A5"><span class="toc-number">4.</span> <span class="toc-text">DDPrompt
+差异化多样性提示策略</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="toc-number">4.1.</span> <span class="toc-text">核心思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84"><span class="toc-number">4.2.</span> <span class="toc-text">技术架构</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/" title="线性回归与梯度下降">线性回归与梯度下降</a><time datetime="2026-01-19T16:00:00.000Z" title="发表于 2026-01-20 00:00:00">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="提高大模型生成多样性的方法综述">提高大模型生成多样性的方法综述</a><time datetime="2026-01-13T16:00:00.000Z" title="发表于 2026-01-14 00:00:00">2026-01-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/29/%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90%E4%B8%8E%E8%AE%BE%E8%AE%A1/" title="算法分析与设计">算法分析与设计</a><time datetime="2025-12-29T09:22:03.000Z" title="发表于 2025-12-29 17:22:03">2025-12-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/22/MySQL%E4%BD%BF%E7%94%A8/" title="MySQL命令行使用">MySQL命令行使用</a><time datetime="2025-12-22T09:22:03.000Z" title="发表于 2025-12-22 17:22:03">2025-12-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/10/%E6%9F%A5%E8%AF%A2%E5%A4%84%E7%90%86%E4%B8%8E%E4%BC%98%E5%8C%96/" title="查询处理与优化">查询处理与优化</a><time datetime="2025-12-10T09:22:03.000Z" title="发表于 2025-12-10 17:22:03">2025-12-10</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

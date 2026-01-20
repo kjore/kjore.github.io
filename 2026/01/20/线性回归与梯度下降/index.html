@@ -1,0 +1,483 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>线性回归与梯度下降 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="线性回归基础 基本术语与符号 以一个波特兰市的房价预测模型作为例子，假设我们有如下数据：  输入特征 (x(i))：例如房子的建筑面积。 输出&#x2F;目标变量 (y(i))：我们要预测的值，例如房价。 训练示例 ((x(i), y(i)))：一组输入和输出的配对。 训练集：包含 n 个训练示例的数据集。 假设 (h)：我们要学习的预测函数，输入 x 并输出预测值。 回归问题：当预测的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线性回归与梯度下降">
+<meta property="og:url" content="https://kjore.github.io/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="线性回归基础 基本术语与符号 以一个波特兰市的房价预测模型作为例子，假设我们有如下数据：  输入特征 (x(i))：例如房子的建筑面积。 输出&#x2F;目标变量 (y(i))：我们要预测的值，例如房价。 训练示例 ((x(i), y(i)))：一组输入和输出的配对。 训练集：包含 n 个训练示例的数据集。 假设 (h)：我们要学习的预测函数，输入 x 并输出预测值。 回归问题：当预测的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-01-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-20T04:02:00.106Z">
+<meta property="article:author" content="kjore">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "线性回归与梯度下降",
+  "url": "https://kjore.github.io/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-01-19T16:00:00.000Z",
+  "dateModified": "2026-01-20T04:02:00.106Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '线性回归与梯度下降',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">线性回归与梯度下降</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">线性回归与梯度下降</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-19T16:00:00.000Z" title="发表于 2026-01-20 00:00:00">2026-01-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-20T04:02:00.106Z" title="更新于 2026-01-20 12:02:00">2026-01-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="线性回归基础">线性回归基础</h1>
+<h2 id="基本术语与符号">基本术语与符号</h2>
+<p>以一个波特兰市的房价预测模型作为例子，假设我们有如下数据：</p>
+<ul>
+<li>输入特征 (<span
+class="math inline"><em>x</em><sup>(<em>i</em>)</sup></span>)：例如房子的建筑面积。</li>
+<li>输出/目标变量 (<span
+class="math inline"><em>y</em><sup>(<em>i</em>)</sup></span>)：我们要预测的值，例如房价。</li>
+<li>训练示例 (<span
+class="math inline">(<em>x</em><sup>(<em>i</em>)</sup>, <em>y</em><sup>(<em>i</em>)</sup>)</span>)：一组输入和输出的配对。</li>
+<li>训练集：包含 <span class="math inline"><em>n</em></span>
+个训练示例的数据集。</li>
+<li>假设 (<span
+class="math inline"><em>h</em></span>)：我们要学习的预测函数，输入 <span
+class="math inline"><em>x</em></span> 并输出预测值。</li>
+<li>回归问题：当预测的目标变量是连续值（如价格）时。</li>
+<li>分类问题：当预测目标是离散值（如判断是“住宅”还是“公寓”）时。</li>
+</ul>
+<table>
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 39%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr>
+<th><strong>概念</strong></th>
+<th><strong>常见维度符号</strong></th>
+<th><strong>在 d 个特征、n 个样本下的具体维度</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>单条输入特征</strong><span
+class="math inline"><em>x</em></span></td>
+<td><strong><span
+class="math inline"><em>x</em> ∈ ℝ<sup><em>d</em> + 1</sup></span></strong></td>
+<td><strong><span
+class="math inline">(<em>d</em> + 1) × 1</span></strong>(列向量)</td>
+</tr>
+<tr>
+<td><strong>单条输出变量</strong><span
+class="math inline"><em>y</em></span></td>
+<td><strong><span
+class="math inline"><em>y</em> ∈ ℝ</span></strong></td>
+<td><strong><span class="math inline">1 × 1</span></strong>(标量)</td>
+</tr>
+<tr>
+<td><strong>参数</strong><span
+class="math inline"><em>θ</em></span></td>
+<td><strong><span
+class="math inline"><em>θ</em> ∈ ℝ<sup><em>d</em> + 1</sup></span></strong></td>
+<td><strong><span
+class="math inline">(<em>d</em> + 1) × 1</span></strong>(列向量)</td>
+</tr>
+<tr>
+<td><strong>设计矩阵</strong><span
+class="math inline"><em>X</em></span></td>
+<td><strong><span
+class="math inline"><em>X</em> ∈ ℝ<sup><em>n</em> × (<em>d</em> + 1)</sup></span></strong></td>
+<td><strong><span
+class="math inline"><em>n</em> × (<em>d</em> + 1)</span></strong>(矩阵)</td>
+</tr>
+<tr>
+<td><strong>目标向量</strong><span
+class="math inline"><em>y⃗</em></span></td>
+<td><strong><span
+class="math inline"><em>y⃗</em> ∈ ℝ<sup><em>n</em></sup></span></strong></td>
+<td><strong><span
+class="math inline"><em>n</em> × 1</span></strong>(向量)</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline"><em>x</em><sup>(<em>i</em>)</sup></span>
+表示第 <strong><span class="math inline"><em>i</em></span></strong>
+个训练样本的输入特征向量，<span
+class="math inline"><em>y</em><sup>(<em>i</em>)</sup></span>
+表示对应的输出变量。 <span
+class="math inline"><em>x</em><sub><em>i</em></sub></span>
+表示输入特征向量中的第 <strong><span
+class="math inline"><em>i</em></span></strong> 个特征值。</p>
+<h2 id="线性回归模型">线性回归模型</h2>
+<p>假设预测函数是线性的：</p>
+<p><span class="math display">$$
+h_{\theta}(x) = \theta_0 + \theta_1 x_1 + \theta_2 x_2 = \sum_{i=0}^{d}
+\theta_i x_i = \theta^T x
+$$</span></p>
+<p>其中，<span
+class="math inline"><em>θ</em></span>是参数（或称为权重），<span
+class="math inline"><em>x</em><sub>0</sub> = 1</span> 是截距项 。</p>
+<h2 id="成本函数">成本函数</h2>
+<p>为了评估参数 <span class="math inline"><em>θ</em></span>
+的优劣，定义了最小二乘法成本函数：</p>
+<p><span class="math display">$$
+J(\theta) = \frac{1}{2} \sum_{i=1}^{n} (h_{\theta}(x^{(i)}) - y^{(i)})^2
+$$</span></p>
+<p>目标是找到使 <strong><span
+class="math inline"><em>J</em>(<em>θ</em>)</span></strong> 最小的
+<strong><span class="math inline"><em>θ</em></span></strong> 值 。</p>
+<h1 id="优化算法">优化算法</h1>
+<h2 id="梯度下降算法">梯度下降算法</h2>
+<p><span
+class="math display"><em>θ</em><sub><em>j</em></sub> := <em>θ</em><sub><em>j</em></sub> + <em>α</em>(<em>y</em><sup>(<em>i</em>)</sup> − <em>h</em><sub><em>θ</em></sub>(<em>x</em><sup>(<em>i</em>)</sup>))<em>x</em><sub><em>j</em></sub><sup>(<em>i</em>)</sup> − − − − − (1)</span></p>
+<ul>
+<li><strong>SGD 随机梯度下降算法</strong>：每遇到一个示例就立即更新参数
+。它在处理大数据集时速度更快，但参数会在最小值附近震荡 。</li>
+<li><strong>批量梯度下降（Batch Gradient Descent）</strong>
+：每走一步都要扫描整个训练集的所有示例 。由于 <strong><span
+class="math inline"><em>J</em></span></strong>
+是凸二次函数，它总是能收敛到全局最小值 。</li>
+</ul>
+<p><span class="math inline"><em>α</em></span>
+是学习率，控制每次更新的步长大小。选择合适的学习率对于算法的收敛速度和稳定性至关重要。</p>
+<h2 id="证明梯度下降算法公式">证明梯度下降算法公式</h2>
+<p>梯度下降规则：</p>
+<p><span class="math display">$$
+\theta_{j}:=\theta_{j}-\alpha\frac{\partial}{\partial\theta_{j}}J(\theta)
+$$</span></p>
+<p>我们针对单个训练样本 <span
+class="math inline">(<em>x</em>, <em>y</em>)</span> 来计算偏导数：</p>
+<p><span class="math display">$$
+\frac{\partial}{\partial\theta_{j}}J(\theta) =
+\frac{\partial}{\partial\theta_{j}}\frac{1}{2}(h_{\theta}(x)-y)^{2}
+$$</span></p>
+<p><span class="math display">$$
+=
+2\cdot\frac{1}{2}(h_{\theta}(x)-y)\cdot\frac{\partial}{\partial\theta_{j}}(h_{\theta}(x)-y)
+$$</span></p>
+<p><span class="math display">$$
+=
+(h_{\theta}(x)-y)\cdot\frac{\partial}{\partial\theta_{j}}(\sum_{i=0}^{d}\theta_{i}x_{i}-y)
+$$</span></p>
+<p><span
+class="math display"> = (<em>h</em><sub><em>θ</em></sub>(<em>x</em>) − <em>y</em>)<em>x</em><sub><em>j</em></sub></span></p>
+<p>当完成单个样本的求导并得到结果 <span
+class="math inline">(<em>h</em><sub><em>θ</em></sub>(<em>x</em>) − <em>y</em>)<em>x</em><sub><em>j</em></sub></span>
+后，在实际应用到整个训练集时，再根据不同的梯度下降算法进行更新</p>
+<ul>
+<li>批量梯度下降 (Batch Gradient
+Descent)：在更新参数时，会把所有样本的梯度累加起来：</li>
+</ul>
+<p><span class="math display">$$
+\theta_j := \theta_j + \alpha \sum_{i=1}^{n} (y^{(i)} -
+h_{\theta}(x^{(i)})) x_j^{(i)}
+$$</span></p>
+<ul>
+<li>随机梯度下降 (Stochastic Gradient
+Descent)：则不需要求和，它直接使用推导出的单个样本的梯度来更新参数，每次只看一个例子
+。</li>
+</ul>
+<h1 id="正规方程">正规方程</h1>
+<p>除了迭代算法，还可以通过矩阵运算直接求得 <span
+class="math inline"><em>θ</em></span> 的闭式解：</p>
+<p><span
+class="math display"><em>θ</em> = (<em>X</em><sup><em>T</em></sup><em>X</em>)<sup>−1</sup><em>X</em><sup><em>T</em></sup><em>y⃗</em></span></p>
+<p><strong>这种方法不需要迭代，直接一步到位</strong>。</p>
+<h2 id="推导过程">推导过程</h2>
+<p>成本函数的矩阵表示</p>
+<p>为了简化计算，我们将预测值与真实值之间的差异表示为向量形式：</p>
+<p><span class="math display">$$
+X\theta - \vec{y} = \begin{bmatrix} (x^{(1)})^T \theta \\ \vdots \\
+(x^{(n)})^T \theta \end{bmatrix} - \begin{bmatrix} y^{(1)} \\ \vdots \\
+y^{(n)} \end{bmatrix} = \begin{bmatrix} h_{\theta}(x^{(1)}) - y^{(1)} \\
+\vdots \\ h_{\theta}(x^{(n)}) - y^{(n)} \end{bmatrix}
+$$</span></p>
+<p>利用向量恒等式 <strong><span
+class="math inline"><em>z</em><sup><em>T</em></sup><em>z</em> = ∑<sub><em>i</em></sub><em>z</em><sub><em>i</em></sub><sup>2</sup></span>，我们可以将成本函数
+</strong><span class="math inline"><em>J</em>(<em>θ</em>)</span>**
+重写为矩阵-向量符号 ：</p>
+<p><span class="math display">$$
+\frac{1}{2}(X\theta - \vec{y})^T (X\theta - \vec{y}) = \frac{1}{2}
+\sum_{i=1}^n (h_{\theta}(x^{(i)}) - y^{(i)})^2 = J(\theta)
+$$</span></p>
+<p>梯度推导（矩阵形式）</p>
+<p>为了最小化 <strong><span
+class="math inline"><em>J</em></span></strong>，我们需要找到它对
+<strong><span class="math inline"><em>θ</em></span></strong> 的导数
+。推导过程如下 ：</p>
+<p><span class="math display">$$
+\begin{aligned} \nabla_{\theta} J(\theta) &amp;= \nabla_{\theta}
+\frac{1}{2}(X\theta - \vec{y})^T (X\theta - \vec{y}) \\ &amp;=
+\frac{1}{2} \nabla_{\theta} ((X\theta)^T X\theta - (X\theta)^T \vec{y} -
+\vec{y}^T (X\theta) + \vec{y}^T \vec{y}) \\ &amp;= \frac{1}{2}
+\nabla_{\theta} (\theta^T (X^T X) \theta - \vec{y}^T (X\theta) -
+\vec{y}^T (X\theta)) \\ &amp;= \frac{1}{2} \nabla_{\theta} (\theta^T
+(X^T X) \theta - 2(X^T \vec{y})^T \theta) \\ &amp;= \frac{1}{2} (2 X^T X
+\theta - 2 X^T \vec{y}) \\ &amp;= X^T X \theta - X^T \vec{y}
+\end{aligned}
+$$</span></p>
+<p><strong><span
+class="math inline">∇<sub><em>x</em></sub>(<em>x</em><sup><em>T</em></sup><em>A</em><em>x</em>) = 2<em>A</em><em>x</em></span></strong></p>
+<p><span
+class="math inline">∇<sub><em>x</em></sub>(<em>b</em><sup><em>T</em></sup><em>x</em>) = <em>b</em></span></p>
+<table>
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 32%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th><strong>变量/表达式</strong></th>
+<th><strong>形状 (Shape)</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><span class="math inline"><em>X</em></span></strong></td>
+<td><strong><span
+class="math inline"><em>n</em> × (<em>d</em> + 1)</span></strong></td>
+<td>数据矩阵（样本<span class="math inline">×</span>特征）</td>
+</tr>
+<tr>
+<td><strong><span class="math inline"><em>θ</em></span></strong></td>
+<td><strong><span
+class="math inline">(<em>d</em> + 1) × 1</span></strong></td>
+<td>权重参数列向量</td>
+</tr>
+<tr>
+<td><strong><span
+class="math inline"><em>X</em><em>θ</em></span></strong></td>
+<td><strong><span
+class="math inline"><em>n</em> × 1</span></strong></td>
+<td>对所有样本的预测值</td>
+</tr>
+<tr>
+<td><strong><span
+class="math inline"><em>J</em>(<em>θ</em>)</span></strong></td>
+<td><strong><span class="math inline">1 × 1</span></strong>(标量)</td>
+<td>总误差（损失）</td>
+</tr>
+<tr>
+<td><strong><span
+class="math inline"><em>X</em><sup><em>T</em></sup><em>X</em></span></strong></td>
+<td><strong><span
+class="math inline">(<em>d</em> + 1) × (<em>d</em> + 1)</span></strong></td>
+<td>特征间的协方差相关矩阵</td>
+</tr>
+<tr>
+<td><strong><span
+class="math inline">∇<sub><em>θ</em></sub><em>J</em>(<em>θ</em>)</span></strong></td>
+<td><strong><span
+class="math inline">(<em>d</em> + 1) × 1</span></strong></td>
+<td>误差对每个参数的下降方向</td>
+</tr>
+</tbody>
+</table>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/">https://kjore.github.io/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="提高大模型生成多样性的方法综述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">提高大模型生成多样性的方法综述</div></div><div class="info-2"><div class="info-item-1">temperature和top-p采样 在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。 temperature和Top-p都是 高-&gt;随机，有创造力。 低-&gt;确定，偏向保守。 原理 大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。  生成分数 大模型会为其词汇表中所有词（数量通常为几万到几十万）打分，该分数在 AI 领域称为 logit。以用户问题 “可以给我推荐一个讲 ai 的技术频道吗？” 为例，模型会对相关词进行打分，实际应用中通常展示分数最高的前几个词。 转换概率 通过 softmax 函数将分数转换为概率，公式为 $$ \sigma(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}} $$ 其中zi为第 i 个词的分数，K 为词的总量。转换后得到每个词的输出概率，使模型能按概率预测下一个词。   1768549921177  加权采样 根据概率生成预测值的过程...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E5%9F%BA%E7%A1%80"><span class="toc-number">1.</span> <span class="toc-text">线性回归基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD%E4%B8%8E%E7%AC%A6%E5%8F%B7"><span class="toc-number">1.1.</span> <span class="toc-text">基本术语与符号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">线性回归模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%90%E6%9C%AC%E5%87%BD%E6%95%B0"><span class="toc-number">1.3.</span> <span class="toc-text">成本函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">优化算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E7%AE%97%E6%B3%95"><span class="toc-number">2.1.</span> <span class="toc-text">梯度下降算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%81%E6%98%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">证明梯度下降算法公式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">正规方程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E5%AF%BC%E8%BF%87%E7%A8%8B"><span class="toc-number">3.1.</span> <span class="toc-text">推导过程</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/" title="线性回归与梯度下降">线性回归与梯度下降</a><time datetime="2026-01-19T16:00:00.000Z" title="发表于 2026-01-20 00:00:00">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="提高大模型生成多样性的方法综述">提高大模型生成多样性的方法综述</a><time datetime="2026-01-13T16:00:00.000Z" title="发表于 2026-01-14 00:00:00">2026-01-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/29/%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90%E4%B8%8E%E8%AE%BE%E8%AE%A1/" title="算法分析与设计">算法分析与设计</a><time datetime="2025-12-29T09:22:03.000Z" title="发表于 2025-12-29 17:22:03">2025-12-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/22/MySQL%E4%BD%BF%E7%94%A8/" title="MySQL命令行使用">MySQL命令行使用</a><time datetime="2025-12-22T09:22:03.000Z" title="发表于 2025-12-22 17:22:03">2025-12-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/10/%E6%9F%A5%E8%AF%A2%E5%A4%84%E7%90%86%E4%B8%8E%E4%BC%98%E5%8C%96/" title="查询处理与优化">查询处理与优化</a><time datetime="2025-12-10T09:22:03.000Z" title="发表于 2025-12-10 17:22:03">2025-12-10</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
