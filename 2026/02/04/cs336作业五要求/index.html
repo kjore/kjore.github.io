@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>cs336作业五文档 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="这是一份名为 CS336 作业 5 (Alignment)：对齐与推理强化学习 (RL) 的课程作业文档翻译。 以下是文档内容的详细中文翻译，保持了原文档的结构、代码块占位和专业术语。  [页 1] CS336 作业 5 (Alignment)：对齐与推理 RL 1. 作业概览  版本：1.0.0 CS336 教研组 2025 年春季  在本作业中，通过训练语言模型解决数">
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>cs336作业五文档 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="这是一份名为 CS336 作业 5 (Alignment)：对齐与推理强化学习 (RL) 的课程作业文档翻译。 以下是文档内容的详细中文翻译，保持了原文档的结构、代码块占位和专业术语。  [页 1] CS336 作业 5 (Alignment)：对齐与推理 RL 1. 作业概览  版本：1.0.0 CS336 教研组 2025 年春季  在本作业中，通过训练语言模型解决数学问题，你将获得让模型进行">
 <meta property="og:type" content="article">
 <meta property="og:title" content="cs336作业五文档">
 <meta property="og:url" content="https://kjore.github.io/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/index.html">
 <meta property="og:site_name" content="kjore&#39;s blog">
-<meta property="og:description" content="这是一份名为 CS336 作业 5 (Alignment)：对齐与推理强化学习 (RL) 的课程作业文档翻译。 以下是文档内容的详细中文翻译，保持了原文档的结构、代码块占位和专业术语。  [页 1] CS336 作业 5 (Alignment)：对齐与推理 RL 1. 作业概览  版本：1.0.0 CS336 教研组 2025 年春季  在本作业中，通过训练语言模型解决数">
+<meta property="og:description" content="这是一份名为 CS336 作业 5 (Alignment)：对齐与推理强化学习 (RL) 的课程作业文档翻译。 以下是文档内容的详细中文翻译，保持了原文档的结构、代码块占位和专业术语。  [页 1] CS336 作业 5 (Alignment)：对齐与推理 RL 1. 作业概览  版本：1.0.0 CS336 教研组 2025 年春季  在本作业中，通过训练语言模型解决数学问题，你将获得让模型进行">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kjore.github.io/img/head.png">
 <meta property="article:published_time" content="2026-02-04T09:22:03.000Z">
@@ -159,79 +159,57 @@
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">cs336作业五文档</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">cs336作业五文档</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-04T09:22:03.000Z" title="发表于 2026-02-04 17:22:03">2026-02-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-26T08:24:13.621Z" title="更新于 2026-02-26 16:24:13">2026-02-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/LLM/">LLM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>这是一份名为 <strong>CS336 作业 5 (Alignment)：对齐与推理强化学习
-(RL)</strong> 的课程作业文档翻译。</p>
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">cs336作业五文档</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">cs336作业五文档</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-04T09:22:03.000Z" title="发表于 2026-02-04 17:22:03">2026-02-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-26T08:24:13.621Z" title="更新于 2026-02-26 16:24:13">2026-02-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/LLM/">LLM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>这是一份名为 <strong>CS336 作业 5 (Alignment)：对齐与推理强化学习 (RL)</strong> 的课程作业文档翻译。</p>
 <p>以下是文档内容的详细中文翻译，保持了原文档的结构、代码块占位和专业术语。</p>
-<hr />
+<hr>
 <p><strong>[页 1]</strong></p>
-<h1 id="cs336-作业-5-alignment对齐与推理-rl">CS336 作业 5
-(Alignment)：对齐与推理 RL</h1>
+<h1>CS336 作业 5 (Alignment)：对齐与推理 RL</h1>
 <p><strong>1. 作业概览</strong></p>
 <ul>
 <li>版本：1.0.0</li>
 <li>CS336 教研组</li>
 <li>2025 年春季</li>
 </ul>
-<p>在本作业中，通过训练语言模型解决数学问题，你将获得让模型进行<strong>推理
-(Reasoning)</strong> 的实战经验。</p>
+<p>在本作业中，通过训练语言模型解决数学问题，你将获得让模型进行<strong>推理 (Reasoning)</strong> 的实战经验。</p>
 <p><strong>你将实现的内容：</strong></p>
-<ol type="1">
-<li><strong>Zero-shot prompting baseline（零样本提示基线）</strong>
-：针对 Hendrycks et al. [2021] 的 MATH 竞赛数学数据集。</li>
-<li><strong>Supervised Finetuning (SFT，监督微调)</strong>
-：基于来自更强推理模型（DeepSeek R1, DeepSeek-AI et
-al. 2025）的推理轨迹数据。</li>
-<li><strong>Expert Iteration (专家迭代)</strong>
-：利用已验证的奖励来提升推理性能。</li>
-<li><strong>Group-Relative Policy Optimization
-(GRPO，组相对策略优化)</strong> ：利用已验证的奖励来提升推理性能。</li>
+<ol>
+<li><strong>Zero-shot prompting baseline（零样本提示基线）</strong> ：针对 Hendrycks et al. [2021] 的 MATH 竞赛数学数据集。</li>
+<li><strong>Supervised Finetuning (SFT，监督微调)</strong> ：基于来自更强推理模型（DeepSeek R1, DeepSeek-AI et al. 2025）的推理轨迹数据。</li>
+<li><strong>Expert Iteration (专家迭代)</strong> ：利用已验证的奖励来提升推理性能。</li>
+<li><strong>Group-Relative Policy Optimization (GRPO，组相对策略优化)</strong> ：利用已验证的奖励来提升推理性能。</li>
 </ol>
 <p>对于感兴趣的同学，我们在接下来的几天内还将发布一个完全可选的部分，内容是关于将语言模型与人类偏好进行对齐。</p>
 <p><strong>你将运行的内容：</strong></p>
-<ol type="1">
-<li>测量 <strong>Qwen 2.5 Math 1.5B</strong>
-的零样本提示性能（作为基线）。</li>
-<li>使用 R1 的推理轨迹在 Qwen 2.5 Math 1.5B 上运行 <strong>SFT</strong>
-。</li>
-<li>在 Qwen 2.5 Math 1.5B 上运行带验证奖励的 <strong>Expert
-Iteration</strong> 。</li>
-<li>在 Qwen 2.5 Math 1.5B 上运行带验证奖励的 <strong>GRPO</strong>
-。</li>
+<ol>
+<li>测量 <strong>Qwen 2.5 Math 1.5B</strong> 的零样本提示性能（作为基线）。</li>
+<li>使用 R1 的推理轨迹在 Qwen 2.5 Math 1.5B 上运行  <strong>SFT</strong> 。</li>
+<li>在 Qwen 2.5 Math 1.5B 上运行带验证奖励的  <strong>Expert Iteration</strong> 。</li>
+<li>在 Qwen 2.5 Math 1.5B 上运行带验证奖励的  <strong>GRPO</strong> 。</li>
 </ol>
 <p><strong>代码概览：</strong></p>
 <p>所有作业代码及本文档均可在 GitHub 上找到：</p>
 <p><code>github.com/stanford-cs336/assignment5-alignment</code></p>
-<p>请 <code>git clone</code>
-该仓库。如果有更新，我们会通知你，你可以通过 <code>git pull</code>
-获取最新版本。</p>
-<ol type="1">
-<li><code>cs336_alignment/*</code>：这是你编写作业 5
-代码的地方。注意这里除了少量起始代码外没有其他代码，你需要从头开始编写。</li>
+<p>请 <code>git clone</code> 该仓库。如果有更新，我们会通知你，你可以通过 <code>git pull</code> 获取最新版本。</p>
+<ol>
+<li><code>cs336_alignment/*</code>：这是你编写作业 5 代码的地方。注意这里除了少量起始代码外没有其他代码，你需要从头开始编写。</li>
 </ol>
 <p><strong>[页 2]</strong></p>
-<ol start="2" type="1">
-<li><code>cs336_alignment/prompts/*</code>：为了方便起见，我们提供了包含提示词（prompts）的文本文件，以最大限度减少从
-PDF 复制粘贴提示词可能导致的错误。</li>
+<ol start="2">
+<li><code>cs336_alignment/prompts/*</code>：为了方便起见，我们提供了包含提示词（prompts）的文本文件，以最大限度减少从 PDF 复制粘贴提示词可能导致的错误。</li>
 <li><code>tests/*.py</code>：包含你必须通过的所有测试。
 <ul>
-<li><strong>注意</strong> ：你只需要通过 <code>tests/test_sft.py</code>
-和 <code>tests/test_grpo.py</code>
-中的测试——其余测试用于作业的非强制部分。</li>
-<li>这些测试会调用在 <code>tests/adapters.py</code>
-中定义的钩子（hooks）。你需要实现这些适配器以将你的代码连接到测试。</li>
+<li><strong>注意</strong> ：你只需要通过 <code>tests/test_sft.py</code> 和 <code>tests/test_grpo.py</code> 中的测试——其余测试用于作业的非强制部分。</li>
+<li>这些测试会调用在 <code>tests/adapters.py</code> 中定义的钩子（hooks）。你需要实现这些适配器以将你的代码连接到测试。</li>
 <li>编写更多测试或修改测试代码有助于调试，但你的实现必须通过原始提供的测试套件。</li>
-</ul></li>
+</ul>
+</li>
 <li><code>README.md</code>：包含设置环境的基本说明。</li>
 </ol>
 <p><strong>你可以使用的工具：</strong></p>
 <p>我们希望你从头构建大部分 RL 相关组件。</p>
 <ul>
-<li>你可以使用像 <strong>vLLM</strong> 这样的工具从语言模型生成文本（见
-§3.1）。</li>
-<li>此外，你可以使用 <strong>HuggingFace Transformers</strong> 加载 Qwen
-2.5 Math 1.5B
-模型和分词器并运行前向传播（§4.1），但<strong>不能</strong>使用任何训练实用程序（例如
-<code>Trainer</code> 类）。</li>
+<li>你可以使用像 <strong>vLLM</strong> 这样的工具从语言模型生成文本（见 §3.1）。</li>
+<li>此外，你可以使用 <strong>HuggingFace Transformers</strong> 加载 Qwen 2.5 Math 1.5B 模型和分词器并运行前向传播（§4.1），但<strong>不能</strong>使用任何训练实用程序（例如 <code>Trainer</code> 类）。</li>
 </ul>
 <p><strong>提交方式：</strong></p>
 <p>你需要向 Gradescope 提交以下文件：</p>
@@ -239,576 +217,358 @@ PDF 复制粘贴提示词可能导致的错误。</li>
 <li><code>writeup.pdf</code>：回答所有书面问题。请对你的回复进行排版。</li>
 <li><code>code.zip</code>：包含你编写的所有代码。</li>
 </ul>
-<hr />
-<h1 id="语言模型推理-reasoning-with-language-models">2. 语言模型推理
-(Reasoning with Language Models)</h1>
-<h2 id="动机">2.1 动机</h2>
-<p>语言模型的一个显著用例是构建能够处理广泛自然语言处理任务的通用系统。在本作业中，我们将聚焦于语言模型的一个发展中的用例：
-<strong>数学推理 (Mathematical Reasoning)</strong>
-。这将作为我们的测试平台，用于建立评估、执行监督微调
-(SFT)，并尝试使用强化学习 (RL) 教导 LM 进行推理。</p>
+<hr>
+<h1>2. 语言模型推理 (Reasoning with Language Models)</h1>
+<h2 id="2-1-动机">2.1 动机</h2>
+<p>语言模型的一个显著用例是构建能够处理广泛自然语言处理任务的通用系统。在本作业中，我们将聚焦于语言模型的一个发展中的用例： <strong>数学推理 (Mathematical Reasoning)</strong> 。这将作为我们的测试平台，用于建立评估、执行监督微调 (SFT)，并尝试使用强化学习 (RL) 教导 LM 进行推理。</p>
 <p>与之前的作业相比，这里有两点不同：</p>
-<ol type="1">
-<li><strong>不使用之前的代码库和模型</strong>
-：我们理想情况下想使用之前作业训练的基础模型，但微调那些模型不会得到满意的结果——它们太弱了，无法展示非平凡的数学推理能力。因此，我们将切换到一个我们可以访问的现代高性能语言模型
-( <strong>Qwen 2.5 Math 1.5B Base</strong>
-)，并在该模型之上完成大部分工作。</li>
-<li><strong>引入新的基准测试</strong> ：到目前为止，我们一直认为交叉熵
-(Cross-entropy)
-是许多下游任务的良好替代指标。然而，本作业的重点是弥合基础模型与下游任务之间的差距，因此我们必须使用独立于交叉熵的评估。我们将使用
-Hendrycks et al. [2021] 的 <strong>MATH 12K</strong>
-数据集，其中包含具有挑战性的高中竞赛数学问题。我们将通过将模型输出与参考答案进行比较来评估模型。</li>
+<ol>
+<li><strong>不使用之前的代码库和模型</strong> ：我们理想情况下想使用之前作业训练的基础模型，但微调那些模型不会得到满意的结果——它们太弱了，无法展示非平凡的数学推理能力。因此，我们将切换到一个我们可以访问的现代高性能语言模型 ( <strong>Qwen 2.5 Math 1.5B Base</strong> )，并在该模型之上完成大部分工作。</li>
+<li><strong>引入新的基准测试</strong> ：到目前为止，我们一直认为交叉熵 (Cross-entropy) 是许多下游任务的良好替代指标。然而，本作业的重点是弥合基础模型与下游任务之间的差距，因此我们必须使用独立于交叉熵的评估。我们将使用 Hendrycks et al. [2021] 的 <strong>MATH 12K</strong> 数据集，其中包含具有挑战性的高中竞赛数学问题。我们将通过将模型输出与参考答案进行比较来评估模型。</li>
 </ol>
-<h2
-id="思维链推理与推理-rl-chain-of-thought-reasoning-and-reasoning-rl">2.2
-思维链推理与推理 RL (Chain-of-Thought Reasoning and Reasoning RL)</h2>
-<p>语言模型最近一个令人兴奋的趋势是使用<strong>思维链 (Chain-of-Thought,
-CoT)</strong>
-推理来提高各种任务的性能。思维链是指逐步推理问题的过程，在得出最终答案之前生成中间推理步骤。</p>
+<h2 id="2-2-思维链推理与推理-RL-Chain-of-Thought-Reasoning-and-Reasoning-RL">2.2 思维链推理与推理 RL (Chain-of-Thought Reasoning and Reasoning RL)</h2>
+<p>语言模型最近一个令人兴奋的趋势是使用<strong>思维链 (Chain-of-Thought, CoT)</strong> 推理来提高各种任务的性能。思维链是指逐步推理问题的过程，在得出最终答案之前生成中间推理步骤。</p>
 <p><strong>[页 3]</strong></p>
 <ul>
-<li><strong>LLM 的思维链推理</strong> ：早期的 CoT
-方法微调语言模型以解决简单的数学任务（如算术），通过使用“草稿纸
-(scratchpad)”将问题分解为中间步骤 [Nye et al.,
-2021]。其他工作提示强模型在回答前“一步一步思考 (think step by
-step)”，发现这显著提高了小学数学等任务的性能 [Wei et al., 2023]。</li>
-<li><strong>通过专家迭代 (Expert Iteration) 学习推理</strong>
-：Self-Taught Reasoner (STaR) [Zelikman et al., 2022]
-将推理框架化为一个自举循环：预训练模型首先采样多样化的思维链
-(CoTs)，只保留那些导致正确答案的链，然后在这些“专家”轨迹上进行微调。迭代此循环可以提高
-LM 的推理能力和解答率。STaR
-证明了这种使用基于字符串匹配的自动验证的专家迭代 [Anthony et al., 2017]
-可以在没有人类编写的推理轨迹的情况下自举推理技能。</li>
-<li><strong>基于验证奖励的推理 RL、o1 和 R1</strong>
-：最近的工作探索了使用更强大的强化学习算法配合验证奖励来提高推理性能。OpenAI
-的 <strong>o1</strong> (及后续的 o3/o4)、DeepSeek 的 <strong>R1</strong>
-和 Moonshot 的 <strong>kimi k1.5</strong>
-使用策略梯度方法在可以通过字符串匹配或单元测试验证正确性的数学和代码任务上进行训练，展示了竞赛数学和编码性能的显著提升。后续工作如
-<strong>Open-R1</strong> 、<strong>SimpleRL-Zoo</strong> 和
-<strong>TinyZero</strong> 证实，即使在 1.5B
-参数这样小的模型上，纯粹的基于验证奖励的 RL 也能提高推理性能。</li>
+<li><strong>LLM 的思维链推理</strong> ：早期的 CoT 方法微调语言模型以解决简单的数学任务（如算术），通过使用“草稿纸 (scratchpad)”将问题分解为中间步骤 [Nye et al., 2021]。其他工作提示强模型在回答前“一步一步思考 (think step by step)”，发现这显著提高了小学数学等任务的性能 [Wei et al., 2023]。</li>
+<li><strong>通过专家迭代 (Expert Iteration) 学习推理</strong> ：Self-Taught Reasoner (STaR) [Zelikman et al., 2022] 将推理框架化为一个自举循环：预训练模型首先采样多样化的思维链 (CoTs)，只保留那些导致正确答案的链，然后在这些“专家”轨迹上进行微调。迭代此循环可以提高 LM 的推理能力和解答率。STaR 证明了这种使用基于字符串匹配的自动验证的专家迭代 [Anthony et al., 2017] 可以在没有人类编写的推理轨迹的情况下自举推理技能。</li>
+<li><strong>基于验证奖励的推理 RL、o1 和 R1</strong> ：最近的工作探索了使用更强大的强化学习算法配合验证奖励来提高推理性能。OpenAI 的 <strong>o1</strong> (及后续的 o3/o4)、DeepSeek 的 <strong>R1</strong> 和 Moonshot 的 <strong>kimi k1.5</strong> 使用策略梯度方法在可以通过字符串匹配或单元测试验证正确性的数学和代码任务上进行训练，展示了竞赛数学和编码性能的显著提升。后续工作如  <strong>Open-R1</strong> 、<strong>SimpleRL-Zoo</strong> 和 <strong>TinyZero</strong> 证实，即使在 1.5B 参数这样小的模型上，纯粹的基于验证奖励的 RL 也能提高推理性能。</li>
 </ul>
 <p><strong>我们的设置：模型和数据集</strong></p>
 <p>在接下来的部分中，我们将考虑逐步复杂的方法来训练基础语言模型进行逐步推理以解决数学问题。</p>
 <ul>
-<li><strong>模型</strong> ：我们将使用 <strong>Qwen 2.5 Math 1.5B
-Base</strong> 模型，这是在高质量合成数学预训练数据上从 Qwen 2.5 1.5B
-持续预训练而来的 [Yang et al., 2024]。</li>
-<li><strong>数据集</strong> ：MATH 数据集可在 Together 集群的
-<code>/data/a5-alignment/MATH</code> 路径下获得。</li>
+<li><strong>模型</strong> ：我们将使用 <strong>Qwen 2.5 Math 1.5B Base</strong> 模型，这是在高质量合成数学预训练数据上从 Qwen 2.5 1.5B 持续预训练而来的 [Yang et al., 2024]。</li>
+<li><strong>数据集</strong> ：MATH 数据集可在 Together 集群的 <code>/data/a5-alignment/MATH</code> 路径下获得。</li>
 </ul>
 <blockquote>
 <p><strong>开源审核者的提示：替代数据集</strong></p>
-<p>遗憾的是，由于版权声明，MATH
-数据集不再公开可用。如果你在家里跟随本作业，可以使用以下开源数学推理数据集之一：</p>
+<p>遗憾的是，由于版权声明，MATH 数据集不再公开可用。如果你在家里跟随本作业，可以使用以下开源数学推理数据集之一：</p>
 <ul>
-<li><strong>Countdown</strong> [Pan et al., 2025]：基于英国电视节目
-Countdown 的简单合成任务，是小规模推理 RL 的流行测试平台。</li>
-<li><strong>GSM8K</strong> [Cobbe et al., 2021a]：小学数学问题，比 MATH
-简单，但适合调试正确性和熟悉推理 RL 流程。</li>
-<li><strong>Tulu 3 SFT Math</strong> ：使用 GPT-4o 和 Claude 3.5 Sonnet
-生成的合成数学问题。由于是合成的，部分答案可能不完全正确。</li>
-<li>其他链接的数学 SFT 数据集。 为了获得简短的真实标签（如 <strong><span
-class="math inline">1/2</span></strong>），你可以使用如 Math-Verify
-之类的数学答案解析器处理 ground-truth 列。</li>
+<li><strong>Countdown</strong> [Pan et al., 2025]：基于英国电视节目 Countdown 的简单合成任务，是小规模推理 RL 的流行测试平台。</li>
+<li><strong>GSM8K</strong> [Cobbe et al., 2021a]：小学数学问题，比 MATH 简单，但适合调试正确性和熟悉推理 RL 流程。</li>
+<li><strong>Tulu 3 SFT Math</strong> ：使用 GPT-4o 和 Claude 3.5 Sonnet 生成的合成数学问题。由于是合成的，部分答案可能不完全正确。</li>
+<li>其他链接的数学 SFT 数据集。<br>
+为了获得简短的真实标签（如 <strong>$1/2$</strong>），你可以使用如 Math-Verify 之类的数学答案解析器处理 ground-truth 列。</li>
 </ul>
 </blockquote>
-<hr />
-<h1 id="测量-zero-shot-math-性能">3. 测量 Zero-Shot MATH 性能</h1>
-<p>我们首先测量基础语言模型在 MATH 的 5K
-示例测试集上的性能。建立这个基线对于理解后续每种方法如何影响模型行为非常有用。</p>
+<hr>
+<h1>3. 测量 Zero-Shot MATH 性能</h1>
+<p>我们首先测量基础语言模型在 MATH 的 5K 示例测试集上的性能。建立这个基线对于理解后续每种方法如何影响模型行为非常有用。</p>
 <p><strong>[页 4]</strong></p>
-<p>除非另有说明，对于 MATH 上的实验，我们将使用来自 <strong>DeepSeek
-R1-Zero</strong> 模型 [DeepSeek-AI et al., 2025]
-的以下提示词。我们将此称为 <code>r1_zero</code> 提示词：</p>
+<p>除非另有说明，对于 MATH 上的实验，我们将使用来自 <strong>DeepSeek R1-Zero</strong> 模型 [DeepSeek-AI et al., 2025] 的以下提示词。我们将此称为 <code>r1_zero</code> 提示词：</p>
 <blockquote>
-<p>A conversation between User and Assistant. The User asks a question,
-and the Assistant solves it. The Assistant first thinks about the
-reasoning process in the mind and then provides the User with the
-answer. The reasoning process is enclosed within
-<code>&lt;think&gt;</code> <code>&lt;/think&gt;</code> and answer is
-enclosed within <code>&lt;answer&gt;</code> <code>&lt;/answer&gt;</code>
-tags, respectively, i.e., <code>&lt;think&gt;</code> reasoning process
-here <code>&lt;/think&gt;</code> <code>&lt;answer&gt;</code> answer here
-<code>&lt;/answer&gt;</code>.</p>
-<p>User: {question}</p>
+<p>A conversation between User and Assistant. The User asks a question, and the Assistant solves it. The Assistant first thinks about the reasoning process in the mind and then provides the User with the answer. The reasoning process is enclosed within <code>&lt;think&gt;</code> <code>&lt;/think&gt;</code> and answer is enclosed within <code>&lt;answer&gt;</code> <code>&lt;/answer&gt;</code> tags, respectively, i.e., <code>&lt;think&gt;</code> reasoning process here <code>&lt;/think&gt;</code> <code>&lt;answer&gt;</code> answer here <code>&lt;/answer&gt;</code>.</p>
+<p question="">User:</p>
 <p>Assistant: <code>&lt;think&gt;</code></p>
 </blockquote>
-<p>该 <code>r1_zero</code> 提示词位于文本文件
-<code>cs336_alignment/prompts/r1_zero.prompt</code> 中。</p>
-<p>在提示词中，<code>question</code>
-指的是我们插入的问题。预期模型扮演助手的角色，并开始生成思考过程（因为我们已经包含了左侧的
-<code>&lt;think&gt;</code> 标签），用 <code>&lt;/think&gt;</code>
-结束思考过程，然后在 <code>answer</code> 标签内生成最终的符号答案，如
-<code>&lt;answer&gt; 4x + 10 &lt;/answer&gt;</code>。让模型生成
-<code>&lt;answer&gt;</code>
-标签的目的是便于我们解析模型的输出并将其与真实答案进行比较，并且我们可以在看到右侧答案标签
-<code>&lt;/answer&gt;</code> 时停止生成。</p>
+<p>该 <code>r1_zero</code> 提示词位于文本文件 <code>cs336_alignment/prompts/r1_zero.prompt</code> 中。</p>
+<p>在提示词中，<code>question</code> 指的是我们插入的问题。预期模型扮演助手的角色，并开始生成思考过程（因为我们已经包含了左侧的 <code>&lt;think&gt;</code> 标签），用 <code>&lt;/think&gt;</code> 结束思考过程，然后在 <code>answer</code> 标签内生成最终的符号答案，如 <code>&lt;answer&gt; 4x + 10 &lt;/answer&gt;</code>。让模型生成 <code>&lt;answer&gt;</code> 标签的目的是便于我们解析模型的输出并将其与真实答案进行比较，并且我们可以在看到右侧答案标签 <code>&lt;/answer&gt;</code> 时停止生成。</p>
 <blockquote>
 <p><strong>关于提示词选择的说明</strong></p>
-<p>事实证明，<code>r1_zero</code> 提示词并不是 RL
-后最大化下游性能的最佳选择，因为提示词与 Qwen 2.5 Math 1.5B
-模型的预训练方式不匹配。Liu et al. [2025]
-发现，仅用问题提示模型（不做其他任何提示）一开始就有很高的准确率，例如在
-100 步 RL 后就能匹配 <code>r1_zero</code>
-提示词的效果。这表明该模型已经在类似的问题-答案对上进行了预训练。尽管如此，我们在本作业中选择
-<code>r1_zero</code> 提示词，因为使用它进行 RL
-可以在短时间内显示出明显的准确率提升，使我们能够快速完成 RL
-机制的演练并进行正确性检查。作为现实检查，你稍后会在作业中直接与
-<code>question_only</code> 提示词进行比较。</p>
+<p>事实证明，<code>r1_zero</code> 提示词并不是 RL 后最大化下游性能的最佳选择，因为提示词与 Qwen 2.5 Math 1.5B 模型的预训练方式不匹配。Liu et al. [2025] 发现，仅用问题提示模型（不做其他任何提示）一开始就有很高的准确率，例如在 100 步 RL 后就能匹配 <code>r1_zero</code> 提示词的效果。这表明该模型已经在类似的问题-答案对上进行了预训练。尽管如此，我们在本作业中选择 <code>r1_zero</code> 提示词，因为使用它进行 RL 可以在短时间内显示出明显的准确率提升，使我们能够快速完成 RL 机制的演练并进行正确性检查。作为现实检查，你稍后会在作业中直接与 <code>question_only</code> 提示词进行比较。</p>
 </blockquote>
-<h2 id="使用-vllm-进行离线语言模型推理">3.1 使用 vLLM
-进行离线语言模型推理</h2>
-<p>为了评估语言模型，我们需要为各种提示生成续写（响应）。为了高效实现
-RL，我们需要高性能的推理技术。因此，本作业推荐使用 <strong>vLLM</strong>
-进行离线批量推理。vLLM 是一个高吞吐量且内存高效的推理引擎（支持 CUDA
-内核优化、PagedAttention 等）。</p>
+<h2 id="3-1-使用-vLLM-进行离线语言模型推理">3.1 使用 vLLM 进行离线语言模型推理</h2>
+<p>为了评估语言模型，我们需要为各种提示生成续写（响应）。为了高效实现 RL，我们需要高性能的推理技术。因此，本作业推荐使用 <strong>vLLM</strong> 进行离线批量推理。vLLM 是一个高吞吐量且内存高效的推理引擎（支持 CUDA 内核优化、PagedAttention 等）。</p>
 <p>使用 vLLM 生成的示例代码：</p>
 <p><strong>Python</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">from vllm import LLM, SamplingParams</span><br><span class="line"># 采样提示词</span><br><span class="line">prompts = [</span><br><span class="line">    &quot;Hello, my name is&quot;,</span><br><span class="line">    &quot;The president of the United States is&quot;,</span><br><span class="line">    # ...</span><br><span class="line">]</span><br><span class="line"># 创建采样参数，遇到换行符停止</span><br><span class="line">sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024, stop=[&quot;\n&quot;])</span><br><span class="line"># 创建 LLM</span><br><span class="line">llm = LLM(model=&quot;path/to/model&quot;)</span><br><span class="line"># 生成文本</span><br><span class="line">outputs = llm.generate(prompts, sampling_params)</span><br><span class="line"># 打印输出</span><br><span class="line">for output in outputs:</span><br><span class="line">    # ...</span><br></pre></td></tr></table></figure>
 <p><strong>[页 5]</strong></p>
 <p>在 Together 集群上，我们已预下载了以下模型，请直接使用路径：</p>
 <ul>
-<li><strong>Qwen 2.5 Math 1.5B Base</strong> (推理实验):
-<code>/data/a5-alignment/models/Qwen2.5-Math-1.5B</code></li>
-<li>Llama 3.1 8B Base (可选):
-<code>/data/a5-alignment/models/Llama-3.1</code></li>
-<li>Llama 3.3 70B Instruct (可选):
-<code>/data/a5-alignment/models/Llama-3.3-70B-Instruct</code></li>
+<li><strong>Qwen 2.5 Math 1.5B Base</strong> (推理实验): <code>/data/a5-alignment/models/Qwen2.5-Math-1.5B</code></li>
+<li>Llama 3.1 8B Base (可选): <code>/data/a5-alignment/models/Llama-3.1</code></li>
+<li>Llama 3.3 70B Instruct (可选): <code>/data/a5-alignment/models/Llama-3.3-70B-Instruct</code></li>
 </ul>
-<h2 id="zero-shot-math-基线">3.2 Zero-shot MATH 基线</h2>
-<p><strong>提示设置</strong> ：加载 MATH 验证集示例，使用
-<code>r1_zero</code> 提示词提示模型回答。</p>
-<p><strong>评估指标</strong> ：数学问题的评估很棘手，因为模型可能输出
-<code>&lt;answer&gt; 1/2 &lt;/answer&gt;</code> 而真实答案是
-<code>0.5</code>。我们需要一个答案解析函数。</p>
-<p>我们将使用最近推理 RL 工作中使用的快速且准确的答案解析器 [Liu et al.,
-2025]。该奖励函数实现在
-<code>cs336_alignment.drgrpo_grader.r1_zero_reward_fn</code>，除非另有说明，你应该使用它来评估
-MATH 上的性能。</p>
-<p><strong>生成超参数</strong> ：temperature 1.0, top-p 1.0, max
-generation length 1024。指示 vLLM 在模型输出
-<code>&lt;/answer&gt;</code> 时停止：</p>
+<h2 id="3-2-Zero-shot-MATH-基线">3.2 Zero-shot MATH 基线</h2>
+<p><strong>提示设置</strong> ：加载 MATH 验证集示例，使用 <code>r1_zero</code> 提示词提示模型回答。</p>
+<p><strong>评估指标</strong> ：数学问题的评估很棘手，因为模型可能输出 <code>&lt;answer&gt; 1/2 &lt;/answer&gt;</code> 而真实答案是 <code>0.5</code>。我们需要一个答案解析函数。</p>
+<p>我们将使用最近推理 RL 工作中使用的快速且准确的答案解析器 [Liu et al., 2025]。该奖励函数实现在 <code>cs336_alignment.drgrpo_grader.r1_zero_reward_fn</code>，除非另有说明，你应该使用它来评估 MATH 上的性能。</p>
+<p><strong>生成超参数</strong> ：temperature 1.0, top-p 1.0, max generation length 1024。指示 vLLM 在模型输出 <code>&lt;/answer&gt;</code> 时停止：</p>
 <p><strong>Python</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sampling_params.stop = [&quot;&lt;/answer&gt;&quot;]</span><br><span class="line">sampling_params.include_stop_str_in_output = True</span><br></pre></td></tr></table></figure>
 <p><strong>[页 6]</strong></p>
-<h3 id="问题-math_baseline-4-分">问题 (math_baseline): 4 分</h3>
-<p><strong>(a)</strong> 编写一个脚本来评估 Qwen 2.5 Math 1.5B 在 MATH
-上的 zero-shot 性能。</p>
+<h3 id="问题-math-baseline-4-分">问题 (math_baseline): 4 分</h3>
+<p><strong>(a)</strong> 编写一个脚本来评估 Qwen 2.5 Math 1.5B 在 MATH 上的 zero-shot 性能。</p>
 <p>该脚本应：</p>
-<ol type="1">
-<li>从 <code>/data/a5-alignment/MATH/validation.jsonl</code>
-加载验证示例。</li>
+<ol>
+<li>从 <code>/data/a5-alignment/MATH/validation.jsonl</code> 加载验证示例。</li>
 <li>使用 <code>r1_zero</code> 提示词将其格式化为字符串。</li>
 <li>为每个示例生成输出。</li>
 <li>计算评估指标。</li>
 <li>将示例、模型生成和相应的评分序列化到磁盘以供后续分析。</li>
 </ol>
-<p>建议实现一个 <code>evaluate_vllm</code>
-方法（见文档中的函数签名）。</p>
+<p>建议实现一个 <code>evaluate_vllm</code> 方法（见文档中的函数签名）。</p>
 <p><strong>交付物</strong> ：评估基线 zero-shot MATH 性能的脚本。</p>
 <p><strong>(b)</strong> 在 Qwen 2.5 Math 1.5B 上运行评估脚本。</p>
 <p>统计落入以下类别的模型生成数量：</p>
-<ol type="1">
+<ol>
 <li>正确（格式和答案奖励均为 1）。</li>
 <li>格式奖励为 1 但答案奖励为 0。</li>
 <li>格式奖励为 0 且答案奖励为 0。</li>
 </ol>
-<p>观察至少 10 个格式奖励为 0
-的案例，你认为是基础模型输出的问题还是解析器的问题？为什么？对于至少 10
-个格式正确但答案错误的案例呢？</p>
-<p><strong>交付物</strong>
-：关于模型和奖励函数性能的评论，包括每种类别的示例。</p>
-<p><strong>(c)</strong> Qwen 2.5 Math 1.5B zero-shot 基线在 MATH
-上的表现如何？</p>
+<p>观察至少 10 个格式奖励为 0 的案例，你认为是基础模型输出的问题还是解析器的问题？为什么？对于至少 10 个格式正确但答案错误的案例呢？</p>
+<p><strong>交付物</strong> ：关于模型和奖励函数性能的评论，包括每种类别的示例。</p>
+<p><strong>©</strong> Qwen 2.5 Math 1.5B zero-shot 基线在 MATH 上的表现如何？</p>
 <p><strong>交付物</strong> ：1-2 句话说明评估指标。</p>
-<hr />
-<h1 id="math-的监督微调-supervised-finetuning">4. MATH 的监督微调
-(Supervised Finetuning)</h1>
+<hr>
+<h1>4. MATH 的监督微调 (Supervised Finetuning)</h1>
 <p><strong>算法 1：监督微调 (SFT)</strong></p>
 <ul>
-<li>输入：初始策略模型 <strong><span
-class="math inline"><em>π</em><sub><em>θ</em><sub><em>i</em><em>n</em><em>i</em><em>t</em></sub></sub></span></strong>；SFT
-数据集 <strong><span class="math inline">𝒟</span></strong></li>
+<li>输入：初始策略模型 <strong>$\pi_{\theta_{init}}$</strong>；SFT 数据集 <strong>$\mathcal{D}$</strong></li>
 <li>循环步骤：采样批次 -&gt; 计算交叉熵损失 -&gt; 梯度更新</li>
 </ul>
 <p><strong>[页 7]</strong></p>
-<p>在本节中，我们将在 MATH
-数据集上微调基础模型。由于目标是提高推理能力，我们将微调模型先生成思维链推理轨迹，然后再生成答案。我们提供了一个数据集，包含从
-<strong>DeepSeek R1</strong> [DeepSeek-AI et al., 2025]
-获取的推理轨迹，位于
-<code>/data/a5-alignment/MATH/sft.jsonl</code>。</p>
+<p>在本节中，我们将在 MATH 数据集上微调基础模型。由于目标是提高推理能力，我们将微调模型先生成思维链推理轨迹，然后再生成答案。我们提供了一个数据集，包含从 <strong>DeepSeek R1</strong> [DeepSeek-AI et al., 2025] 获取的推理轨迹，位于 <code>/data/a5-alignment/MATH/sft.jsonl</code>。</p>
 <blockquote>
-<p>注意：在实践中，SFT 通常作为 RL
-微调的热启动。但由于我们的模型较小，叠加 SFT 和 RL
-效果不明显，因此本作业将这两个阶段分开处理。</p>
+<p>注意：在实践中，SFT 通常作为 RL 微调的热启动。但由于我们的模型较小，叠加 SFT 和 RL 效果不明显，因此本作业将这两个阶段分开处理。</p>
 </blockquote>
-<h2 id="使用-hugging-face-模型">4.1 使用 Hugging Face 模型</h2>
+<h2 id="4-1-使用-Hugging-Face-模型">4.1 使用 Hugging Face 模型</h2>
 <p><strong>加载模型和分词器</strong> ：</p>
-<p>使用 <code>AutoModelForCausalLM</code> 和
-<code>AutoTokenizer</code>。建议使用 <code>bfloat16</code> 和
-<code>flash_attention_2</code>。代码示例见文档。</p>
+<p>使用 <code>AutoModelForCausalLM</code> 和 <code>AutoTokenizer</code>。建议使用 <code>bfloat16</code> 和 <code>flash_attention_2</code>。代码示例见文档。</p>
 <p><strong>前向传播</strong> ：</p>
 <p>运行前向传播获取 logits，然后计算 loss。</p>
 <p><strong>Python</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">logits = model(input_ids).logits</span><br><span class="line">loss = F.cross_entropy(..., ...)</span><br></pre></td></tr></table></figure>
 <p><strong>[页 8]</strong></p>
 <p><strong>保存模型</strong> ：</p>
-<p>使用 <code>.save_pretrained()</code>。请保存到
-<code>/data/yourusername</code> 目录下。</p>
+<p>使用 <code>.save_pretrained()</code>。请保存到 <code>/data/yourusername</code> 目录下。</p>
 <p><strong>梯度累积 (Gradient Accumulation)</strong> ：</p>
 <p>由于显存限制，使用梯度累积来支持更大的有效批次大小。</p>
 <ul>
-<li>每 <strong><span class="math inline"><em>k</em></span></strong>
-步才调用 <code>optimizer.step()</code> 和
-<code>optimizer.zero_grad()</code>。</li>
-<li>在 <code>loss.backward()</code> 之前将 loss 除以
-<code>gradient_accumulation_steps</code>。</li>
+<li>每 <strong>$k$</strong> 步才调用 <code>optimizer.step()</code> 和 <code>optimizer.zero_grad()</code>。</li>
+<li>在 <code>loss.backward()</code> 之前将 loss 除以 <code>gradient_accumulation_steps</code>。</li>
 </ul>
-<h2 id="sft-辅助方法">4.2 SFT 辅助方法</h2>
+<h2 id="4-2-SFT-辅助方法">4.2 SFT 辅助方法</h2>
 <p><strong>分词提示词和输出</strong></p>
-<p>我们需要将问题 <strong><span
-class="math inline"><em>q</em></span></strong> 和目标输出 <strong><span
-class="math inline"><em>o</em></span></strong>
-分别分词并拼接。还需要构建一个
-<code>response_mask</code>（响应掩码），对于响应部分的 token 为
-True，其他为 False。</p>
+<p>我们需要将问题 <strong>$q$</strong> 和目标输出 <strong>$o$</strong> 分别分词并拼接。还需要构建一个 <code>response_mask</code>（响应掩码），对于响应部分的 token 为 True，其他为 False。</p>
 <p><strong>[页 9]</strong></p>
-<h3 id="问题-tokenize_prompt_and_output-提示词和输出分词-2-分">问题
-(tokenize_prompt_and_output): 提示词和输出分词 (2 分)</h3>
-<p><strong>交付物</strong> ：实现
-<code>tokenize_prompt_and_output</code> 方法。</p>
+<h3 id="问题-tokenize-prompt-and-output-提示词和输出分词-2-分">问题 (tokenize_prompt_and_output): 提示词和输出分词 (2 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>tokenize_prompt_and_output</code> 方法。</p>
 <ul>
-<li>输入：<code>prompt_strs</code>, <code>output_strs</code>,
-<code>tokenizer</code>。</li>
-<li>返回：<code>input_ids</code>, <code>labels</code> (shifted input
-ids), <code>response_mask</code>。</li>
-<li><strong>测试</strong> ：实现
-<code>adapters.run_tokenize_prompt_and_output</code> 并运行
-<code>pytest -k test_tokenize_prompt_and_output</code>。</li>
+<li>输入：<code>prompt_strs</code>, <code>output_strs</code>, <code>tokenizer</code>。</li>
+<li>返回：<code>input_ids</code>, <code>labels</code> (shifted input ids), <code>response_mask</code>。</li>
+<li><strong>测试</strong> ：实现 <code>adapters.run_tokenize_prompt_and_output</code> 并运行 <code>pytest -k test_tokenize_prompt_and_output</code>。</li>
 </ul>
 <p><strong>记录逐词熵 (Per-token entropies)</strong></p>
-<p>在 RL 中，跟踪熵以观察模型置信度变化很有用。熵定义为 <strong><span
-class="math inline"><em>H</em>(<em>p</em>) = −∑<em>p</em>(<em>x</em>)log <em>p</em>(<em>x</em>)</span></strong>。</p>
+<p>在 RL 中，跟踪熵以观察模型置信度变化很有用。熵定义为 <strong>$H(p) = -\sum p(x) \log p(x)$</strong>。</p>
 <p><strong>[页 10]</strong></p>
-<h3 id="问题-compute_entropy-逐词熵-1-分">问题 (compute_entropy): 逐词熵
-(1 分)</h3>
-<p><strong>交付物</strong> ：实现 <code>compute_entropy</code>
-方法。</p>
+<h3 id="问题-compute-entropy-逐词熵-1-分">问题 (compute_entropy): 逐词熵 (1 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>compute_entropy</code> 方法。</p>
 <ul>
 <li>输入：<code>logits</code> (unnormalized)。</li>
 <li>返回：每个 next-token 预测的熵。</li>
 <li>提示：使用数值稳定的方法（如 <code>logsumexp</code>）。</li>
-<li><strong>测试</strong>
-：<code>pytest -k test_compute_entropy</code>。</li>
+<li><strong>测试</strong> ：<code>pytest -k test_compute_entropy</code>。</li>
 </ul>
 <p><strong>从模型获取对数概率</strong></p>
-<p>对于 RL 和 SFT，我们需要获得 token 的对数概率：<strong><span
-class="math inline">log <em>p</em><sub><em>θ</em></sub>(<em>y</em>|<em>x</em>) = log [softmax(<em>f</em><sub><em>θ</em></sub>(<em>x</em>))]<sub><em>y</em></sub></span></strong>。</p>
-<h3 id="问题-get_response_log_probs-响应对数概率-2-分">问题
-(get_response_log_probs): 响应对数概率 (2 分)</h3>
-<p><strong>交付物</strong> ：实现 <code>get_response_log_probs</code>
-方法。</p>
+<p>对于 RL 和 SFT，我们需要获得 token 的对数概率：<strong>$\log p_\theta(y|x) = \log [\text{softmax}(f_\theta(x))]_y$</strong>。</p>
+<h3 id="问题-get-response-log-probs-响应对数概率-2-分">问题 (get_response_log_probs): 响应对数概率 (2 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>get_response_log_probs</code> 方法。</p>
 <ul>
-<li>输入：<code>model</code>, <code>input_ids</code>,
-<code>labels</code>, <code>return_token_entropy</code>。</li>
-<li>返回：条件对数概率 <code>log_probs</code> 和可选的
-<code>token_entropy</code>。</li>
-<li><strong>测试</strong>
-：<code>pytest -k test_get_response_log_probs</code>。</li>
+<li>输入：<code>model</code>, <code>input_ids</code>, <code>labels</code>, <code>return_token_entropy</code>。</li>
+<li>返回：条件对数概率 <code>log_probs</code> 和可选的 <code>token_entropy</code>。</li>
+<li><strong>测试</strong> ：<code>pytest -k test_get_response_log_probs</code>。</li>
 </ul>
 <p><strong>[页 11]</strong></p>
 <p><strong>SFT 微批次训练步</strong></p>
 <p>我们需要计算目标输出的负对数似然损失。首先实现一个带掩码的归一化函数。</p>
-<h3 id="问题-masked_normalize-带掩码归一化-1-分">问题
-(masked_normalize): 带掩码归一化 (1 分)</h3>
-<p><strong>交付物</strong> ：实现 <code>masked_normalize</code>
-方法。</p>
+<h3 id="问题-masked-normalize-带掩码归一化-1-分">问题 (masked_normalize): 带掩码归一化 (1 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>masked_normalize</code> 方法。</p>
 <ul>
 <li>功能：在遵守掩码的情况下对 Tensor 元素求和并除以常数。</li>
-<li><strong>测试</strong>
-：<code>pytest -k test_masked_normalize</code>。</li>
+<li><strong>测试</strong> ：<code>pytest -k test_masked_normalize</code>。</li>
 </ul>
 <p><strong>[页 12]</strong></p>
-<h3 id="问题-sft_microbatch_train_step-微批次训练步-3-分">问题
-(sft_microbatch_train_step): 微批次训练步 (3 分)</h3>
-<p><strong>交付物</strong> ：实现 SFT
-的单次微批次更新，包括交叉熵损失、带掩码求和及梯度缩放。</p>
+<h3 id="问题-sft-microbatch-train-step-微批次训练步-3-分">问题 (sft_microbatch_train_step): 微批次训练步 (3 分)</h3>
+<p><strong>交付物</strong> ：实现 SFT 的单次微批次更新，包括交叉熵损失、带掩码求和及梯度缩放。</p>
 <ul>
-<li>输入：<code>policy_log_probs</code>, <code>response_mask</code>,
-<code>gradient_accumulation_steps</code> 等。</li>
-<li>返回：<code>loss</code> (scalar), <code>metadata</code>
-(dict)。</li>
+<li>输入：<code>policy_log_probs</code>, <code>response_mask</code>, <code>gradient_accumulation_steps</code> 等。</li>
+<li>返回：<code>loss</code> (scalar), <code>metadata</code> (dict)。</li>
 <li>提示：需在此函数中调用 <code>loss.backward()</code>。</li>
-<li><strong>测试</strong>
-：<code>pytest -k test_sft_microbatch_train_step</code>。</li>
+<li><strong>测试</strong> ：<code>pytest -k test_sft_microbatch_train_step</code>。</li>
 </ul>
 <p><strong>[页 13]</strong></p>
 <p><strong>记录生成结果 (Logging generations)</strong></p>
-<p>编写 <code>log_generations</code>
-函数，记录输入提示、模型响应、真实答案、奖励信息、平均熵、响应长度等。</p>
-<h3 id="问题-log_generations-记录生成-1-分">问题 (log_generations):
-记录生成 (1 分)</h3>
-<p><strong>交付物</strong> ：实现 <code>log_generations</code>
-函数。</p>
-<h2 id="sft-实验">4.3 SFT 实验</h2>
+<p>编写 <code>log_generations</code> 函数，记录输入提示、模型响应、真实答案、奖励信息、平均熵、响应长度等。</p>
+<h3 id="问题-log-generations-记录生成-1-分">问题 (log_generations): 记录生成 (1 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>log_generations</code> 函数。</p>
+<h2 id="4-3-SFT-实验">4.3 SFT 实验</h2>
 <p>现在实现完整的 SFT 流程（算法 1）。</p>
 <ul>
 <li>数据集：<code>/data/a5-alignment/MATH/sft.jsonl</code>。</li>
-<li>设置：使用 2 个 GPU。一个用于 Policy 模型训练，另一个运行 vLLM
-进行评估。</li>
-<li>代码提供了 <code>init_vllm</code> 和
-<code>load_policy_into_vllm_instance</code> 的辅助函数。</li>
+<li>设置：使用 2 个 GPU。一个用于 Policy 模型训练，另一个运行 vLLM 进行评估。</li>
+<li>代码提供了 <code>init_vllm</code> 和 <code>load_policy_into_vllm_instance</code> 的辅助函数。</li>
 </ul>
 <p><strong>[页 14]</strong></p>
 <ul>
-<li>建议使用 <code>wandb</code> 记录指标（区分 <code>train_step</code>
-和 <code>eval_step</code>）。</li>
+<li>建议使用 <code>wandb</code> 记录指标（区分 <code>train_step</code> 和 <code>eval_step</code>）。</li>
 <li>使用梯度裁剪（clip value 1.0）。</li>
 </ul>
-<h3 id="问题-sft_experiment-在-math-数据集上运行-sft-2-分">问题
-(sft_experiment): 在 MATH 数据集上运行 SFT (2 分)</h3>
-<ol type="1">
-<li><strong>不同数据量</strong> ：在 reasoning SFT 示例上运行
-SFT，变化唯一示例数量 {128, 256, 512, 1024} 及全量数据集。调整学习率和
-Batch Size 以在使用全量数据时达到至少 <strong>15%</strong>
-的验证准确率。</li>
+<h3 id="问题-sft-experiment-在-MATH-数据集上运行-SFT-2-分">问题 (sft_experiment): 在 MATH 数据集上运行 SFT (2 分)</h3>
+<ol>
+<li><strong>不同数据量</strong> ：在 reasoning SFT 示例上运行 SFT，变化唯一示例数量 {128, 256, 512, 1024} 及全量数据集。调整学习率和 Batch Size 以在使用全量数据时达到至少 <strong>15%</strong> 的验证准确率。</li>
 </ol>
 <ul>
 <li><strong>交付物</strong> ：不同数据集大小对应的验证准确率曲线。</li>
 </ul>
-<ol type="1">
-<li><strong>数据过滤</strong> ：过滤 SFT
-示例，仅包含产生正确答案的示例。在过滤后的数据集上运行 SFT。</li>
+<ol>
+<li><strong>数据过滤</strong> ：过滤 SFT 示例，仅包含产生正确答案的示例。在过滤后的数据集上运行 SFT。</li>
 </ol>
 <ul>
-<li><strong>交付物</strong>
-：报告过滤后数据集的大小及验证准确率曲线。比较与之前实验的结果。</li>
+<li><strong>交付物</strong> ：报告过滤后数据集的大小及验证准确率曲线。比较与之前实验的结果。</li>
 </ul>
-<hr />
+<hr>
 <p><strong>[页 15]</strong></p>
-<h1 id="math-的专家迭代-expert-iteration">5. MATH 的专家迭代 (Expert
-Iteration)</h1>
-<p>上一节我们发现通过过滤 SFT
-数据中的坏样本可以提升模型。本节我们将更进一步：对<strong>基础模型自身生成的</strong>推理轨迹应用此过滤过程。这就是专家迭代
-(Expert Iteration, EI)。</p>
+<h1>5. MATH 的专家迭代 (Expert Iteration)</h1>
+<p>上一节我们发现通过过滤 SFT 数据中的坏样本可以提升模型。本节我们将更进一步：对<strong>基础模型自身生成的</strong>推理轨迹应用此过滤过程。这就是专家迭代 (Expert Iteration, EI)。</p>
 <p><strong>算法 2：专家迭代 (EI)</strong></p>
-<ol type="1">
+<ol>
 <li>采样一批问题。</li>
-<li>对每个问题，从当前策略 <strong><span
-class="math inline"><em>π</em><sub><em>θ</em><sub><em>o</em><em>l</em><em>d</em></sub></sub></span></strong>
-采样 <strong><span class="math inline"><em>G</em></span></strong>
-个输出。</li>
-<li>计算奖励，过滤出奖励为 1 的正确输出，构成数据集 <strong><span
-class="math inline">𝒟<sub><em>s</em><em>f</em><em>t</em></sub></span></strong>。</li>
-<li>在 <strong><span
-class="math inline">𝒟<sub><em>s</em><em>f</em><em>t</em></sub></span></strong>
-上运行 SFT 更新模型。</li>
+<li>对每个问题，从当前策略 <strong>$\pi_{\theta_{old}}$</strong> 采样 <strong>$G$</strong> 个输出。</li>
+<li>计算奖励，过滤出奖励为 1 的正确输出，构成数据集 <strong>$\mathcal{D}_{sft}$</strong>。</li>
+<li>在 <strong>$\mathcal{D}_{sft}$</strong> 上运行 SFT 更新模型。</li>
 </ol>
 <p><strong>提示</strong> ：</p>
 <ul>
-<li>vLLM <code>SamplingParams</code> 设置 <code>min_tokens=4</code>
-以防空字符串。</li>
+<li>vLLM <code>SamplingParams</code> 设置 <code>min_tokens=4</code> 以防空字符串。</li>
 <li>使用梯度裁剪。</li>
 </ul>
-<h3 id="问题-expert_iteration_experiment-运行专家迭代-2-分">问题
-(expert_iteration_experiment): 运行专家迭代 (2 分)</h3>
-<p>在 MATH 数据集 (<code>/data/a5-alignment/MATH/train.jsonl</code>)
-上运行 EI。</p>
+<h3 id="问题-expert-iteration-experiment-运行专家迭代-2-分">问题 (expert_iteration_experiment): 运行专家迭代 (2 分)</h3>
+<p>在 MATH 数据集 (<code>/data/a5-alignment/MATH/train.jsonl</code>) 上运行 EI。</p>
 <ul>
-<li>变化每个问题的 rollout 数量 <strong><span
-class="math inline"><em>G</em></span></strong> 和 SFT 步骤的 epoch
-数。</li>
-<li>使用 <strong><span
-class="math inline"><em>n</em><sub><em>e</em><em>i</em>_<em>s</em><em>t</em><em>e</em><em>p</em><em>s</em></sub> = 5</span></strong>。</li>
+<li>变化每个问题的 rollout 数量 <strong>$G$</strong> 和 SFT 步骤的 epoch 数。</li>
+<li>使用 <strong>$n_{ei_steps} = 5$</strong>。</li>
 <li><strong>交付物</strong> ：</li>
 <li>不同配置的验证准确率曲线。</li>
 <li>一个在 MATH 上达到至少 <strong>15%</strong> 验证准确率的模型。</li>
 <li>简短讨论与 SFT 的比较及 EI 步骤间的性能变化。</li>
 <li>模型响应熵随训练变化的图表。</li>
 </ul>
-<hr />
+<hr>
 <p><strong>[页 16]</strong></p>
-<h1 id="策略梯度-policy-gradients-入门">6. 策略梯度 (Policy Gradients)
-入门</h1>
-<p>本节简要介绍用于语言模型的策略梯度。DeepSeek R1
-等强模型就是使用策略梯度训练的。</p>
-<h2 id="语言模型即策略">6.1 语言模型即策略</h2>
-<p>LM 定义了给定前缀 <strong><span
-class="math inline"><em>s</em><sub><em>t</em></sub></span></strong>
-下下一个 token <strong><span
-class="math inline"><em>a</em><sub><em>t</em></sub></span></strong>
-的概率分布。LM 是一个分类随机策略：<strong><span
-class="math inline"><em>π</em><sub><em>θ</em></sub>(<em>a</em><sub><em>t</em></sub>|<em>s</em><sub><em>t</em></sub>) = [softmax(<em>f</em><sub><em>θ</em></sub>(<em>s</em><sub><em>t</em></sub>))]<sub><em>a</em><sub><em>t</em></sub></sub></span></strong>。</p>
-<h2 id="轨迹-trajectories">6.2 轨迹 (Trajectories)</h2>
-<p>轨迹 <strong><span
-class="math inline"><em>τ</em> = (<em>s</em><sub>0</sub>, <em>a</em><sub>0</sub>, ..., <em>s</em><sub><em>T</em></sub>, <em>a</em><sub><em>T</em></sub>)</span></strong>。在
-LLM 中，环境是确定性的：<strong><span
-class="math inline"><em>s</em><sub><em>t</em> + 1</sub> = <em>s</em><sub><em>t</em></sub>||<em>a</em><sub><em>t</em></sub></span></strong>。</p>
+<h1>6. 策略梯度 (Policy Gradients) 入门</h1>
+<p>本节简要介绍用于语言模型的策略梯度。DeepSeek R1 等强模型就是使用策略梯度训练的。</p>
+<h2 id="6-1-语言模型即策略">6.1 语言模型即策略</h2>
+<p>LM 定义了给定前缀 <strong>$s_t$</strong> 下下一个 token <strong>$a_t$</strong> 的概率分布。LM 是一个分类随机策略：<strong>$\pi_\theta(a_t|s_t) = [\text{softmax}(f_\theta(s_t))]_{a_t}$</strong>。</p>
+<h2 id="6-2-轨迹-Trajectories">6.2 轨迹 (Trajectories)</h2>
+<p>轨迹 <strong>$\tau = (s_0, a_0, …, s_T, a_T)$</strong>。在 LLM 中，环境是确定性的：<strong>$s_{t+1} = s_t || a_t$</strong>。</p>
 <p><strong>[页 17]</strong></p>
-<h2 id="奖励与回报-rewards-and-return">6.3 奖励与回报 (Rewards and
-Return)</h2>
-<p>对于验证领域，如果轨迹匹配真实答案则奖励为 1，否则为
-0。我们关注非折现回报 (undiscounted return)。</p>
-<p>目标：最大化期望回报 <strong><span
-class="math inline"><em>J</em>(<em>θ</em>) = 𝔼<sub><em>τ</em> ∼ <em>π</em><sub><em>θ</em></sub></sub>[<em>R</em>(<em>τ</em>)]</span></strong>。</p>
-<h2 id="原始策略梯度-vanilla-policy-gradient">6.4 原始策略梯度 (Vanilla
-Policy Gradient)</h2>
+<h2 id="6-3-奖励与回报-Rewards-and-Return">6.3 奖励与回报 (Rewards and Return)</h2>
+<p>对于验证领域，如果轨迹匹配真实答案则奖励为 1，否则为 0。我们关注非折现回报 (undiscounted return)。</p>
+<p>目标：最大化期望回报 <strong>$J(\theta) = \mathbb{E}<em>{\tau \sim \pi</em>\theta}[R(\tau)]$</strong>。</p>
+<h2 id="6-4-原始策略梯度-Vanilla-Policy-Gradient">6.4 原始策略梯度 (Vanilla Policy Gradient)</h2>
 <p>REINFORCE 策略梯度公式：</p>
-<p><span class="math display">$$
-\nabla_\theta J(\pi_\theta) = \mathbb{E}_{\tau \sim \pi_\theta}
-[\sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t|s_t) R(\tau)]
-$$</span></p>
+<p>$$<br>
+\nabla_\theta J(\pi_\theta) = \mathbb{E}<em>{\tau \sim \pi</em>\theta} [\sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t|s_t) R(\tau)]<br>
+$$</p>
 <p>（文档中提供了推导过程，包括对数导数技巧）。</p>
 <p><strong>[页 18]</strong></p>
 <p><strong>梯度的样本估计</strong> ：</p>
-<p><span class="math display">$$
-\hat{g} = \frac{1}{N} \sum_{i=1}^N \sum_{t=0}^T \nabla_\theta \log
-\pi_\theta(a_t^{(i)}|s_t^{(i)}) R(\tau^{(i)})
-$$</span></p>
-<h2 id="策略梯度基线-baselines">6.5 策略梯度基线 (Baselines)</h2>
-<p>为了减少方差，我们从奖励中减去一个基线 <strong><span
-class="math inline"><em>b</em>(<em>s</em><sub><em>t</em></sub>)</span></strong>。只要基线仅依赖于状态，梯度估计就是无偏的。</p>
+<p>$$<br>
+\hat{g} = \frac{1}{N} \sum_{i=1}^N \sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t^{(i)}|s_t^{(i)}) R(\tau^{(i)})<br>
+$$</p>
+<h2 id="6-5-策略梯度基线-Baselines">6.5 策略梯度基线 (Baselines)</h2>
+<p>为了减少方差，我们从奖励中减去一个基线 <strong>$b(s_t)$</strong>。只要基线仅依赖于状态，梯度估计就是无偏的。</p>
 <p><strong>关于“策略梯度损失 (pg_loss)”的说明</strong> ：</p>
-<p>在 PyTorch 中，我们定义 <code>pg_loss</code>
-是为了通过反向传播获得梯度。它本身不是一个有意义的评估指标。在 RL
-中，应始终记录和报告 <strong>训练和验证奖励</strong> 。</p>
-<h2 id="异策略-off-policy-策略梯度">6.6 异策略 (Off-Policy)
-策略梯度</h2>
+<p>在 PyTorch 中，我们定义 <code>pg_loss</code> 是为了通过反向传播获得梯度。它本身不是一个有意义的评估指标。在 RL 中，应始终记录和报告 <strong>训练和验证奖励</strong> 。</p>
+<h2 id="6-6-异策略-Off-Policy-策略梯度">6.6 异策略 (Off-Policy) 策略梯度</h2>
 <p>REINFORCE 是同策略 (on-policy) 的，效率低。</p>
-<p>异策略方法（如 PPO, GRPO）使用旧策略 <strong><span
-class="math inline"><em>π</em><sub><em>θ</em><sub><em>o</em><em>l</em><em>d</em></sub></sub></span></strong>
-采样的轨迹来优化当前策略 <strong><span
-class="math inline"><em>π</em><sub><em>θ</em></sub></span></strong>。这引入了重要性采样权重。</p>
-<hr />
+<p>异策略方法（如 PPO, GRPO）使用旧策略 <strong>$\pi_{\theta_{old}}$</strong> 采样的轨迹来优化当前策略 <strong>$\pi_\theta$</strong>。这引入了重要性采样权重。</p>
+<hr>
 <p><strong>[页 20]</strong></p>
-<h1 id="组相对策略优化-group-relative-policy-optimization-grpo">7.
-组相对策略优化 (Group Relative Policy Optimization, GRPO)</h1>
-<h2 id="grpo-算法">7.1 GRPO 算法</h2>
+<h1>7. 组相对策略优化 (Group Relative Policy Optimization, GRPO)</h1>
+<h2 id="7-1-GRPO-算法">7.1 GRPO 算法</h2>
 <p><strong>优势估计 (Advantage Estimation)</strong></p>
-<p>GRPO
-的核心思想是对每个问题采样多个输出，并利用它们计算基线。这避免了训练价值函数
-<strong><span
-class="math inline"><em>V</em><sub><em>ϕ</em></sub>(<em>s</em>)</span></strong>
-的需要。</p>
+<p>GRPO 的核心思想是对每个问题采样多个输出，并利用它们计算基线。这避免了训练价值函数 <strong>$V_\phi(s)$</strong> 的需要。</p>
 <p>DeepSeekMath 和 R1 计算组归一化优势：</p>
-<p><span class="math display">$$
-A^{(i)} = \frac{r^{(i)} - \text{mean}(\{r\}) }{\text{std}(\{r\}) +
-\epsilon}
-$$</span></p>
-<p>Dr. GRPO
-提出了一种简化版本，仅减去均值而不除以标准差，我们稍后会比较这两种方法。</p>
+<p>$$<br>
+A^{(i)} = \frac{r^{(i)} - \text{mean}({r}) }{\text{std}({r}) + \epsilon}<br>
+$$</p>
+<p>Dr. GRPO 提出了一种简化版本，仅减去均值而不除以标准差，我们稍后会比较这两种方法。</p>
 <p><strong>GRPO 目标函数</strong></p>
 <p>结合了三个思想：</p>
-<ol type="1">
+<ol>
 <li>异策略策略梯度。</li>
 <li>组归一化优势。</li>
 <li>裁剪机制 (Clipping)，类似于 PPO。</li>
 </ol>
 <p><strong>[页 21]</strong></p>
 <p><strong>算法 3：GRPO</strong></p>
-<p>（表格形式展示了 GRPO 的训练循环：采样问题 -&gt; 采样 G 个输出 -&gt;
-计算奖励和优势 -&gt; 内部循环更新策略）。</p>
+<p>（表格形式展示了 GRPO 的训练循环：采样问题 -&gt; 采样 G 个输出 -&gt; 计算奖励和优势 -&gt; 内部循环更新策略）。</p>
 <p><strong>GRPO-Clip 目标函数</strong> ：</p>
-<p><span class="math display">$$
-\text{per-token objective} = \min \left( \frac{\pi}{\pi_{old}} A,
-\text{clip}\left(\frac{\pi}{\pi_{old}}, 1-\epsilon, 1+\epsilon\right) A
-\right)
-$$</span></p>
+<p>$$<br>
+\text{per-token objective} = \min \left( \frac{\pi}{\pi_{old}} A, \text{clip}\left(\frac{\pi}{\pi_{old}}, 1-\epsilon, 1+\epsilon\right) A \right)<br>
+$$</p>
 <p>（文档解释了裁剪如何防止策略变化过大）。</p>
-<h2 id="实现">7.2 实现</h2>
+<h2 id="7-2-实现">7.2 实现</h2>
 <p><strong>计算优势（组归一化奖励）</strong></p>
 <p><strong>[页 22]</strong></p>
-<h3 id="问题-compute_group_normalized_rewards-组归一化-2-分">问题
-(compute_group_normalized_rewards): 组归一化 (2 分)</h3>
-<p><strong>交付物</strong> ：实现
-<code>compute_group_normalized_rewards</code>。</p>
+<h3 id="问题-compute-group-normalized-rewards-组归一化-2-分">问题 (compute_group_normalized_rewards): 组归一化 (2 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>compute_group_normalized_rewards</code>。</p>
 <ul>
-<li>输入：<code>reward_fn</code>, <code>rollout_responses</code>,
-<code>group_size</code> 等。</li>
+<li>输入：<code>reward_fn</code>, <code>rollout_responses</code>, <code>group_size</code> 等。</li>
 <li>功能：计算原始奖励，并在组内进行归一化（支持除以标准差或不除）。</li>
-<li><strong>测试</strong>
-：<code>pytest -k test_compute_group_normalized_rewards</code>。</li>
+<li><strong>测试</strong> ：<code>pytest -k test_compute_group_normalized_rewards</code>。</li>
 </ul>
 <p><strong>朴素策略梯度损失</strong></p>
 <p><strong>[页 23]</strong></p>
-<h3 id="问题-compute_naive_policy_gradient_loss-朴素策略梯度-1-分">问题
-(compute_naive_policy_gradient_loss): 朴素策略梯度 (1 分)</h3>
-<p><strong>交付物</strong> ：实现
-<code>compute_naive_policy_gradient_loss</code>。</p>
+<h3 id="问题-compute-naive-policy-gradient-loss-朴素策略梯度-1-分">问题 (compute_naive_policy_gradient_loss): 朴素策略梯度 (1 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>compute_naive_policy_gradient_loss</code>。</p>
 <ul>
-<li>公式：<strong><span
-class="math inline">−<em>A</em><sub><em>t</em></sub> ⋅ log <em>p</em><sub><em>θ</em></sub>(<em>o</em><sub><em>t</em></sub>|<em>q</em>, <em>o</em><sub> &lt; <em>t</em></sub>)</span></strong>。</li>
-<li><strong>测试</strong>
-：<code>pytest -k test_compute_naive_policy_gradient_loss</code>。</li>
+<li>公式：<strong>$-A_t \cdot \log p_\theta(o_t | q, o_{&lt;t})$</strong>。</li>
+<li><strong>测试</strong> ：<code>pytest -k test_compute_naive_policy_gradient_loss</code>。</li>
 </ul>
 <p><strong>GRPO-Clip 损失</strong></p>
-<h3 id="问题-compute_grpo_clip_loss-grpo-clip-损失-2-分">问题
-(compute_grpo_clip_loss): GRPO-Clip 损失 (2 分)</h3>
-<p><strong>交付物</strong> ：实现
-<code>compute_grpo_clip_loss</code>。</p>
+<h3 id="问题-compute-grpo-clip-loss-GRPO-Clip-损失-2-分">问题 (compute_grpo_clip_loss): GRPO-Clip 损失 (2 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>compute_grpo_clip_loss</code>。</p>
 <ul>
 <li>实现带裁剪的目标函数。</li>
-<li><strong>测试</strong>
-：<code>pytest -k test_compute_grpo_clip_loss</code>。</li>
+<li><strong>测试</strong> ：<code>pytest -k test_compute_grpo_clip_loss</code>。</li>
 </ul>
-<p><span class="math display">$$
-- \min \left( \frac{\pi_\theta(o_t|q,
-o_{&lt;t})}{\pi_{\theta_{old}}(o_t|q, o_{&lt;t})} A_t, \text{clip}
-\left( \frac{\pi_\theta(o_t|q, o_{&lt;t})}{\pi_{\theta_{old}}(o_t|q,
-o_{&lt;t})}, 1-\epsilon, 1+\epsilon \right) A_t \right)
-$$</span></p>
+<p>$$</p>
+<ul>
+<li>\min \left( \frac{\pi_\theta(o_t|q, o_{&lt;t})}{\pi_{\theta_{old}}(o_t|q, o_{&lt;t})} A_t, \text{clip} \left( \frac{\pi_\theta(o_t|q, o_{&lt;t})}{\pi_{\theta_{old}}(o_t|q, o_{&lt;t})}, 1-\epsilon, 1+\epsilon \right) A_t \right)<br>
+$$</li>
+</ul>
 <p><strong>[页 24]</strong></p>
 <p><strong>策略梯度损失包装器 (Wrapper)</strong></p>
 <p>我们需要对比三种版本：</p>
-<ol type="a">
-<li><p><code>no_baseline</code>: 原始奖励作为优势。</p></li>
-<li><p><code>reinforce_with_baseline</code>:
-组归一化奖励作为优势。</p></li>
-<li><p><code>grpo_clip</code>: GRPO-Clip 损失。</p></li>
-</ol>
-<h3 id="问题-compute_policy_gradient_loss-策略梯度包装器-1-分">问题
-(compute_policy_gradient_loss): 策略梯度包装器 (1 分)</h3>
-<p><strong>交付物</strong> ：实现
-<code>compute_policy_gradient_loss</code>，根据 <code>loss_type</code>
-分发调用。</p>
+<p>(a) <code>no_baseline</code>: 原始奖励作为优势。</p>
+<p>(b) <code>reinforce_with_baseline</code>: 组归一化奖励作为优势。</p>
+<p>© <code>grpo_clip</code>: GRPO-Clip 损失。</p>
+<h3 id="问题-compute-policy-gradient-loss-策略梯度包装器-1-分">问题 (compute_policy_gradient_loss): 策略梯度包装器 (1 分)</h3>
+<p><strong>交付物</strong> ：实现 <code>compute_policy_gradient_loss</code>，根据 <code>loss_type</code> 分发调用。</p>
 <p><strong>[页 25]</strong></p>
 <p><strong>带掩码的均值 (Masked mean)</strong></p>
 <p>通常我们将 loss 在序列维度求均值。</p>
-<h3 id="问题-masked_mean-带掩码均值-1-分">问题 (masked_mean): 带掩码均值
-(1 分)</h3>
+<h3 id="问题-masked-mean-带掩码均值-1-分">问题 (masked_mean): 带掩码均值 (1 分)</h3>
 <p><strong>交付物</strong> ：实现 <code>masked_mean</code>。</p>
 <p><strong>[页 26]</strong></p>
 <p><strong>GRPO 微批次训练步</strong></p>
-<h3 id="问题-grpo_microbatch_train_step-微批次训练步-3-分">问题
-(grpo_microbatch_train_step): 微批次训练步 (3 分)</h3>
+<h3 id="问题-grpo-microbatch-train-step-微批次训练步-3-分">问题 (grpo_microbatch_train_step): 微批次训练步 (3 分)</h3>
 <p><strong>交付物</strong> ：实现 GRPO 的单次微批次更新。</p>
 <ul>
 <li>调用 <code>compute_policy_gradient_loss</code>。</li>
 <li>使用 <code>masked_mean</code> 聚合 loss。</li>
 <li>处理梯度累积。</li>
-<li><strong>测试</strong>
-：<code>pytest -k test_grpo_microbatch_train_step</code>。</li>
+<li><strong>测试</strong> ：<code>pytest -k test_grpo_microbatch_train_step</code>。</li>
 </ul>
 <p><strong>[页 27]</strong></p>
 <p><strong>GRPO 训练循环</strong></p>
 <p>提供了一些起始超参数（LR=1e-5, group_size=8, etc.）。</p>
-<p>注意：如果是 Off-policy 设置，需要计算一次 <code>old_log_probs</code>
-并在内层循环复用（不要对 old log probs 求导）。</p>
+<p>注意：如果是 Off-policy 设置，需要计算一次 <code>old_log_probs</code> 并在内层循环复用（不要对 old log probs 求导）。</p>
 <p><strong>[页 28]</strong></p>
-<h3 id="问题-grpo_train_loop-grpo-训练循环-5-分">问题 (grpo_train_loop):
-GRPO 训练循环 (5 分)</h3>
+<h3 id="问题-grpo-train-loop-GRPO-训练循环-5-分">问题 (grpo_train_loop): GRPO 训练循环 (5 分)</h3>
 <p><strong>交付物</strong> ：实现完整的 GRPO 训练循环。</p>
 <ul>
 <li>开始训练并确认验证奖励提升。</li>
 <li>提供验证奖励随步骤变化的图表和一些 rollout 示例。</li>
 </ul>
-<hr />
+<hr>
 <p><strong>[页 29]</strong></p>
-<h1 id="grpo-实验">8. GRPO 实验</h1>
+<h1>8. GRPO 实验</h1>
 <p><strong>注意</strong> ：如果发现超参数明显不好，可提前停止。</p>
-<h3 id="问题-grpo_learning_rate-调整学习率-2-分">问题
-(grpo_learning_rate): 调整学习率 (2 分)</h3>
+<h3 id="问题-grpo-learning-rate-调整学习率-2-分">问题 (grpo_learning_rate): 调整学习率 (2 分)</h3>
 <ul>
 <li>扫描学习率，报告最终验证答案奖励。</li>
 <li><strong>交付物</strong> ：</li>
@@ -817,130 +577,69 @@ GRPO 训练循环 (5 分)</h3>
 <li>简短讨论。</li>
 </ul>
 <p><strong>基线的影响</strong></p>
-<p>比较 <code>no_baseline</code> 和
-<code>reinforce_with_baseline</code>（On-policy 设置）。</p>
-<h3 id="问题-grpo_baselines-基线的影响-2-分">问题 (grpo_baselines):
-基线的影响 (2 分)</h3>
+<p>比较 <code>no_baseline</code> 和 <code>reinforce_with_baseline</code>（On-policy 设置）。</p>
+<h3 id="问题-grpo-baselines-基线的影响-2-分">问题 (grpo_baselines): 基线的影响 (2 分)</h3>
 <ul>
 <li><strong>交付物</strong> ：验证奖励曲线及简短讨论。</li>
 </ul>
 <p><strong>[页 30]</strong></p>
 <p><strong>长度归一化 (Length normalization)</strong></p>
 <p>比较两种聚合 loss 的方式：</p>
-<ol type="1">
+<ol>
 <li><code>masked_mean</code>：对序列中未掩码的 token 求平均。</li>
-<li><code>masked_normalize</code>：求和后除以常数（如最大生成长度）。
+<li><code>masked_normalize</code>：求和后除以常数（如最大生成长度）。<br>
 （文档提供了一个代码示例展示梯度差异）。</li>
 </ol>
-<h3 id="问题-think_about_length_normalization-思考长度归一化-1-分">问题
-(think_about_length_normalization): 思考长度归一化 (1 分)</h3>
+<h3 id="问题-think-about-length-normalization-思考长度归一化-1-分">问题 (think_about_length_normalization): 思考长度归一化 (1 分)</h3>
 <p><strong>交付物</strong> ：比较两种方法的优缺点（无需运行实验）。</p>
 <p><strong>[页 31]</strong></p>
-<h3 id="问题-grpo_length_normalization-长度归一化的影响-2-分">问题
-(grpo_length_normalization): 长度归一化的影响 (2 分)</h3>
-<p><strong>交付物</strong> ：通过端到端 GRPO
-训练比较两种归一化方法。报告曲线并评论稳定性（如梯度范数）。</p>
+<h3 id="问题-grpo-length-normalization-长度归一化的影响-2-分">问题 (grpo_length_normalization): 长度归一化的影响 (2 分)</h3>
+<p><strong>交付物</strong> ：通过端到端 GRPO 训练比较两种归一化方法。报告曲线并评论稳定性（如梯度范数）。</p>
 <p><strong>组标准差归一化</strong></p>
 <p>比较是否在优势计算中除以组标准差。</p>
-<h3 id="问题-grpo_group_standard_deviation-标准差归一化的影响-2-分">问题
-(grpo_group_standard_deviation): 标准差归一化的影响 (2 分)</h3>
-<p><strong>交付物</strong> ：比较 <code>use_std_normalization</code> 为
-True 和 False 的情况。</p>
+<h3 id="问题-grpo-group-standard-deviation-标准差归一化的影响-2-分">问题 (grpo_group_standard_deviation): 标准差归一化的影响 (2 分)</h3>
+<p><strong>交付物</strong> ：比较 <code>use_std_normalization</code> 为 True 和 False 的情况。</p>
 <p><strong>[页 32]</strong></p>
 <p><strong>Off-policy vs On-policy</strong></p>
-<p>On-policy 效率低。我们将实验 Off-policy（每个 rollout batch
-进行多次梯度更新）。</p>
-<h3 id="问题-grpo_off_policy-实现-off-policy-grpo">问题
-(grpo_off_policy): 实现 Off-policy GRPO</h3>
-<p><strong>交付物</strong> ：修改代码以支持多 epoch
-更新，并正确计算和使用 <code>old_log_probs</code>。使用
-<code>grpo_clip</code> 损失。</p>
-<h3 id="问题-grpo_off_policy_sweep-off-policy-grpo-超参数扫描-4-分">问题
-(grpo_off_policy_sweep): Off-policy GRPO 超参数扫描 (4 分)</h3>
+<p>On-policy 效率低。我们将实验 Off-policy（每个 rollout batch 进行多次梯度更新）。</p>
+<h3 id="问题-grpo-off-policy-实现-Off-policy-GRPO">问题 (grpo_off_policy): 实现 Off-policy GRPO</h3>
+<p><strong>交付物</strong> ：修改代码以支持多 epoch 更新，并正确计算和使用 <code>old_log_probs</code>。使用 <code>grpo_clip</code> 损失。</p>
+<h3 id="问题-grpo-off-policy-sweep-Off-policy-GRPO-超参数扫描-4-分">问题 (grpo_off_policy_sweep): Off-policy GRPO 超参数扫描 (4 分)</h3>
 <p><strong>交付物</strong> ：</p>
 <ul>
-<li>固定 <code>rollout_batch_size=256</code>，扫描
-<code>epochs_per_rollout_batch</code> 和
-<code>train_batch_size</code>。</li>
+<li>固定 <code>rollout_batch_size=256</code>，扫描 <code>epochs_per_rollout_batch</code> 和 <code>train_batch_size</code>。</li>
 <li>与 On-policy 运行进行比较（验证步骤 vs 挂钟时间）。</li>
 <li>比较熵的变化。</li>
 </ul>
 <p><strong>裁剪 (Clipping) 的消融实验</strong></p>
-<h3
-id="问题-grpo_off_policy_clip_ablation-off-policy-grpo-clip-消融-2-分">问题
-(grpo_off_policy_clip_ablation): Off-policy GRPO-Clip 消融 (2 分)</h3>
-<p><strong>交付物</strong> ：实现无裁剪版本 (<code>GRPO-No-Clip</code>)
-并在最佳 Off-policy 设置下运行。比较结果。</p>
+<h3 id="问题-grpo-off-policy-clip-ablation-Off-policy-GRPO-Clip-消融-2-分">问题 (grpo_off_policy_clip_ablation): Off-policy GRPO-Clip 消融 (2 分)</h3>
+<p><strong>交付物</strong> ：实现无裁剪版本 (<code>GRPO-No-Clip</code>) 并在最佳 Off-policy 设置下运行。比较结果。</p>
 <p><strong>[页 33]</strong></p>
 <p><strong>提示词的影响 (Effect of prompt)</strong></p>
-<p>比较 <code>r1_zero</code> 提示词与简单的 <code>question_only</code>
-提示词。</p>
-<h3 id="问题-grpo_prompt_ablation-提示词消融-2-分">问题
-(grpo_prompt_ablation): 提示词消融 (2 分)</h3>
-<p><strong>交付物</strong>
-：报告验证奖励曲线。解释为什么简单的提示词可能表现更好（或不同）。</p>
-<hr />
-<h1 id="leaderboard-math-上的-grpo">Leaderboard: MATH 上的 GRPO</h1>
-<h3 id="问题-leaderboard-排行榜-16-分">问题 (leaderboard): 排行榜 (16
-分)</h3>
-<p><strong>交付物</strong> ：在 2 张 H100 GPU 上训练 <strong>4
-小时内</strong> 获得的最高验证准确率。</p>
+<p>比较 <code>r1_zero</code> 提示词与简单的 <code>question_only</code> 提示词。</p>
+<h3 id="问题-grpo-prompt-ablation-提示词消融-2-分">问题 (grpo_prompt_ablation): 提示词消融 (2 分)</h3>
+<p><strong>交付物</strong> ：报告验证奖励曲线。解释为什么简单的提示词可能表现更好（或不同）。</p>
+<hr>
+<h1>Leaderboard: MATH 上的 GRPO</h1>
+<h3 id="问题-leaderboard-排行榜-16-分">问题 (leaderboard): 排行榜 (16 分)</h3>
+<p><strong>交付物</strong> ：在 2 张 H100 GPU 上训练 <strong>4 小时内</strong> 获得的最高验证准确率。</p>
 <ul>
 <li>提供随时间变化的验证准确率截图。</li>
 <li><strong>约束</strong> ：</li>
 </ul>
-<ol type="1">
+<ol>
 <li>使用 Qwen 2.5 Math 1.5B Base。</li>
 <li>仅使用 MATH 数据集。</li>
-<li>验证时必须使用 <code>r1_zero</code> 提示词和提供的
-<code>r1_zero_reward_fn</code>。</li>
+<li>验证时必须使用 <code>r1_zero</code> 提示词和提供的 <code>r1_zero_reward_fn</code>。</li>
 <li>验证参数：Temp 1.0, Max tokens 1024。</li>
 </ol>
-<p><strong>系统优化提示</strong> ：你可以优化并行方式（vLLM 和 Policy
-并行），降低精度，使用 <code>torch.compile</code> 等。</p>
+<p><strong>系统优化提示</strong> ：你可以优化并行方式（vLLM 和 Policy 并行），降低精度，使用 <code>torch.compile</code> 等。</p>
 <p><strong>[页 34]</strong></p>
-<h1 id="结语">10. 结语</h1>
+<h1>10. 结语</h1>
 <p>恭喜完成这门课的最后一次作业！</p>
-<h1 id="参考文献">参考文献</h1>
-<p>[列出了相关的论文，包括 Hendrycks et al., DeepSeek R1, STaR, OpenAI
-o1, Kimi k1.5, PPO 等]</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/">https://kjore.github.io/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cs336/">cs336</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/02/06/python%E8%AF%AD%E6%B3%95/" title="一些python语法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">一些python语法</div></div><div class="info-2"><div class="info-item-1">路径与导入 如果运行一个python文件，该文件中使用相对路径来寻找另一个文件，那么这个路径是相对于当前运行的python文件所在的目录即控制台当前的目录，而不是相对于被导入的python文件所在的目录。 导入包时，python会按照sys.path中的路径顺序来寻找包。sys.path中包含了该python文件当前目录、环境变量PYTHONPATH指定的路径以及python安装目录下的site-packages等路径。 init.py 文件的主要作用是将一个普通的文件夹标识为一个 Python 包 </div></div></div></a><a class="pagination-related" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">推理</div></div><div class="info-2"><div class="info-item-1">inference概述 推理应用场景  实际应用 (Actual Use) ：这是用户最直观的感受，包括聊天机器人（如 ChatGPT）、代码自动补全（如 Copilot）以及对海量数据的离线批处理。 模型评估 (Model Evaluation) ：为了衡量模型的性能（例如指令遵循能力），需要运行推理来生成结果并进行打分。 测试时计算 (Test-time Compute) ：这与当前流行的“推理模型”（如 OpenAI o1 系列）相关，即通过增加推理时的计算量（如思考过程、多路径搜索）来提升模型解决复杂问题的能力。 强化学习训练 (RL Training) ：在强化学习（如 PPO 或 GRPO）过程中，模型需要生成大量样本，然后由奖励模型进行打分，这个“生成样本”的过程本质上就是大规模推理。  指标  ime-to-first-token (TTFT) / 首字延迟  定义 ：从用户发出请求到屏幕上蹦出第一个字的时间。 重要性 ：这是即时交互（Chatbot）体验的生命线。如果 TTFT 过长，用户会感觉系统“卡死”了。这主要取...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/02/26/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E5%AE%9E%E7%8E%B0/" title="cs336作业五实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-26</div><div class="info-item-2">cs336作业五实现</div></div><div class="info-2"><div class="info-item-1">环境与准备  使用conda下载好的flash-atten,cuda和python版本要匹配，安装transformers和datasets库 下载Qwen2.5-Math-1.5B作为基座模型 数据集直接使用原项目中的/data目录下的几个数据集  sft 核心函数 tokenize_prompt_and_output 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647def tokenize_prompt_and_output(    prompt_strs: list[str],    output_strs: list[str],    tokenizer: PreTrainedTokenizerBase,) -&gt; dict[str, Tensor]:    # 该函数将提示和输出字符串列表转换为模型输入张量，包括 input_ids、labels 和 response_mask。    prompt_ids = []    ou...</div></div></div></a><a class="pagination-related" href="/2026/01/29/scaling%20laws/" title="scaling laws"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-29</div><div class="info-item-2">scaling laws</div></div><div class="info-2"><div class="info-item-1">导入 我们知道，像H100,A100这样的高性能GPU在训练大规模深度学习模型时成本是很昂贵的，因此，我们不能盲目地设定参数来试错，而是需要有一定的理论依据来指导我们如何选择模型的规模和训练数据的规模。Scaling Laws（缩放定律）为我们提供了这样的理论依据。 训练一个大模型需要  基础设施 数据 训练策略  虽然你有算力（H100）、有系统（Infra）、有数据（Dataset），但当你真正要敲下回车键开始训练时，你会面临一系列决策瘫痪：  我应该训练一个 600 亿参数的模型，跑久一点？ 还是训练一个 1750 亿参数的模型，跑短一点？ 层数要多深？宽度要多大？  设计大模型有无数种参数组合，盲目尝试太贵，照抄别人又不一定对。 利用缩放定律。我们发现模型的性能（Loss）与资源（算力、参数）在双对数坐标下呈线性关系。 通过学习 Scaling Laws，我们可以更好地理解如何在给定的计算预算下，选择模型规模和训练数据规模，以达到最佳的性能表现。  scaling laws 历史和背景  在经典的统计学习理论（如 VC 维理论...</div></div></div></a><a class="pagination-related" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-30</div><div class="info-item-2">推理</div></div><div class="info-2"><div class="info-item-1">inference概述 推理应用场景  实际应用 (Actual Use) ：这是用户最直观的感受，包括聊天机器人（如 ChatGPT）、代码自动补全（如 Copilot）以及对海量数据的离线批处理。 模型评估 (Model Evaluation) ：为了衡量模型的性能（例如指令遵循能力），需要运行推理来生成结果并进行打分。 测试时计算 (Test-time Compute) ：这与当前流行的“推理模型”（如 OpenAI o1 系列）相关，即通过增加推理时的计算量（如思考过程、多路径搜索）来提升模型解决复杂问题的能力。 强化学习训练 (RL Training) ：在强化学习（如 PPO 或 GRPO）过程中，模型需要生成大量样本，然后由奖励模型进行打分，这个“生成样本”的过程本质上就是大规模推理。  指标  ime-to-first-token (TTFT) / 首字延迟  定义 ：从用户发出请求到屏幕上蹦出第一个字的时间。 重要性 ：这是即时交互（Chatbot）体验的生命线。如果 TTFT 过长，用户会感觉系统“卡死”了。这主要取...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cs336-%E4%BD%9C%E4%B8%9A-5-alignment%E5%AF%B9%E9%BD%90%E4%B8%8E%E6%8E%A8%E7%90%86-rl"><span class="toc-number">1.</span> <span class="toc-text">CS336 作业 5
-(Alignment)：对齐与推理 RL</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86-reasoning-with-language-models"><span class="toc-number">2.</span> <span class="toc-text">2. 语言模型推理
-(Reasoning with Language Models)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%9C%BA"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 动机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E7%BB%B4%E9%93%BE%E6%8E%A8%E7%90%86%E4%B8%8E%E6%8E%A8%E7%90%86-rl-chain-of-thought-reasoning-and-reasoning-rl"><span class="toc-number">2.2.</span> <span class="toc-text">2.2
-思维链推理与推理 RL (Chain-of-Thought Reasoning and Reasoning RL)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E9%87%8F-zero-shot-math-%E6%80%A7%E8%83%BD"><span class="toc-number">3.</span> <span class="toc-text">3. 测量 Zero-Shot MATH 性能</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-vllm-%E8%BF%9B%E8%A1%8C%E7%A6%BB%E7%BA%BF%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 使用 vLLM
-进行离线语言模型推理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#zero-shot-math-%E5%9F%BA%E7%BA%BF"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 Zero-shot MATH 基线</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-math_baseline-4-%E5%88%86"><span class="toc-number">3.2.1.</span> <span class="toc-text">问题 (math_baseline): 4 分</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#math-%E7%9A%84%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83-supervised-finetuning"><span class="toc-number">4.</span> <span class="toc-text">4. MATH 的监督微调
-(Supervised Finetuning)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-hugging-face-%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 使用 Hugging Face 模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sft-%E8%BE%85%E5%8A%A9%E6%96%B9%E6%B3%95"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 SFT 辅助方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-tokenize_prompt_and_output-%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%92%8C%E8%BE%93%E5%87%BA%E5%88%86%E8%AF%8D-2-%E5%88%86"><span class="toc-number">4.2.1.</span> <span class="toc-text">问题
-(tokenize_prompt_and_output): 提示词和输出分词 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute_entropy-%E9%80%90%E8%AF%8D%E7%86%B5-1-%E5%88%86"><span class="toc-number">4.2.2.</span> <span class="toc-text">问题 (compute_entropy): 逐词熵
-(1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-get_response_log_probs-%E5%93%8D%E5%BA%94%E5%AF%B9%E6%95%B0%E6%A6%82%E7%8E%87-2-%E5%88%86"><span class="toc-number">4.2.3.</span> <span class="toc-text">问题
-(get_response_log_probs): 响应对数概率 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-masked_normalize-%E5%B8%A6%E6%8E%A9%E7%A0%81%E5%BD%92%E4%B8%80%E5%8C%96-1-%E5%88%86"><span class="toc-number">4.2.4.</span> <span class="toc-text">问题
-(masked_normalize): 带掩码归一化 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-sft_microbatch_train_step-%E5%BE%AE%E6%89%B9%E6%AC%A1%E8%AE%AD%E7%BB%83%E6%AD%A5-3-%E5%88%86"><span class="toc-number">4.2.5.</span> <span class="toc-text">问题
-(sft_microbatch_train_step): 微批次训练步 (3 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-log_generations-%E8%AE%B0%E5%BD%95%E7%94%9F%E6%88%90-1-%E5%88%86"><span class="toc-number">4.2.6.</span> <span class="toc-text">问题 (log_generations):
-记录生成 (1 分)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sft-%E5%AE%9E%E9%AA%8C"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 SFT 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-sft_experiment-%E5%9C%A8-math-%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8A%E8%BF%90%E8%A1%8C-sft-2-%E5%88%86"><span class="toc-number">4.3.1.</span> <span class="toc-text">问题
-(sft_experiment): 在 MATH 数据集上运行 SFT (2 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#math-%E7%9A%84%E4%B8%93%E5%AE%B6%E8%BF%AD%E4%BB%A3-expert-iteration"><span class="toc-number">5.</span> <span class="toc-text">5. MATH 的专家迭代 (Expert
-Iteration)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-expert_iteration_experiment-%E8%BF%90%E8%A1%8C%E4%B8%93%E5%AE%B6%E8%BF%AD%E4%BB%A3-2-%E5%88%86"><span class="toc-number">5.0.1.</span> <span class="toc-text">问题
-(expert_iteration_experiment): 运行专家迭代 (2 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6-policy-gradients-%E5%85%A5%E9%97%A8"><span class="toc-number">6.</span> <span class="toc-text">6. 策略梯度 (Policy Gradients)
-入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%8D%B3%E7%AD%96%E7%95%A5"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 语言模型即策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%A8%E8%BF%B9-trajectories"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 轨迹 (Trajectories)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A5%96%E5%8A%B1%E4%B8%8E%E5%9B%9E%E6%8A%A5-rewards-and-return"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 奖励与回报 (Rewards and
-Return)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%A7%8B%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6-vanilla-policy-gradient"><span class="toc-number">6.4.</span> <span class="toc-text">6.4 原始策略梯度 (Vanilla
-Policy Gradient)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E5%9F%BA%E7%BA%BF-baselines"><span class="toc-number">6.5.</span> <span class="toc-text">6.5 策略梯度基线 (Baselines)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E7%AD%96%E7%95%A5-off-policy-%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6"><span class="toc-number">6.6.</span> <span class="toc-text">6.6 异策略 (Off-Policy)
-策略梯度</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%84%E7%9B%B8%E5%AF%B9%E7%AD%96%E7%95%A5%E4%BC%98%E5%8C%96-group-relative-policy-optimization-grpo"><span class="toc-number">7.</span> <span class="toc-text">7.
-组相对策略优化 (Group Relative Policy Optimization, GRPO)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#grpo-%E7%AE%97%E6%B3%95"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 GRPO 算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute_group_normalized_rewards-%E7%BB%84%E5%BD%92%E4%B8%80%E5%8C%96-2-%E5%88%86"><span class="toc-number">7.2.1.</span> <span class="toc-text">问题
-(compute_group_normalized_rewards): 组归一化 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute_naive_policy_gradient_loss-%E6%9C%B4%E7%B4%A0%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6-1-%E5%88%86"><span class="toc-number">7.2.2.</span> <span class="toc-text">问题
-(compute_naive_policy_gradient_loss): 朴素策略梯度 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute_grpo_clip_loss-grpo-clip-%E6%8D%9F%E5%A4%B1-2-%E5%88%86"><span class="toc-number">7.2.3.</span> <span class="toc-text">问题
-(compute_grpo_clip_loss): GRPO-Clip 损失 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute_policy_gradient_loss-%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E5%8C%85%E8%A3%85%E5%99%A8-1-%E5%88%86"><span class="toc-number">7.2.4.</span> <span class="toc-text">问题
-(compute_policy_gradient_loss): 策略梯度包装器 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-masked_mean-%E5%B8%A6%E6%8E%A9%E7%A0%81%E5%9D%87%E5%80%BC-1-%E5%88%86"><span class="toc-number">7.2.5.</span> <span class="toc-text">问题 (masked_mean): 带掩码均值
-(1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_microbatch_train_step-%E5%BE%AE%E6%89%B9%E6%AC%A1%E8%AE%AD%E7%BB%83%E6%AD%A5-3-%E5%88%86"><span class="toc-number">7.2.6.</span> <span class="toc-text">问题
-(grpo_microbatch_train_step): 微批次训练步 (3 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_train_loop-grpo-%E8%AE%AD%E7%BB%83%E5%BE%AA%E7%8E%AF-5-%E5%88%86"><span class="toc-number">7.2.7.</span> <span class="toc-text">问题 (grpo_train_loop):
-GRPO 训练循环 (5 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#grpo-%E5%AE%9E%E9%AA%8C"><span class="toc-number">8.</span> <span class="toc-text">8. GRPO 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_learning_rate-%E8%B0%83%E6%95%B4%E5%AD%A6%E4%B9%A0%E7%8E%87-2-%E5%88%86"><span class="toc-number">8.0.1.</span> <span class="toc-text">问题
-(grpo_learning_rate): 调整学习率 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_baselines-%E5%9F%BA%E7%BA%BF%E7%9A%84%E5%BD%B1%E5%93%8D-2-%E5%88%86"><span class="toc-number">8.0.2.</span> <span class="toc-text">问题 (grpo_baselines):
-基线的影响 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-think_about_length_normalization-%E6%80%9D%E8%80%83%E9%95%BF%E5%BA%A6%E5%BD%92%E4%B8%80%E5%8C%96-1-%E5%88%86"><span class="toc-number">8.0.3.</span> <span class="toc-text">问题
-(think_about_length_normalization): 思考长度归一化 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_length_normalization-%E9%95%BF%E5%BA%A6%E5%BD%92%E4%B8%80%E5%8C%96%E7%9A%84%E5%BD%B1%E5%93%8D-2-%E5%88%86"><span class="toc-number">8.0.4.</span> <span class="toc-text">问题
-(grpo_length_normalization): 长度归一化的影响 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_group_standard_deviation-%E6%A0%87%E5%87%86%E5%B7%AE%E5%BD%92%E4%B8%80%E5%8C%96%E7%9A%84%E5%BD%B1%E5%93%8D-2-%E5%88%86"><span class="toc-number">8.0.5.</span> <span class="toc-text">问题
-(grpo_group_standard_deviation): 标准差归一化的影响 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_off_policy-%E5%AE%9E%E7%8E%B0-off-policy-grpo"><span class="toc-number">8.0.6.</span> <span class="toc-text">问题
-(grpo_off_policy): 实现 Off-policy GRPO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_off_policy_sweep-off-policy-grpo-%E8%B6%85%E5%8F%82%E6%95%B0%E6%89%AB%E6%8F%8F-4-%E5%88%86"><span class="toc-number">8.0.7.</span> <span class="toc-text">问题
-(grpo_off_policy_sweep): Off-policy GRPO 超参数扫描 (4 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_off_policy_clip_ablation-off-policy-grpo-clip-%E6%B6%88%E8%9E%8D-2-%E5%88%86"><span class="toc-number">8.0.8.</span> <span class="toc-text">问题
-(grpo_off_policy_clip_ablation): Off-policy GRPO-Clip 消融 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo_prompt_ablation-%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B6%88%E8%9E%8D-2-%E5%88%86"><span class="toc-number">8.0.9.</span> <span class="toc-text">问题
-(grpo_prompt_ablation): 提示词消融 (2 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#leaderboard-math-%E4%B8%8A%E7%9A%84-grpo"><span class="toc-number">9.</span> <span class="toc-text">Leaderboard: MATH 上的 GRPO</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-leaderboard-%E6%8E%92%E8%A1%8C%E6%A6%9C-16-%E5%88%86"><span class="toc-number">9.0.1.</span> <span class="toc-text">问题 (leaderboard): 排行榜 (16
-分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">10.</span> <span class="toc-text">10. 结语</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">11.</span> <span class="toc-text">参考文献</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/26/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E5%AE%9E%E7%8E%B0/" title="cs336作业五实现">cs336作业五实现</a><time datetime="2026-02-26T07:28:02.000Z" title="发表于 2026-02-26 15:28:02">2026-02-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="SQL查询多样性与相似性度量方法">SQL查询多样性与相似性度量方法</a><time datetime="2026-02-07T09:22:03.000Z" title="发表于 2026-02-07 17:22:03">2026-02-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/06/python%E8%AF%AD%E6%B3%95/" title="一些python语法">一些python语法</a><time datetime="2026-02-06T09:22:03.000Z" title="发表于 2026-02-06 17:22:03">2026-02-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/" title="cs336作业五文档">cs336作业五文档</a><time datetime="2026-02-04T09:22:03.000Z" title="发表于 2026-02-04 17:22:03">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理">推理</a><time datetime="2026-01-29T16:00:00.000Z" title="发表于 2026-01-30 00:00:00">2026-01-30</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+<h1>参考文献</h1>
+<p>[列出了相关的论文，包括 Hendrycks et al., DeepSeek R1, STaR, OpenAI o1, Kimi k1.5, PPO 等]</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/">https://kjore.github.io/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cs336/">cs336</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/02/06/python%E8%AF%AD%E6%B3%95/" title="一些python语法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">一些python语法</div></div><div class="info-2"><div class="info-item-1">路径与导入 如果运行一个python文件，该文件中使用相对路径来寻找另一个文件，那么这个路径是相对于当前运行的python文件所在的目录即控制台当前的目录，而不是相对于被导入的python文件所在的目录。 导入包时，python会按照sys.path中的路径顺序来寻找包。sys.path中包含了该python文件当前目录、环境变量PYTHONPATH指定的路径以及python安装目录下的site-packages等路径。 init.py 文件的主要作用是将一个普通的文件夹标识为一个 Python 包 </div></div></div></a><a class="pagination-related" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">推理</div></div><div class="info-2"><div class="info-item-1">inference概述 推理应用场景  实际应用 (Actual Use) ：这是用户最直观的感受，包括聊天机器人（如 ChatGPT）、代码自动补全（如 Copilot）以及对海量数据的离线批处理。 模型评估 (Model Evaluation) ：为了衡量模型的性能（例如指令遵循能力），需要运行推理来生成结果并进行打分。 测试时计算 (Test-time Compute) ：这与当前流行的“推理模型”（如 OpenAI o1 系列）相关，即通过增加推理时的计算量（如思考过程、多路径搜索）来提升模型解决复杂问题的能力。 强化学习训练 (RL Training) ：在强化学习（如 PPO 或 GRPO）过程中，模型需要生成大量样本，然后由奖励模型进行打分，这个“生成样本”的过程本质上就是大规模推理。  指标  ime-to-first-token (TTFT) / 首字延迟  定义 ：从用户发出请求到屏幕上蹦出第一个字的时间。 重要性 ：这是即时交互（Chatbot）体验的生命线。如果 TTFT 过长，用户会感觉系统“卡死”了。这主要取决于Prefill（预填充）阶段的速度，即模...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/02/26/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E5%AE%9E%E7%8E%B0/" title="cs336作业五实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-26</div><div class="info-item-2">cs336作业五实现</div></div><div class="info-2"><div class="info-item-1">环境与准备  使用conda下载好的flash-atten,cuda和python版本要匹配，安装transformers和datasets库 下载Qwen2.5-Math-1.5B作为基座模型 数据集直接使用原项目中的/data目录下的几个数据集  sft 核心函数 tokenize_prompt_and_output 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647def tokenize_prompt_and_output(    prompt_strs: list[str],    output_strs: list[str],    tokenizer: PreTrainedTokenizerBase,) -&gt; dict[str, Tensor]:    # 该函数将提示和输出字符串列表转换为模型输入张量，包括 input_ids、labels 和 response_mask。    prompt_ids = []    output_ids ...</div></div></div></a><a class="pagination-related" href="/2026/01/29/scaling%20laws/" title="scaling laws"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-29</div><div class="info-item-2">scaling laws</div></div><div class="info-2"><div class="info-item-1">导入 我们知道，像H100,A100这样的高性能GPU在训练大规模深度学习模型时成本是很昂贵的，因此，我们不能盲目地设定参数来试错，而是需要有一定的理论依据来指导我们如何选择模型的规模和训练数据的规模。Scaling Laws（缩放定律）为我们提供了这样的理论依据。 训练一个大模型需要  基础设施 数据 训练策略  虽然你有算力（H100）、有系统（Infra）、有数据（Dataset），但当你真正要敲下回车键开始训练时，你会面临一系列决策瘫痪：  我应该训练一个 600 亿参数的模型，跑久一点？ 还是训练一个 1750 亿参数的模型，跑短一点？ 层数要多深？宽度要多大？  设计大模型有无数种参数组合，盲目尝试太贵，照抄别人又不一定对。 利用缩放定律。我们发现模型的性能（Loss）与资源（算力、参数）在双对数坐标下呈线性关系。 通过学习 Scaling Laws，我们可以更好地理解如何在给定的计算预算下，选择模型规模和训练数据规模，以达到最佳的性能表现。  scaling laws 历史和背景  在经典的统计学习理论（如 VC 维理论）中，理论学家早就推导出模型的估计误差 $\e...</div></div></div></a><a class="pagination-related" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-30</div><div class="info-item-2">推理</div></div><div class="info-2"><div class="info-item-1">inference概述 推理应用场景  实际应用 (Actual Use) ：这是用户最直观的感受，包括聊天机器人（如 ChatGPT）、代码自动补全（如 Copilot）以及对海量数据的离线批处理。 模型评估 (Model Evaluation) ：为了衡量模型的性能（例如指令遵循能力），需要运行推理来生成结果并进行打分。 测试时计算 (Test-time Compute) ：这与当前流行的“推理模型”（如 OpenAI o1 系列）相关，即通过增加推理时的计算量（如思考过程、多路径搜索）来提升模型解决复杂问题的能力。 强化学习训练 (RL Training) ：在强化学习（如 PPO 或 GRPO）过程中，模型需要生成大量样本，然后由奖励模型进行打分，这个“生成样本”的过程本质上就是大规模推理。  指标  ime-to-first-token (TTFT) / 首字延迟  定义 ：从用户发出请求到屏幕上蹦出第一个字的时间。 重要性 ：这是即时交互（Chatbot）体验的生命线。如果 TTFT 过长，用户会感觉系统“卡死”了。这主要取决于Prefill（预填充）阶段的速度，即模...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">CS336 作业 5 (Alignment)：对齐与推理 RL</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">2. 语言模型推理 (Reasoning with Language Models)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E5%8A%A8%E6%9C%BA"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 动机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E6%80%9D%E7%BB%B4%E9%93%BE%E6%8E%A8%E7%90%86%E4%B8%8E%E6%8E%A8%E7%90%86-RL-Chain-of-Thought-Reasoning-and-Reasoning-RL"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 思维链推理与推理 RL (Chain-of-Thought Reasoning and Reasoning RL)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">3. 测量 Zero-Shot MATH 性能</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E4%BD%BF%E7%94%A8-vLLM-%E8%BF%9B%E8%A1%8C%E7%A6%BB%E7%BA%BF%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 使用 vLLM 进行离线语言模型推理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-Zero-shot-MATH-%E5%9F%BA%E7%BA%BF"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 Zero-shot MATH 基线</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-math-baseline-4-%E5%88%86"><span class="toc-number">3.2.1.</span> <span class="toc-text">问题 (math_baseline): 4 分</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">4. MATH 的监督微调 (Supervised Finetuning)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E4%BD%BF%E7%94%A8-Hugging-Face-%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 使用 Hugging Face 模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-SFT-%E8%BE%85%E5%8A%A9%E6%96%B9%E6%B3%95"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 SFT 辅助方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-tokenize-prompt-and-output-%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%92%8C%E8%BE%93%E5%87%BA%E5%88%86%E8%AF%8D-2-%E5%88%86"><span class="toc-number">4.2.1.</span> <span class="toc-text">问题 (tokenize_prompt_and_output): 提示词和输出分词 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute-entropy-%E9%80%90%E8%AF%8D%E7%86%B5-1-%E5%88%86"><span class="toc-number">4.2.2.</span> <span class="toc-text">问题 (compute_entropy): 逐词熵 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-get-response-log-probs-%E5%93%8D%E5%BA%94%E5%AF%B9%E6%95%B0%E6%A6%82%E7%8E%87-2-%E5%88%86"><span class="toc-number">4.2.3.</span> <span class="toc-text">问题 (get_response_log_probs): 响应对数概率 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-masked-normalize-%E5%B8%A6%E6%8E%A9%E7%A0%81%E5%BD%92%E4%B8%80%E5%8C%96-1-%E5%88%86"><span class="toc-number">4.2.4.</span> <span class="toc-text">问题 (masked_normalize): 带掩码归一化 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-sft-microbatch-train-step-%E5%BE%AE%E6%89%B9%E6%AC%A1%E8%AE%AD%E7%BB%83%E6%AD%A5-3-%E5%88%86"><span class="toc-number">4.2.5.</span> <span class="toc-text">问题 (sft_microbatch_train_step): 微批次训练步 (3 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-log-generations-%E8%AE%B0%E5%BD%95%E7%94%9F%E6%88%90-1-%E5%88%86"><span class="toc-number">4.2.6.</span> <span class="toc-text">问题 (log_generations): 记录生成 (1 分)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-SFT-%E5%AE%9E%E9%AA%8C"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 SFT 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-sft-experiment-%E5%9C%A8-MATH-%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8A%E8%BF%90%E8%A1%8C-SFT-2-%E5%88%86"><span class="toc-number">4.3.1.</span> <span class="toc-text">问题 (sft_experiment): 在 MATH 数据集上运行 SFT (2 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">5. MATH 的专家迭代 (Expert Iteration)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-expert-iteration-experiment-%E8%BF%90%E8%A1%8C%E4%B8%93%E5%AE%B6%E8%BF%AD%E4%BB%A3-2-%E5%88%86"><span class="toc-number">5.0.1.</span> <span class="toc-text">问题 (expert_iteration_experiment): 运行专家迭代 (2 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">6.</span> <span class="toc-text">6. 策略梯度 (Policy Gradients) 入门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1-%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%8D%B3%E7%AD%96%E7%95%A5"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 语言模型即策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2-%E8%BD%A8%E8%BF%B9-Trajectories"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 轨迹 (Trajectories)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3-%E5%A5%96%E5%8A%B1%E4%B8%8E%E5%9B%9E%E6%8A%A5-Rewards-and-Return"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 奖励与回报 (Rewards and Return)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4-%E5%8E%9F%E5%A7%8B%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6-Vanilla-Policy-Gradient"><span class="toc-number">6.4.</span> <span class="toc-text">6.4 原始策略梯度 (Vanilla Policy Gradient)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-5-%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E5%9F%BA%E7%BA%BF-Baselines"><span class="toc-number">6.5.</span> <span class="toc-text">6.5 策略梯度基线 (Baselines)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-6-%E5%BC%82%E7%AD%96%E7%95%A5-Off-Policy-%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6"><span class="toc-number">6.6.</span> <span class="toc-text">6.6 异策略 (Off-Policy) 策略梯度</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">7.</span> <span class="toc-text">7. 组相对策略优化 (Group Relative Policy Optimization, GRPO)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#7-1-GRPO-%E7%AE%97%E6%B3%95"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 GRPO 算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-2-%E5%AE%9E%E7%8E%B0"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute-group-normalized-rewards-%E7%BB%84%E5%BD%92%E4%B8%80%E5%8C%96-2-%E5%88%86"><span class="toc-number">7.2.1.</span> <span class="toc-text">问题 (compute_group_normalized_rewards): 组归一化 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute-naive-policy-gradient-loss-%E6%9C%B4%E7%B4%A0%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6-1-%E5%88%86"><span class="toc-number">7.2.2.</span> <span class="toc-text">问题 (compute_naive_policy_gradient_loss): 朴素策略梯度 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute-grpo-clip-loss-GRPO-Clip-%E6%8D%9F%E5%A4%B1-2-%E5%88%86"><span class="toc-number">7.2.3.</span> <span class="toc-text">问题 (compute_grpo_clip_loss): GRPO-Clip 损失 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-compute-policy-gradient-loss-%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E5%8C%85%E8%A3%85%E5%99%A8-1-%E5%88%86"><span class="toc-number">7.2.4.</span> <span class="toc-text">问题 (compute_policy_gradient_loss): 策略梯度包装器 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-masked-mean-%E5%B8%A6%E6%8E%A9%E7%A0%81%E5%9D%87%E5%80%BC-1-%E5%88%86"><span class="toc-number">7.2.5.</span> <span class="toc-text">问题 (masked_mean): 带掩码均值 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-microbatch-train-step-%E5%BE%AE%E6%89%B9%E6%AC%A1%E8%AE%AD%E7%BB%83%E6%AD%A5-3-%E5%88%86"><span class="toc-number">7.2.6.</span> <span class="toc-text">问题 (grpo_microbatch_train_step): 微批次训练步 (3 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-train-loop-GRPO-%E8%AE%AD%E7%BB%83%E5%BE%AA%E7%8E%AF-5-%E5%88%86"><span class="toc-number">7.2.7.</span> <span class="toc-text">问题 (grpo_train_loop): GRPO 训练循环 (5 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">8.</span> <span class="toc-text">8. GRPO 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-learning-rate-%E8%B0%83%E6%95%B4%E5%AD%A6%E4%B9%A0%E7%8E%87-2-%E5%88%86"><span class="toc-number">8.0.1.</span> <span class="toc-text">问题 (grpo_learning_rate): 调整学习率 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-baselines-%E5%9F%BA%E7%BA%BF%E7%9A%84%E5%BD%B1%E5%93%8D-2-%E5%88%86"><span class="toc-number">8.0.2.</span> <span class="toc-text">问题 (grpo_baselines): 基线的影响 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-think-about-length-normalization-%E6%80%9D%E8%80%83%E9%95%BF%E5%BA%A6%E5%BD%92%E4%B8%80%E5%8C%96-1-%E5%88%86"><span class="toc-number">8.0.3.</span> <span class="toc-text">问题 (think_about_length_normalization): 思考长度归一化 (1 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-length-normalization-%E9%95%BF%E5%BA%A6%E5%BD%92%E4%B8%80%E5%8C%96%E7%9A%84%E5%BD%B1%E5%93%8D-2-%E5%88%86"><span class="toc-number">8.0.4.</span> <span class="toc-text">问题 (grpo_length_normalization): 长度归一化的影响 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-group-standard-deviation-%E6%A0%87%E5%87%86%E5%B7%AE%E5%BD%92%E4%B8%80%E5%8C%96%E7%9A%84%E5%BD%B1%E5%93%8D-2-%E5%88%86"><span class="toc-number">8.0.5.</span> <span class="toc-text">问题 (grpo_group_standard_deviation): 标准差归一化的影响 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-off-policy-%E5%AE%9E%E7%8E%B0-Off-policy-GRPO"><span class="toc-number">8.0.6.</span> <span class="toc-text">问题 (grpo_off_policy): 实现 Off-policy GRPO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-off-policy-sweep-Off-policy-GRPO-%E8%B6%85%E5%8F%82%E6%95%B0%E6%89%AB%E6%8F%8F-4-%E5%88%86"><span class="toc-number">8.0.7.</span> <span class="toc-text">问题 (grpo_off_policy_sweep): Off-policy GRPO 超参数扫描 (4 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-off-policy-clip-ablation-Off-policy-GRPO-Clip-%E6%B6%88%E8%9E%8D-2-%E5%88%86"><span class="toc-number">8.0.8.</span> <span class="toc-text">问题 (grpo_off_policy_clip_ablation): Off-policy GRPO-Clip 消融 (2 分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-grpo-prompt-ablation-%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B6%88%E8%9E%8D-2-%E5%88%86"><span class="toc-number">8.0.9.</span> <span class="toc-text">问题 (grpo_prompt_ablation): 提示词消融 (2 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">9.</span> <span class="toc-text">Leaderboard: MATH 上的 GRPO</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-leaderboard-%E6%8E%92%E8%A1%8C%E6%A6%9C-16-%E5%88%86"><span class="toc-number">9.0.1.</span> <span class="toc-text">问题 (leaderboard): 排行榜 (16 分)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">10.</span> <span class="toc-text">10. 结语</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">11.</span> <span class="toc-text">参考文献</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/26/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E5%AE%9E%E7%8E%B0/" title="cs336作业五实现">cs336作业五实现</a><time datetime="2026-02-26T07:28:02.000Z" title="发表于 2026-02-26 15:28:02">2026-02-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="SQL查询多样性与相似性度量方法">SQL查询多样性与相似性度量方法</a><time datetime="2026-02-07T09:22:03.000Z" title="发表于 2026-02-07 17:22:03">2026-02-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/06/python%E8%AF%AD%E6%B3%95/" title="一些python语法">一些python语法</a><time datetime="2026-02-06T09:22:03.000Z" title="发表于 2026-02-06 17:22:03">2026-02-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/" title="cs336作业五文档">cs336作业五文档</a><time datetime="2026-02-04T09:22:03.000Z" title="发表于 2026-02-04 17:22:03">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理">推理</a><time datetime="2026-01-29T16:00:00.000Z" title="发表于 2026-01-30 00:00:00">2026-01-30</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
   const loadMathjax = () => {
     if (!window.MathJax) {
       window.MathJax = {
