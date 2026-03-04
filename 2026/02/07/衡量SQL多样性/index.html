@@ -1,0 +1,507 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SQL查询多样性与相似性度量方法 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="现有研究表明，提升大模型输出的多样性在一定程度上可以提高模型的准确率。将此思路拓展至Text-to-SQL任务中，可以通过提升模型输出SQL查询的多样性来优化模型性能。本文将综述一些常用的SQL查询多样性与相似性度量方法。 1. 词法形态 该类方法主要关注SQL的文本相似度。 实现步骤如下： 1.1 SQL 标准化处理  格式化与清洗 ：利用 Python 库 sqlparse 对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL查询多样性与相似性度量方法">
+<meta property="og:url" content="https://kjore.github.io/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="现有研究表明，提升大模型输出的多样性在一定程度上可以提高模型的准确率。将此思路拓展至Text-to-SQL任务中，可以通过提升模型输出SQL查询的多样性来优化模型性能。本文将综述一些常用的SQL查询多样性与相似性度量方法。 1. 词法形态 该类方法主要关注SQL的文本相似度。 实现步骤如下： 1.1 SQL 标准化处理  格式化与清洗 ：利用 Python 库 sqlparse 对">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-02-07T09:22:03.000Z">
+<meta property="article:modified_time" content="2026-02-08T01:49:03.994Z">
+<meta property="article:author" content="kjore">
+<meta property="article:tag" content="综述">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SQL查询多样性与相似性度量方法",
+  "url": "https://kjore.github.io/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-02-07T09:22:03.000Z",
+  "dateModified": "2026-02-08T01:49:03.994Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SQL查询多样性与相似性度量方法',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">SQL查询多样性与相似性度量方法</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">SQL查询多样性与相似性度量方法</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-07T09:22:03.000Z" title="发表于 2026-02-07 17:22:03">2026-02-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-08T01:49:03.994Z" title="更新于 2026-02-08 09:49:03">2026-02-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>现有研究表明，提升大模型输出的多样性在一定程度上可以提高模型的准确率。将此思路拓展至Text-to-SQL任务中，可以通过提升模型输出SQL查询的多样性来优化模型性能。本文将综述一些常用的SQL查询多样性与相似性度量方法。</p>
+<h1 id="词法形态">1. 词法形态</h1>
+<p>该类方法主要关注SQL的文本相似度。</p>
+<p>实现步骤如下：</p>
+<h2 id="sql-标准化处理">1.1 SQL 标准化处理</h2>
+<ul>
+<li><p><strong>格式化与清洗</strong> ：利用 Python 库
+<code>sqlparse</code> 对 SQL 进行格式化，去除冗余空格，将 SQL
+整合成单行，去除注释，并将字符统一转换为大写或小写。</p></li>
+<li><p><strong>符号掩码化</strong></p>
+<ul>
+<li><strong>全统一占位符</strong>
+：将具体的表名、列名、字符串、数字等替换为统一占位符，如
+<code>TABLE_NAME</code>, <code>COLUMN_NAME</code>,
+<code>STRING_LITERAL</code> 等。 例如： <strong>原始 SQL
+A:</strong></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> u.id <span class="keyword">FROM</span> users u <span class="keyword">JOIN</span> orders o <span class="keyword">ON</span> u.id <span class="operator">=</span> o.user_id;</span><br></pre></td></tr></table></figure>
+<p><strong>标准化后 SQL A:</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> COLUMN_NAME <span class="keyword">FROM</span> TABLE_NAME <span class="keyword">JOIN</span> TABLE_NAME <span class="keyword">ON</span> COLUMN_NAME <span class="operator">=</span> COLUMN_NAME;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>注</strong> ：该方法侧重于 SQL
+的结构和语法，但忽略了具体的表名、列名等细节，导致表间关系信息丢失（例如无法区分“自连接”和“普通连接”）。</p>
+</blockquote>
+<ul>
+<li><strong>索引式占位符</strong>
+：该方法并非将所有表映射为同一词汇，而是根据其出现的顺序或哈希值，映射为
+<code>T1</code>, <code>T2</code>, <code>C1</code>, <code>C2</code>
+等占位符，从而保留表间的关系信息。 例如： <strong>原始 SQL
+A:</strong></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> u.id <span class="keyword">FROM</span> users u <span class="keyword">JOIN</span> orders o <span class="keyword">ON</span> u.id <span class="operator">=</span> o.user_id;</span><br></pre></td></tr></table></figure>
+<p><strong>标准化后 SQL A:</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> C1 <span class="keyword">FROM</span> T1 <span class="keyword">JOIN</span> T2 <span class="keyword">ON</span> C1 <span class="operator">=</span> C2;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>注</strong>
+：这种方法保留了数据流动的拓扑结构，能够识别出结构相似但逻辑拓扑不同的
+SQL（如涉及两张不同表与涉及同一张表的区别）。虽然实现相对复杂，需要维护映射字典，但精确度更高。</p>
+</blockquote></li>
+</ul>
+<h2 id="计算文本相似度">1.2 计算文本相似度</h2>
+<p>获得标准化后的SQL字符串后，可采用通用的文本相似度度量方法进行计算。</p>
+<h3 id="编辑距离">1.2.1 编辑距离</h3>
+<p>通过计算两个SQL字符串之间的最小编辑操作数（插入、删除、替换）来衡量其相似度。编辑距离越小，SQL越相似。</p>
+<p>计算过程：</p>
+<ul>
+<li>构建矩阵，行表示 SQL A 的字符（或分词），列表示 SQL B
+的字符（或分词）。</li>
+<li>矩阵单元格 <strong><span
+class="math inline">(<em>i</em>, <em>j</em>)</span></strong> 表示将 A
+的前 <strong><span class="math inline"><em>i</em></span></strong>
+个字符变换为 B 的前 <strong><span
+class="math inline"><em>j</em></span></strong>
+个字符所需的最小步骤。</li>
+<li>通过状态转移方程计算：
+<ul>
+<li>若当前字符相同，代价为 0；</li>
+<li>若不同，取（上方、左方、左上方）三个单元格中的最小值加 1。</li>
+</ul></li>
+</ul>
+<p><span class="math display">$$
+\text{Sim}_{\text{SQL}}(A,B) = 1 - \frac{\text{EditDist}(A, B)}{|A| +
+|B|}
+$$</span></p>
+<h3 id="jaccard相似度">1.2.2 Jaccard相似度</h3>
+<p>将SQL分词后，计算两个SQL词集合的交集与并集之比。Jaccard相似度越高，SQL越相似，意味着多样性越低。因此，通常使用
+1 减去Jaccard相似度来衡量多样性。</p>
+<p><span class="math display">$$
+Score_{lexical} = 1 - \frac{|Set_A \cap Set_B|}{|Set_A \cup Set_B|}
+$$</span></p>
+<h1 id="句法结构">2. 句法结构</h1>
+<p>该类方法关注SQL的骨架形状，即SQL的抽象语法树（AST）结构相似度。</p>
+<h2 id="ast生成">2.1 AST生成</h2>
+<p>利用强类型SQL解析器（如 <code>sqlglot</code>）生成AST。</p>
+<h2 id="结构相似度计算">2.2 结构相似度计算</h2>
+<p>主要包含以下两种方法：</p>
+<h3 id="ast-结构特征向量">2.2.1 AST 结构特征向量</h3>
+<p>为了准确评估生成SQL查询在逻辑结构上的差异，而非仅关注表名或列名的词汇变化，一种基于抽象语法树（AST）的结构特征提取与距离度量方法被提出。</p>
+<h4 id="结构特征向量构建">2.2.1.1 结构特征向量构建</h4>
+<p>对于每一个生成的 SQL 查询 <strong><span
+class="math inline"><em>q</em></span></strong>，首先将其解析为
+AST。为消除标识符命名（如表别名、列名）和字面量（Literal
+Values）对结构分析的干扰，预处理阶段需对 AST
+的叶子节点进行匿名化处理。随后，从树结构中提取一组关键统计量，将
+<strong><span class="math inline"><em>q</em></span></strong>
+映射为一个固定维度的结构特征向量 <strong><span
+class="math inline"><strong>v</strong>(<em>q</em>) ∈ ℝ<sup><em>n</em></sup></span></strong>（可根据实际情况扩展维度）：</p>
+<p><span
+class="math display"><strong>v</strong>(<em>q</em>) = [<em>n</em><sub>sel</sub>, <em>d</em><sub>nest</sub>, <em>b</em><sub>join</sub>, <strong>t</strong><sub>join</sub>, <em>n</em><sub>pred</sub>, <em>b</em><sub>subq</sub>, <em>b</em><sub>agg</sub>, <em>b</em><sub>group</sub>, <em>b</em><sub>having</sub>, <em>b</em><sub>order</sub>, <em>b</em><sub>distinct</sub>...]<sup>⊤</sup></span></p>
+<p>向量中各分量定义如下：</p>
+<ul>
+<li><strong><span
+class="math inline"><em>n</em><sub>sel</sub></span></strong>：SELECT
+子句中投影列的数量，反映查询结果的维度；</li>
+<li><strong><span
+class="math inline"><em>d</em><sub>nest</sub></span></strong>：AST
+的最大嵌套深度，衡量查询逻辑的层级复杂度；</li>
+<li><strong><span
+class="math inline"><em>b</em><sub>join</sub> ∈ {0, 1}</span></strong>：指示变量，表示查询是否包含
+JOIN 操作；</li>
+<li><strong><span
+class="math inline"><strong>t</strong><sub>join</sub></span></strong>：JOIN
+类型的独热编码，涵盖 INNER、LEFT、RIGHT 等连接类型；</li>
+<li><strong><span
+class="math inline"><em>n</em><sub>pred</sub></span></strong>：WHERE
+子句中谓词条件的数量，反映过滤逻辑的复杂度；</li>
+<li><strong><span
+class="math inline"><em>b</em><sub>subq</sub> ∈ {0, 1}</span></strong>：表示是否包含子查询结构；</li>
+<li><strong><span
+class="math inline"><em>b</em><sub>agg</sub>, <em>b</em><sub>group</sub>, <em>b</em><sub>having</sub> ∈ {0, 1}</span></strong>：分别表示是否使用聚合函数、GROUP
+BY 分组及 HAVING 过滤；</li>
+<li><strong><span
+class="math inline"><em>b</em><sub>order</sub>, <em>b</em><sub>distinct</sub> ∈ {0, 1}</span></strong>：分别表示是否包含排序和去重操作。</li>
+</ul>
+<p>该特征向量综合涵盖了 SQL
+查询的选择（Selection）、连接（Join）、嵌套（Nesting）及聚合（Aggregation）等核心结构维度，能够有效表征查询的拓扑骨架。</p>
+<h4 id="归一化结构距离">2.2.1.2 归一化结构距离</h4>
+<p>给定两个查询 <strong><span
+class="math inline"><em>q</em><sub><em>i</em></sub></span></strong> 与
+<strong><span
+class="math inline"><em>q</em><sub><em>j</em></sub></span></strong>，定义其结构差异
+<strong><span
+class="math inline"><em>d</em><sub>struct</sub>(<em>q</em><sub><em>i</em></sub>, <em>q</em><sub><em>j</em></sub>)</span></strong>
+为特征向量间的归一化曼哈顿距离：</p>
+<p><span class="math display">$$
+d_{\text{struct}}(q_i, q_j) = \frac{1}{d} \sum_{k=1}^{d} \frac{|v_{ik} -
+v_{jk}|}{\max(v_{ik}, v_{jk}, 1)}
+$$</span></p>
+<p>其中 <strong><span
+class="math inline"><em>d</em> = <em>n</em></span></strong>
+为特征维度。分母中的 <strong><span
+class="math inline">max (⋅, 1)</span></strong>
+项不仅避免了除零错误，还起到了动态归一化的作用，消除了不同特征量纲（如嵌套层数
+<strong><span
+class="math inline"><em>d</em><sub>nest</sub></span></strong>
+与布尔标志位 <strong><span
+class="math inline"><em>b</em><sub>subq</sub></span></strong>）对距离计算的偏差影响。</p>
+<h3 id="树编辑距离-tree-edit-distance-ted">2.2.2 树编辑距离 (Tree Edit
+Distance, TED)</h3>
+<h4 id="ast-规范化">2.2.2.1 AST 规范化</h4>
+<p>计算距离前，需对每个 SQL 的 AST
+执行结构重组，以消除无效的结构差异：</p>
+<ol type="1">
+<li><p><strong>算子扁平化 (Operator Flattening)：</strong>
+将嵌套的二元逻辑运算符（如 <code>AND</code>,
+<code>OR</code>）转换为多元运算符节点，消除解析器产生的左递归或右递归深度差异。例如：</p>
+<ul>
+<li>标准 AST 中，<code>WHERE A AND B AND C</code> 可能被解析为嵌套二叉树
+<code>AND(A, AND(B, C))</code>。</li>
+<li>此类结构会导致层级过深，应将其<strong>扁平化</strong>为
+<code>AND</code> 节点下挂三个子节点 <code>[A, B, C]</code>。</li>
+</ul></li>
+<li><p><strong>字典序重排 (Lexicographical Reordering)：</strong>
+针对满足交换律（Commutative）的节点——包括 <code>FROM</code>
+表列表、<code>WHERE</code> 连词条件及 <code>GROUP BY</code>
+分组列——对其子树按照归一化的字符串表示进行字典序排序。</p>
+<p><span
+class="math display">sort(AND(<em>c</em><sub>2</sub>, <em>c</em><sub>1</sub>)) → AND(<em>c</em><sub>1</sub>, <em>c</em><sub>2</sub>)</span></p>
+<p>通过此步骤，语义等价的查询将被映射为唯一的拓扑结构。</p></li>
+</ol>
+<h4 id="加权树编辑距离">2.2.2.2 加权树编辑距离</h4>
+<p>通常采用经典的<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1201.0230">RTED 算法</a>
+计算规范化 AST 之间的最小编辑成本。RTED
+的目标是找到成本最小的操作序列，将 <strong><span
+class="math inline"><em>T</em><sub>1</sub></span></strong> 转换为
+<strong><span
+class="math inline"><em>T</em><sub>2</sub></span></strong>。</p>
+<p>标准操作通常有三种，默认代价（Cost）设为 1：</p>
+<ol type="1">
+<li><strong>Rename (替换)</strong> ：修改节点的标签（Label）。</li>
+<li><strong>Delete (删除)</strong>
+：删除节点（处理方式取决于具体定义，RTED 通常处理单个节点）。</li>
+<li><strong>Insert (插入)</strong> ：插入一个新节点。</li>
+</ol>
+<p><span
+class="math display"><em>T</em><em>E</em><em>D</em>(<em>T</em><sub>1</sub>, <em>T</em><sub>2</sub>) = ∑Cost(Rename) + ∑Cost(Insert) + ∑Cost(Delete)</span></p>
+<p>最终的 AST 相似度定义为：</p>
+<p><span class="math display">$$
+\text{Sim}_{\text{tree}}(T_1, T_2) = 1 - \frac{\text{TED}(T_1,
+T_2)}{|T_1| + |T_2|}
+$$</span></p>
+<h1 id="语义向量化">3. 语义向量化</h1>
+<p>利用在大规模代码库上预训练的Transformer模型（如CodeBERT,
+GraphCodeBERT,
+UniXcoder），将离散的SQL符号映射到连续的高维语义向量空间。</p>
+<h2 id="dqo-diversity-via-determinantal-point-processes">3.1 DQO
+(Diversity via Determinantal Point Processes)</h2>
+<ol type="1">
+<li><strong>语义向量化</strong> ：使用模型将每条 SQL
+映射为高维向量。</li>
+<li><strong>相似度矩阵</strong> ：计算向量之间的相似度矩阵 <strong><span
+class="math inline"><em>L</em></span></strong>。若两个 SQL
+语义相似，则对应的矩阵元素值较大。</li>
+<li><strong>几何体积</strong> ：在数学上，矩阵 <strong><span
+class="math inline"><em>L</em> + <em>I</em></span></strong> 的行列式
+<strong><span
+class="math inline">det (<em>L</em> + <em>I</em>)</span></strong>
+表征了这些向量在语义空间张成的“体积”。若所有 SQL
+高度相似（向量近似共线），体积较小；若 SQL
+覆盖不同的语义方向（向量彼此正交），体积较大。</li>
+<li><strong>边际贡献</strong> ：计算移除第 <strong><span
+class="math inline"><em>i</em></span></strong> 个 SQL
+后，整体语义体积的减少量。</li>
+</ol>
+<p><span
+class="math display"><em>B</em><em>o</em><em>n</em><em>u</em><em>s</em><sub><em>i</em></sub> = log det (<em>L</em><sub><em>a</em><em>l</em><em>l</em></sub> + <em>I</em>) − log det (<em>L</em><sub><em>m</em><em>i</em><em>n</em><em>u</em><em>s</em>_<em>i</em></sub> + <em>I</em>)</span></p>
+<ul>
+<li>若移除该 SQL 导致体积显著减小，说明其提供了独特的语义信息，赋予
+<strong>高奖励</strong> 。</li>
+<li>若移除后体积几乎不变（说明存在与其高度相似的替代 SQL），则赋予
+<strong>低奖励或零奖励</strong> 。</li>
+</ul>
+<h2 id="svgd-stein-variational-gradient-descent">3.2 SVGD (Stein
+Variational Gradient Descent)</h2>
+<ol type="1">
+<li><p><strong>嵌入与归一化</strong> 将 SQL 转化为向量，并进行 L2
+归一化，使得欧氏距离等价于余弦相似度。</p></li>
+<li><p><strong>距离矩阵计算</strong> 计算每两个 SQL 之间的
+<strong>平方欧氏距离</strong> 。</p>
+<ul>
+<li><p>距离矩阵 <strong><span
+class="math inline">𝒟</span></strong>：</p>
+<p><span
+class="math display">𝒟 = {∥<strong>x</strong><sub><em>i</em></sub> − <strong>x</strong><sub><em>j</em></sub>∥<sup>2</sup> ∣ 1 ≤ <em>i</em>, <em>j</em> ≤ <em>N</em>, <em>i</em> ≠ <em>j</em>}</span></p></li>
+<li><p><strong>自适应带宽 </strong><span
+class="math inline"><em>h</em></span><strong>：</strong></p>
+<p><span class="math display">$$
+h = \frac{\text{median}(\mathcal{D})}{\ln(N) + \epsilon}
+$$</span></p>
+<p>取所有粒子间距离的中位数作为基准带宽 <strong><span
+class="math inline"><em>h</em></span></strong>，<strong><span
+class="math inline">ln (<em>N</em>)</span></strong>
+项为缩放因子。当样本量 <strong><span
+class="math inline"><em>N</em></span></strong>
+增大时，该因子使带宽适度收缩，以保持梯度的敏感度。此举保证了核函数的尺度能适应当前数据的疏密程度，避免因数据过于密集或稀疏导致核函数失效（趋于0或1）。</p></li>
+<li><p>核函数 <strong><span
+class="math inline"><em>k</em></span></strong>：</p>
+<p><span class="math display">$$
+k(\mathbf{x}_i, \mathbf{x}_j) = \exp\left( - \frac{\|\mathbf{x}_i -
+\mathbf{x}_j\|^2}{h} \right)
+$$</span></p>
+<p><strong><span
+class="math inline"><em>k</em><sub><em>i</em><em>j</em></sub></span></strong>
+越接近 1，表示两个 SQL 越相似；接近 0 则表示越不相似。</p></li>
+</ul></li>
+<li><p><strong>排斥压力计算</strong> 模拟 SVGD
+梯度更新公式中的排斥项：</p>
+<ul>
+<li>对于第 <strong><span class="math inline"><em>i</em></span></strong>
+个 SQL，其压力源自所有其他粒子 <strong><span
+class="math inline"><em>j</em></span></strong> 对它的核函数值之和。</li>
+<li>若邻域内存在大量相似 SQL（<strong><span
+class="math inline"><em>k</em><sub><em>i</em><em>j</em></sub></span></strong>
+较大），则排斥压力（Pressure）较高。</li>
+</ul></li>
+<li><p><strong>奖励转换</strong></p>
+<p><span
+class="math display"><em>R</em><sub><em>i</em></sub> = <em>α</em> ⋅ exp (−2 ⋅ <em>P</em>(<strong>x</strong><sub><em>i</em></sub>))</span></p>
+<ul>
+<li>压力越大（重复度高），奖励衰减越显著。</li>
+<li>压力越小（独特），奖励越接近最大值 <strong><span
+class="math inline"><em>α</em></span></strong>。</li>
+</ul></li>
+</ol>
+<h1 id="行为与执行">4.行为与执行</h1>
+<p>数据库优化器生成的物理执行计划是查询行为的蓝图。相较于单纯的 SQL
+文本比对，执行计划更能反映查询对系统资源的实际影响及底层逻辑路径。</p>
+<p>然而，优化器的标准化机制往往会将句法结构不同但语义等价的查询映射为相同的执行计划。这种特性虽然有助于识别深层的逻辑重复，但也意味着该指标对模型在句法层面的生成多样性不敏感。此外，考虑到获取执行计划对特定数据库环境（Schema、统计信息）的强依赖性以及较高的计算开销，本文不再深入展开基于执行计划的具体度量算法。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/">https://kjore.github.io/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BB%BC%E8%BF%B0/">综述</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/02/26/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E5%AE%9E%E7%8E%B0/" title="cd336作业五实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">cd336作业五实现</div></div><div class="info-2"><div class="info-item-1">环境与准备  使用conda下载好的flash-atten,cuda和python版本要匹配，安装transformers和datasets库 下载Qwen2.5-Math-1.5B作为基座模型 数据集直接使用原项目中的/data目录下的几个数据集  sft 核心函数 tokenize_prompt_and_output 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647def tokenize_prompt_and_output(    prompt_strs: list[str],    output_strs: list[str],    tokenizer: PreTrainedTokenizerBase,) -&gt; dict[str, Tensor]:    # 该函数将提示和输出字符串列表转换为模型输入张量，包括 input_ids、labels 和 response_mask。    prompt_ids = []    ou...</div></div></div></a><a class="pagination-related" href="/2026/02/06/python%E8%AF%AD%E6%B3%95/" title="一些python语法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">一些python语法</div></div><div class="info-2"><div class="info-item-1">路径与导入 如果运行一个python文件，该文件中使用相对路径来寻找另一个文件，那么这个路径是相对于当前运行的python文件所在的目录即控制台当前的目录，而不是相对于被导入的python文件所在的目录。 导入包时，python会按照sys.path中的路径顺序来寻找包。sys.path中包含了该python文件当前目录、环境变量PYTHONPATH指定的路径以及python安装目录下的site-packages等路径。 init.py 文件的主要作用是将一个普通的文件夹标识为一个 Python 包 </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/01/14/%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="提高大模型生成多样性的方法综述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-14</div><div class="info-item-2">提高大模型生成多样性的方法综述</div></div><div class="info-2"><div class="info-item-1">temperature和top-p采样 在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。 temperature和Top-p都是 高-&gt;随机，有创造力。 低-&gt;确定，偏向保守。 原理 大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。  生成分数 大模型会为其词汇表中所有词（数量通常为几万到几十万）打分，该分数在 AI 领域称为 logit。以用户问题 “可以给我推荐一个讲 ai 的技术频道吗？” 为例，模型会对相关词进行打分，实际应用中通常展示分数最高的前几个词。 转换概率 通过 softmax 函数将分数转换为概率，公式为 $$ \sigma(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}} $$ 其中zi为第 i 个词的分数，K 为词的总量。转换后得到每个词的输出概率，使模型能按概率预测下一个词。  加权采样 根据概率生成预测值的过程称为加权采样。将每个词的概率对应分配到...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%8D%E6%B3%95%E5%BD%A2%E6%80%81"><span class="toc-number">1.</span> <span class="toc-text">1. 词法形态</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#sql-%E6%A0%87%E5%87%86%E5%8C%96%E5%A4%84%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 SQL 标准化处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E6%96%87%E6%9C%AC%E7%9B%B8%E4%BC%BC%E5%BA%A6"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 计算文本相似度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.2.1 编辑距离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jaccard%E7%9B%B8%E4%BC%BC%E5%BA%A6"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2.2 Jaccard相似度</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%A5%E6%B3%95%E7%BB%93%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">2. 句法结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ast%E7%94%9F%E6%88%90"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 AST生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E7%9B%B8%E4%BC%BC%E5%BA%A6%E8%AE%A1%E7%AE%97"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 结构相似度计算</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ast-%E7%BB%93%E6%9E%84%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1 AST 结构特征向量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F%E6%9E%84%E5%BB%BA"><span class="toc-number">2.2.1.1.</span> <span class="toc-text">2.2.1.1 结构特征向量构建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BD%92%E4%B8%80%E5%8C%96%E7%BB%93%E6%9E%84%E8%B7%9D%E7%A6%BB"><span class="toc-number">2.2.1.2.</span> <span class="toc-text">2.2.1.2 归一化结构距离</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%91%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB-tree-edit-distance-ted"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.2 树编辑距离 (Tree Edit
+Distance, TED)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ast-%E8%A7%84%E8%8C%83%E5%8C%96"><span class="toc-number">2.2.2.1.</span> <span class="toc-text">2.2.2.1 AST 规范化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E6%9D%83%E6%A0%91%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB"><span class="toc-number">2.2.2.2.</span> <span class="toc-text">2.2.2.2 加权树编辑距离</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%AD%E4%B9%89%E5%90%91%E9%87%8F%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">3. 语义向量化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#dqo-diversity-via-determinantal-point-processes"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 DQO
+(Diversity via Determinantal Point Processes)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#svgd-stein-variational-gradient-descent"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 SVGD (Stein
+Variational Gradient Descent)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A1%8C%E4%B8%BA%E4%B8%8E%E6%89%A7%E8%A1%8C"><span class="toc-number">4.</span> <span class="toc-text">4.行为与执行</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/26/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E5%AE%9E%E7%8E%B0/" title="cd336作业五实现">cd336作业五实现</a><time datetime="2026-02-26T07:28:02.000Z" title="发表于 2026-02-26 15:28:02">2026-02-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="SQL查询多样性与相似性度量方法">SQL查询多样性与相似性度量方法</a><time datetime="2026-02-07T09:22:03.000Z" title="发表于 2026-02-07 17:22:03">2026-02-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/06/python%E8%AF%AD%E6%B3%95/" title="一些python语法">一些python语法</a><time datetime="2026-02-06T09:22:03.000Z" title="发表于 2026-02-06 17:22:03">2026-02-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/" title="cs336作业五文档">cs336作业五文档</a><time datetime="2026-02-04T09:22:03.000Z" title="发表于 2026-02-04 17:22:03">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理">推理</a><time datetime="2026-01-29T16:00:00.000Z" title="发表于 2026-01-30 00:00:00">2026-01-30</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
