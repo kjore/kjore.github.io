@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>广义线性模型 GLMs | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="指数分布族 Exponential Family Distributions 如果一类分布可以写成如下形式，我们就说它是指数分布族的： $$ p(y; \eta) &#x3D; b(y) \exp(\eta^T T(y) - a(\eta)) \quad (3.1) $$  $\eta$ 被称为该分布的 自然参数 （natural parameter，也称为正则参数 canonical parameter）">
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>广义线性模型 GLMs | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="指数分布族 Exponential Family Distributions 如果一类分布可以写成如下形式，我们就说它是指数分布族的： p(y; η) &#x3D; b(y)exp (ηTT(y) − a(η))  (3.1)  η 被称为该分布的 自然参数 （natural parameter，也称为正则参数 canonical parameter）。 T(y) 是 充分统计量 （suf">
 <meta property="og:type" content="article">
 <meta property="og:title" content="广义线性模型 GLMs">
 <meta property="og:url" content="https://kjore.github.io/2026/01/21/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/index.html">
 <meta property="og:site_name" content="kjore&#39;s blog">
-<meta property="og:description" content="指数分布族 Exponential Family Distributions 如果一类分布可以写成如下形式，我们就说它是指数分布族的： $$ p(y; \eta) &#x3D; b(y) \exp(\eta^T T(y) - a(\eta)) \quad (3.1) $$  $\eta$ 被称为该分布的 自然参数 （natural parameter，也称为正则参数 canonical parameter）">
+<meta property="og:description" content="指数分布族 Exponential Family Distributions 如果一类分布可以写成如下形式，我们就说它是指数分布族的： p(y; η) &#x3D; b(y)exp (ηTT(y) − a(η))  (3.1)  η 被称为该分布的 自然参数 （natural parameter，也称为正则参数 canonical parameter）。 T(y) 是 充分统计量 （suf">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kjore.github.io/img/head.png">
 <meta property="article:published_time" content="2026-01-20T16:00:00.000Z">
@@ -158,166 +158,384 @@
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">广义线性模型 GLMs</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">广义线性模型 GLMs</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-20T16:00:00.000Z" title="发表于 2026-01-21 00:00:00">2026-01-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-21T09:45:03.444Z" title="更新于 2026-01-21 17:45:03">2026-01-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>指数分布族 Exponential Family Distributions</h1>
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">广义线性模型 GLMs</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">广义线性模型 GLMs</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-20T16:00:00.000Z" title="发表于 2026-01-21 00:00:00">2026-01-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-21T09:45:03.444Z" title="更新于 2026-01-21 17:45:03">2026-01-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="指数分布族-exponential-family-distributions">指数分布族
+Exponential Family Distributions</h1>
 <p>如果一类分布可以写成如下形式，我们就说它是指数分布族的：</p>
-<p>$$<br>
-p(y; \eta) = b(y) \exp(\eta^T T(y) - a(\eta)) \quad (3.1)<br>
-$$</p>
+<p><span
+class="math display"><em>p</em>(<em>y</em>; <em>η</em>) = <em>b</em>(<em>y</em>)exp (<em>η</em><sup><em>T</em></sup><em>T</em>(<em>y</em>) − <em>a</em>(<em>η</em>))  (3.1)</span></p>
 <ul>
-<li><strong>$\eta$</strong> 被称为该分布的 <strong>自然参数</strong> （natural parameter，也称为<strong>正则参数</strong> canonical parameter）。</li>
-<li><strong>$T(y)$</strong> 是 <strong>充分统计量</strong> （sufficient statistic）。在我们考虑的分布中，通常有 <strong>$T(y) = y$</strong>。</li>
-<li><strong>$a(\eta)$</strong> 是 <strong>对数配分函数</strong> （log partition function）。</li>
-<li>量 <strong>$e^{-a(\eta)}$</strong> 本质上起到了<strong>归一化常数</strong>的作用，确保分布 <strong>$p(y; \eta)$</strong> 对 <strong>$y$</strong> 的求和或积分等于 1。</li>
+<li><strong><span class="math inline"><em>η</em></span></strong>
+被称为该分布的 <strong>自然参数</strong> （natural
+parameter，也称为<strong>正则参数</strong> canonical parameter）。</li>
+<li><strong><span
+class="math inline"><em>T</em>(<em>y</em>)</span></strong> 是
+<strong>充分统计量</strong> （sufficient
+statistic）。在我们考虑的分布中，通常有 <strong><span
+class="math inline"><em>T</em>(<em>y</em>) = <em>y</em></span></strong>。</li>
+<li><strong><span
+class="math inline"><em>a</em>(<em>η</em>)</span></strong> 是
+<strong>对数配分函数</strong> （log partition function）。</li>
+<li>量 <strong><span
+class="math inline"><em>e</em><sup>−<em>a</em>(<em>η</em>)</sup></span></strong>
+本质上起到了<strong>归一化常数</strong>的作用，确保分布 <strong><span
+class="math inline"><em>p</em>(<em>y</em>; <em>η</em>)</span></strong>
+对 <strong><span class="math inline"><em>y</em></span></strong>
+的求和或积分等于 1。</li>
 </ul>
-<p>一旦固定了 <strong>$T, a$</strong> 和 <strong>$b$</strong> 的选择，就定义了一个由 <strong>$\eta$</strong> 参数化的分布族；随着我们改变 <strong>$\eta$</strong>，我们就能得到该家族中不同的分布。</p>
-<h2 id="伯努利分布（Bernoulli-Distribution）">伯努利分布（Bernoulli Distribution）</h2>
-<p>我们现在证明伯努利分布和高斯分布都是指数分布族的例子。均值为 <strong>$\phi$</strong> 的伯努利分布（记作 <strong>$\text{Bernoulli}(\phi)$</strong>）定义在 <strong>$y \in {0, 1}$</strong> 上，使得 <strong>$p(y = 1; \phi) = \phi$</strong> 且 <strong>$p(y = 0; \phi) = 1 - \phi$</strong>。随着 <strong>$\phi$</strong> 的变化，我们得到不同均值的伯努利分布。我们现在通过选择合适的 <strong>$T, a$</strong> 和 <strong>$b$</strong>，将伯努利分布改写为等式 (3.1) 的形式：</p>
-<p>$$<br>
-\begin{aligned}<br>
-p(y; \phi) &amp;= \phi^y (1 - \phi)^{1-y} \<br>
-&amp;= \exp(y \log \phi + (1 - y) \log(1 - \phi)) \<br>
-&amp;= \exp \left( \left( \log \left( \frac{\phi}{1 - \phi} \right) \right) y + \log(1 - \phi) \right)<br>
-\end{aligned}<br>
-$$</p>
-<p>由此可见，自然参数为 $\eta = \log(\phi/(1 - \phi))$。有趣的是，如果我们反解出 $\phi$ 关于 $\eta$ 的函数，可以得到：</p>
-<p>$$<br>
-\phi = \frac{1}{1 + e^{-\eta}}<br>
-$$</p>
-<p>这就是我们熟悉的 Sigmoid 函数！当我们之后将逻辑回归推导为一种 GLM 时，这一点会再次出现。为了完成伯努利分布的指数族表述，我们还有：</p>
+<p>一旦固定了 <strong><span
+class="math inline"><em>T</em>, <em>a</em></span></strong> 和
+<strong><span class="math inline"><em>b</em></span></strong>
+的选择，就定义了一个由 <strong><span
+class="math inline"><em>η</em></span></strong>
+参数化的分布族；随着我们改变 <strong><span
+class="math inline"><em>η</em></span></strong>，我们就能得到该家族中不同的分布。</p>
+<h2 id="伯努利分布bernoulli-distribution">伯努利分布（Bernoulli
+Distribution）</h2>
+<p>我们现在证明伯努利分布和高斯分布都是指数分布族的例子。均值为
+<strong><span class="math inline"><em>ϕ</em></span></strong>
+的伯努利分布（记作 <strong><span
+class="math inline">Bernoulli(<em>ϕ</em>)</span></strong>）定义在
+<strong><span class="math inline"><em>y</em> ∈ {0, 1}</span></strong>
+上，使得 <strong><span
+class="math inline"><em>p</em>(<em>y</em> = 1; <em>ϕ</em>) = <em>ϕ</em></span></strong>
+且 <strong><span
+class="math inline"><em>p</em>(<em>y</em> = 0; <em>ϕ</em>) = 1 − <em>ϕ</em></span></strong>。随着
+<strong><span class="math inline"><em>ϕ</em></span></strong>
+的变化，我们得到不同均值的伯努利分布。我们现在通过选择合适的
+<strong><span class="math inline"><em>T</em>, <em>a</em></span></strong>
+和 <strong><span
+class="math inline"><em>b</em></span></strong>，将伯努利分布改写为等式
+(3.1) 的形式：</p>
+<p><span class="math display">$$
+\begin{aligned}
+p(y; \phi) &amp;= \phi^y (1 - \phi)^{1-y} \\
+&amp;= \exp(y \log \phi + (1 - y) \log(1 - \phi)) \\
+&amp;= \exp \left( \left( \log \left( \frac{\phi}{1 - \phi} \right)
+\right) y + \log(1 - \phi) \right)
+\end{aligned}
+$$</span></p>
+<p>由此可见，自然参数为 <span
+class="math inline"><em>η</em> = log (<em>ϕ</em>/(1 − <em>ϕ</em>))</span>。有趣的是，如果我们反解出
+<span class="math inline"><em>ϕ</em></span> 关于 <span
+class="math inline"><em>η</em></span> 的函数，可以得到：</p>
+<p><span class="math display">$$
+\phi = \frac{1}{1 + e^{-\eta}}
+$$</span></p>
+<p>这就是我们熟悉的 Sigmoid 函数！当我们之后将逻辑回归推导为一种 GLM
+时，这一点会再次出现。为了完成伯努利分布的指数族表述，我们还有：</p>
 <ul>
-<li><strong>$T(y) = y$</strong></li>
-<li><strong>$a(\eta) = -\log(1 - \phi) = \log(1 + e^\eta)$</strong></li>
-<li><strong>$b(y) = 1$</strong></li>
+<li><strong><span
+class="math inline"><em>T</em>(<em>y</em>) = <em>y</em></span></strong></li>
+<li><strong><span
+class="math inline"><em>a</em>(<em>η</em>) = −log (1 − <em>ϕ</em>) = log (1 + <em>e</em><sup><em>η</em></sup>)</span></strong></li>
+<li><strong><span
+class="math inline"><em>b</em>(<em>y</em>) = 1</span></strong></li>
 </ul>
-<p>这表明伯努利分布可以通过适当选择 <strong>$T, a$</strong> 和 <strong>$b$</strong> 写成等式 (3.1) 的形式。</p>
-<hr>
-<h2 id="高斯分布（Gaussian-Distribution）">高斯分布（Gaussian Distribution）</h2>
-<p>接下来考虑高斯分布。回顾一下，在推导线性回归时，<strong>$\sigma^2$</strong> 的取值对我们最终选择的 <strong>$\theta$</strong> 和 <strong>$h_\theta(x)$</strong> 没有影响。因此，我们可以选择一个任意值给 <strong>$\sigma^2$</strong> 而不改变任何结论。为了简化推导，我们设 <strong>$\sigma^2 = 1$</strong>。则有：</p>
-<p>$$<br>
-\begin{aligned}<br>
-p(y; \mu) &amp;= \frac{1}{\sqrt{2\pi}} \exp \left( -\frac{1}{2}(y - \mu)^2 \right) \<br>
-&amp;= \frac{1}{\sqrt{2\pi}} \exp \left( -\frac{1}{2}y^2 \right) \cdot \exp \left( \mu y - \frac{1}{2}\mu^2 \right)<br>
-\end{aligned}<br>
-$$</p>
+<p>这表明伯努利分布可以通过适当选择 <strong><span
+class="math inline"><em>T</em>, <em>a</em></span></strong> 和
+<strong><span class="math inline"><em>b</em></span></strong> 写成等式
+(3.1) 的形式。</p>
+<hr />
+<h2 id="高斯分布gaussian-distribution">高斯分布（Gaussian
+Distribution）</h2>
+<p>接下来考虑高斯分布。回顾一下，在推导线性回归时，<strong><span
+class="math inline"><em>σ</em><sup>2</sup></span></strong>
+的取值对我们最终选择的 <strong><span
+class="math inline"><em>θ</em></span></strong> 和 <strong><span
+class="math inline"><em>h</em><sub><em>θ</em></sub>(<em>x</em>)</span></strong>
+没有影响。因此，我们可以选择一个任意值给 <strong><span
+class="math inline"><em>σ</em><sup>2</sup></span></strong>
+而不改变任何结论。为了简化推导，我们设 <strong><span
+class="math inline"><em>σ</em><sup>2</sup> = 1</span></strong>。则有：</p>
+<p><span class="math display">$$
+\begin{aligned}
+p(y; \mu) &amp;= \frac{1}{\sqrt{2\pi}} \exp \left( -\frac{1}{2}(y -
+\mu)^2 \right) \\
+&amp;= \frac{1}{\sqrt{2\pi}} \exp \left( -\frac{1}{2}y^2 \right) \cdot
+\exp \left( \mu y - \frac{1}{2}\mu^2 \right)
+\end{aligned}
+$$</span></p>
 <p>由此可见，高斯分布也属于指数分布族，其中：</p>
 <ul>
-<li><strong>$\eta = \mu$</strong></li>
-<li><strong>$T(y) = y$</strong></li>
-<li><strong>$a(\eta) = \mu^2/2 = \eta^2/2$</strong></li>
-<li><strong>$b(y) = \frac{1}{\sqrt{2\pi}} \exp(-y^2/2)$</strong></li>
+<li><strong><span
+class="math inline"><em>η</em> = <em>μ</em></span></strong></li>
+<li><strong><span
+class="math inline"><em>T</em>(<em>y</em>) = <em>y</em></span></strong></li>
+<li><strong><span
+class="math inline"><em>a</em>(<em>η</em>) = <em>μ</em><sup>2</sup>/2 = <em>η</em><sup>2</sup>/2</span></strong></li>
+<li><strong><span class="math inline">$b(y) = \frac{1}{\sqrt{2\pi}}
+\exp(-y^2/2)$</span></strong></li>
 </ul>
-<p>还有许多其他分布也是指数分布族的成员：例如 <strong>多项式分布</strong> （我们稍后会看到）、 <strong>泊松分布</strong> （用于计数数据建模）、<strong>伽马分布</strong>和 <strong>指数分布</strong> （用于建模连续的正随机变量，如时间间隔）、<strong>Beta 分布</strong>和 <strong>狄利克雷分布</strong> （用于概率的分布）等等。在下一节中，我们将描述一种通用的“配方”，用于构建 <strong>$y$</strong>（给定 <strong>$x$</strong> 和 <strong>$\theta$</strong>）符合上述任何分布的模型。</p>
-<h1>构建广义线性模型</h1>
-<p>假设你想要建立一个模型，根据某些特征 <strong>$x$</strong>（如商店促销、近期广告、天气、星期几等）来估算每小时光顾商店的顾客数量 <strong>$y$</strong>（或者是你网站的页面浏览量）。我们知道，<strong>泊松分布</strong>通常能很好地模拟访客数量。既然如此，我们该如何为这个问题建立模型呢？幸运的是，泊松分布属于指数分布族，因此我们可以应用广义线性模型（GLM）。在本节中，我们将介绍一种为这类问题构建 GLM 模型的方法。</p>
-<p>更一般地，考虑一个分类或回归问题，我们希望预测某个随机变量 <strong>$y$</strong> 关于 <strong>$x$</strong> 的值。为了推导该问题的 GLM，我们将对给定 <strong>$x$</strong> 下 <strong>$y$</strong> 的条件分布以及我们的模型做出以下 <strong>三个假设</strong> ：</p>
-<ol>
-<li><strong>$y | x; \theta \sim \text{ExponentialFamily}(\eta)$</strong> 。即：在给定 <strong>$x$</strong> 和 <strong>$\theta$</strong> 的情况下，<strong>$y$</strong> 的分布<strong>服从某个以 $\eta$ 为自然参数的指数分布族</strong>。</li>
-<li>给定 <strong>$x$</strong>，我们的目标是预测 <strong>$T(y)$</strong> 在给定 <strong>$x$</strong> 下的<strong>期望值</strong>。在大多数例子中，我们有 <strong>$T(y) = y$</strong>，这意味着我们希望学习到的假设函数 <strong>$h$</strong> 输出的预测值 <strong>$h(x)$</strong> 满足  <strong>$h(x) = E[y|x]$</strong> 。（注意，在逻辑回归和线性回归中，对 <strong>$h_\theta(x)$</strong> 的选择都满足这一假设。例如在逻辑回归中，<strong>$h_\theta(x) = p(y=1|x; \theta) = 0 \cdot p(y=0|x; \theta) + 1 \cdot p(y=1|x; \theta) = E[y|x; \theta]$</strong>。）</li>
-<li>自然参数 <strong>$\eta$</strong> 与输入 <strong>$x$</strong> 呈线性关系： <strong>$\eta = \theta^T x$</strong> 。（如果 <strong>$\eta$</strong> 是向量，则 <strong>$\eta_i = \theta_i^T x$</strong>。）</li>
+<p>还有许多其他分布也是指数分布族的成员：例如
+<strong>多项式分布</strong> （我们稍后会看到）、
+<strong>泊松分布</strong>
+（用于计数数据建模）、<strong>伽马分布</strong>和
+<strong>指数分布</strong>
+（用于建模连续的正随机变量，如时间间隔）、<strong>Beta 分布</strong>和
+<strong>狄利克雷分布</strong>
+（用于概率的分布）等等。在下一节中，我们将描述一种通用的“配方”，用于构建
+<strong><span class="math inline"><em>y</em></span></strong>（给定
+<strong><span class="math inline"><em>x</em></span></strong> 和
+<strong><span
+class="math inline"><em>θ</em></span></strong>）符合上述任何分布的模型。</p>
+<h1 id="构建广义线性模型">构建广义线性模型</h1>
+<p>假设你想要建立一个模型，根据某些特征 <strong><span
+class="math inline"><em>x</em></span></strong>（如商店促销、近期广告、天气、星期几等）来估算每小时光顾商店的顾客数量
+<strong><span
+class="math inline"><em>y</em></span></strong>（或者是你网站的页面浏览量）。我们知道，<strong>泊松分布</strong>通常能很好地模拟访客数量。既然如此，我们该如何为这个问题建立模型呢？幸运的是，泊松分布属于指数分布族，因此我们可以应用广义线性模型（GLM）。在本节中，我们将介绍一种为这类问题构建
+GLM 模型的方法。</p>
+<p>更一般地，考虑一个分类或回归问题，我们希望预测某个随机变量
+<strong><span class="math inline"><em>y</em></span></strong> 关于
+<strong><span class="math inline"><em>x</em></span></strong>
+的值。为了推导该问题的 GLM，我们将对给定 <strong><span
+class="math inline"><em>x</em></span></strong> 下 <strong><span
+class="math inline"><em>y</em></span></strong>
+的条件分布以及我们的模型做出以下 <strong>三个假设</strong> ：</p>
+<ol type="1">
+<li><strong><span
+class="math inline"><em>y</em>|<em>x</em>; <em>θ</em> ∼ ExponentialFamily(<em>η</em>)</span></strong>
+。即：在给定 <strong><span
+class="math inline"><em>x</em></span></strong> 和 <strong><span
+class="math inline"><em>θ</em></span></strong> 的情况下，<strong><span
+class="math inline"><em>y</em></span></strong> 的分布<strong>服从某个以
+<span class="math inline"><em>η</em></span>
+为自然参数的指数分布族</strong>。</li>
+<li>给定 <strong><span
+class="math inline"><em>x</em></span></strong>，我们的目标是预测
+<strong><span class="math inline"><em>T</em>(<em>y</em>)</span></strong>
+在给定 <strong><span class="math inline"><em>x</em></span></strong>
+下的<strong>期望值</strong>。在大多数例子中，我们有 <strong><span
+class="math inline"><em>T</em>(<em>y</em>) = <em>y</em></span></strong>，这意味着我们希望学习到的假设函数
+<strong><span class="math inline"><em>h</em></span></strong>
+输出的预测值 <strong><span
+class="math inline"><em>h</em>(<em>x</em>)</span></strong> 满足
+<strong><span
+class="math inline"><em>h</em>(<em>x</em>) = <em>E</em>[<em>y</em>|<em>x</em>]</span></strong>
+。（注意，在逻辑回归和线性回归中，对 <strong><span
+class="math inline"><em>h</em><sub><em>θ</em></sub>(<em>x</em>)</span></strong>
+的选择都满足这一假设。例如在逻辑回归中，<strong><span
+class="math inline"><em>h</em><sub><em>θ</em></sub>(<em>x</em>) = <em>p</em>(<em>y</em> = 1|<em>x</em>; <em>θ</em>) = 0 ⋅ <em>p</em>(<em>y</em> = 0|<em>x</em>; <em>θ</em>) + 1 ⋅ <em>p</em>(<em>y</em> = 1|<em>x</em>; <em>θ</em>) = <em>E</em>[<em>y</em>|<em>x</em>; <em>θ</em>]</span></strong>。）</li>
+<li>自然参数 <strong><span
+class="math inline"><em>η</em></span></strong> 与输入 <strong><span
+class="math inline"><em>x</em></span></strong> 呈线性关系：
+<strong><span
+class="math inline"><em>η</em> = <em>θ</em><sup><em>T</em></sup><em>x</em></span></strong>
+。（如果 <strong><span class="math inline"><em>η</em></span></strong>
+是向量，则 <strong><span
+class="math inline"><em>η</em><sub><em>i</em></sub> = <em>θ</em><sub><em>i</em></sub><sup><em>T</em></sup><em>x</em></span></strong>。）</li>
 </ol>
-<h2 id="普通最小二乘法-Ordinary-Least-Squares">普通最小二乘法 (Ordinary Least Squares)</h2>
-<p>为了展示普通最小二乘法是 GLM 家族的一个特例，考虑目标变量 <strong>$y$</strong>（在 GLM 术语中也称为 <strong>响应变量</strong> ）是连续的，并且我们将给定 <strong>$x$</strong> 时 <strong>$y$</strong> 的条件分布建模为高斯分布 <strong>$\mathcal{N}(\mu, \sigma^2)$</strong>（此处 <strong>$\mu$</strong> 可能依赖于 <strong>$x$</strong>）。因此，我们令上述指数分布族为高斯分布。正如我们之前所见，在高斯分布的指数族形式中，有 <strong>$\mu = \eta$</strong>。因此：</p>
-<p>$$<br>
-\begin{aligned}<br>
-h_\theta(x) &amp;= E[y|x; \theta] \<br>
-&amp;= \mu \<br>
-&amp;= \eta \<br>
-&amp;= \theta^T x<br>
-\end{aligned}<br>
-$$</p>
-<p>第一个等号根据假设 2；第二个等号根据 <strong>$y|x; \theta \sim \mathcal{N}(\mu, \sigma^2)$</strong> 及其期望值为 <strong>$\mu$</strong>；第三个等号根据假设 1（以及之前推导的高斯分布中 <strong>$\mu = \eta$</strong>）；最后一个等号根据假设 3。</p>
-<hr>
-<h2 id="逻辑回归-Logistic-Regression">逻辑回归 (Logistic Regression)</h2>
-<p>现在考虑逻辑回归。这里我们关注二元分类，所以 <strong>$y \in {0, 1}$</strong>。既然 <strong>$y$</strong> 是二值化的，选择<strong>伯努利分布族</strong>来建模给定 <strong>$x$</strong> 时 <strong>$y$</strong> 的条件分布是很自然的。在伯努利分布的指数族形式中，我们有 <strong>$\phi = 1/(1 + e^{-\eta})$</strong>。此外，如果 <strong>$y|x; \theta \sim \text{Bernoulli}(\phi)$</strong>，那么 <strong>$E[y|x; \theta] = \phi$</strong>。遵循与普通最小二乘法类似的推导：</p>
-<p>$$<br>
-\begin{aligned}<br>
-h_\theta(x) &amp;= E[y|x; \theta] \<br>
-&amp;= \phi \<br>
-&amp;= 1/(1 + e^{-\eta}) \<br>
-&amp;= 1/(1 + e^{-\theta^T x})<br>
-\end{aligned}<br>
-$$</p>
-<p>这给出了形式为 <strong>$h_\theta(x) = 1/(1 + e^{-\theta^T x})$</strong> 的假设函数。如果你之前好奇我们是如何得出逻辑函数 <strong>$1/(1 + e^{-z})$</strong> 这种形式的，这就是答案：一旦我们假设 <strong>$y$</strong> 在给定 <strong>$x$</strong> 下服从伯努利分布，它就是 GLM 定义和指数分布族属性的必然结果。</p>
-<p>再引入一些术语：将分布的均值表示为自然参数的函数（<strong>$g(\eta) = E[T(y); \eta]$</strong>）称为 <strong>正则响应函数 (canonical response function)</strong> 。它的反函数 <strong>$g^{-1}$</strong> 称为 <strong>正则联系函数 (canonical link function)</strong> 。因此，高斯分布族的正则响应函数是恒等函数；而伯努利分布族的正则响应函数是逻辑函数（Sigmoid 函数）。</p>
-<hr>
-<h2 id="Softmax-回归-Softmax-Regression">Softmax 回归 (Softmax Regression)</h2>
-<p>让我们再看一个 GLM 的例子。考虑一个分类问题，响应变量 <strong>$y$</strong> 可以取 <strong>$k$</strong> 个值中的任意一个，即 <strong>$y \in {1, 2, \dots, k}$</strong>。例如，我们可能想将电子邮件分为三类：垃圾邮件、个人邮件和工作相关邮件，而不仅仅是二元分类。响应变量仍然是离散的，但现在可以取两个以上的值。因此，我们将建模它服从 <strong>多项式分布 (Multinomial Distribution)</strong> 。</p>
-<p>我们要为多项式数据推导一个 GLM。首先，将多项式分布表示为指数分布族。</p>
-<p>为了参数化具有 <strong>$k$</strong> 种可能结果的多项式分布，可以使用 <strong>$k$</strong> 个参数 <strong>$\phi_1, \dots, \phi_k$</strong> 来指定每个结果的概率。然而，这些参数是冗余的（因为 <strong>$\sum_{i=1}^k \phi_i = 1$</strong>，知道其中 <strong>$k-1$</strong> 个就能确定最后一个）。因此，我们只用 <strong>$k-1$</strong> 个参数 <strong>$\phi_1, \dots, \phi_{k-1}$</strong>，其中 <strong>$\phi_i = p(y=i; \phi)$</strong>，<strong>$p(y=k; \phi) = 1 - \sum_{i=1}^{k-1} \phi_i$</strong>。</p>
-<p>为了将多项式分布表达为指数分布族，我们定义 $T(y) \in \mathbb{R}^{k-1}$ 如下（独热编码形式）：</p>
-<p>$T(1) = [1, 0, 0, \dots, 0]^T, T(2) = [0, 1, 0, \dots, 0]^T, \dots, T(k-1) = [0, 0, 0, \dots, 1]^T, T(k) = [0, 0, 0, \dots, 0]^T$。</p>
-<p>这里 $T(y)$ 是一个 $k-1$ 维向量。我们使用指示函数 $1{\cdot}$，可以写成 $(T(y))_i = 1{y = i}$。此外，$E[(T(y))_i] = P(y=i) = \phi_i$。</p>
+<h2 id="普通最小二乘法-ordinary-least-squares">普通最小二乘法 (Ordinary
+Least Squares)</h2>
+<p>为了展示普通最小二乘法是 GLM 家族的一个特例，考虑目标变量
+<strong><span class="math inline"><em>y</em></span></strong>（在 GLM
+术语中也称为 <strong>响应变量</strong> ）是连续的，并且我们将给定
+<strong><span class="math inline"><em>x</em></span></strong> 时
+<strong><span class="math inline"><em>y</em></span></strong>
+的条件分布建模为高斯分布 <strong><span
+class="math inline">𝒩(<em>μ</em>, <em>σ</em><sup>2</sup>)</span></strong>（此处
+<strong><span class="math inline"><em>μ</em></span></strong> 可能依赖于
+<strong><span
+class="math inline"><em>x</em></span></strong>）。因此，我们令上述指数分布族为高斯分布。正如我们之前所见，在高斯分布的指数族形式中，有
+<strong><span
+class="math inline"><em>μ</em> = <em>η</em></span></strong>。因此：</p>
+<p><span class="math display">$$
+\begin{aligned}
+h_\theta(x) &amp;= E[y|x; \theta] \\
+&amp;= \mu \\
+&amp;= \eta \\
+&amp;= \theta^T x
+\end{aligned}
+$$</span></p>
+<p>第一个等号根据假设 2；第二个等号根据 <strong><span
+class="math inline"><em>y</em>|<em>x</em>; <em>θ</em> ∼ 𝒩(<em>μ</em>, <em>σ</em><sup>2</sup>)</span></strong>
+及其期望值为 <strong><span
+class="math inline"><em>μ</em></span></strong>；第三个等号根据假设
+1（以及之前推导的高斯分布中 <strong><span
+class="math inline"><em>μ</em> = <em>η</em></span></strong>）；最后一个等号根据假设
+3。</p>
+<hr />
+<h2 id="逻辑回归-logistic-regression">逻辑回归 (Logistic
+Regression)</h2>
+<p>现在考虑逻辑回归。这里我们关注二元分类，所以 <strong><span
+class="math inline"><em>y</em> ∈ {0, 1}</span></strong>。既然
+<strong><span class="math inline"><em>y</em></span></strong>
+是二值化的，选择<strong>伯努利分布族</strong>来建模给定 <strong><span
+class="math inline"><em>x</em></span></strong> 时 <strong><span
+class="math inline"><em>y</em></span></strong>
+的条件分布是很自然的。在伯努利分布的指数族形式中，我们有 <strong><span
+class="math inline"><em>ϕ</em> = 1/(1 + <em>e</em><sup>−<em>η</em></sup>)</span></strong>。此外，如果
+<strong><span
+class="math inline"><em>y</em>|<em>x</em>; <em>θ</em> ∼ Bernoulli(<em>ϕ</em>)</span></strong>，那么
+<strong><span
+class="math inline"><em>E</em>[<em>y</em>|<em>x</em>; <em>θ</em>] = <em>ϕ</em></span></strong>。遵循与普通最小二乘法类似的推导：</p>
+<p><span class="math display">$$
+\begin{aligned}
+h_\theta(x) &amp;= E[y|x; \theta] \\
+&amp;= \phi \\
+&amp;= 1/(1 + e^{-\eta}) \\
+&amp;= 1/(1 + e^{-\theta^T x})
+\end{aligned}
+$$</span></p>
+<p>这给出了形式为 <strong><span
+class="math inline"><em>h</em><sub><em>θ</em></sub>(<em>x</em>) = 1/(1 + <em>e</em><sup>−<em>θ</em><sup><em>T</em></sup><em>x</em></sup>)</span></strong>
+的假设函数。如果你之前好奇我们是如何得出逻辑函数 <strong><span
+class="math inline">1/(1 + <em>e</em><sup>−<em>z</em></sup>)</span></strong>
+这种形式的，这就是答案：一旦我们假设 <strong><span
+class="math inline"><em>y</em></span></strong> 在给定 <strong><span
+class="math inline"><em>x</em></span></strong> 下服从伯努利分布，它就是
+GLM 定义和指数分布族属性的必然结果。</p>
+<p>再引入一些术语：将分布的均值表示为自然参数的函数（<strong><span
+class="math inline"><em>g</em>(<em>η</em>) = <em>E</em>[<em>T</em>(<em>y</em>); <em>η</em>]</span></strong>）称为
+<strong>正则响应函数 (canonical response function)</strong> 。它的反函数
+<strong><span
+class="math inline"><em>g</em><sup>−1</sup></span></strong> 称为
+<strong>正则联系函数 (canonical link function)</strong>
+。因此，高斯分布族的正则响应函数是恒等函数；而伯努利分布族的正则响应函数是逻辑函数（Sigmoid
+函数）。</p>
+<hr />
+<h2 id="softmax-回归-softmax-regression">Softmax 回归 (Softmax
+Regression)</h2>
+<p>让我们再看一个 GLM 的例子。考虑一个分类问题，响应变量 <strong><span
+class="math inline"><em>y</em></span></strong> 可以取 <strong><span
+class="math inline"><em>k</em></span></strong> 个值中的任意一个，即
+<strong><span
+class="math inline"><em>y</em> ∈ {1, 2, …, <em>k</em>}</span></strong>。例如，我们可能想将电子邮件分为三类：垃圾邮件、个人邮件和工作相关邮件，而不仅仅是二元分类。响应变量仍然是离散的，但现在可以取两个以上的值。因此，我们将建模它服从
+<strong>多项式分布 (Multinomial Distribution)</strong> 。</p>
+<p>我们要为多项式数据推导一个
+GLM。首先，将多项式分布表示为指数分布族。</p>
+<p>为了参数化具有 <strong><span
+class="math inline"><em>k</em></span></strong>
+种可能结果的多项式分布，可以使用 <strong><span
+class="math inline"><em>k</em></span></strong> 个参数 <strong><span
+class="math inline"><em>ϕ</em><sub>1</sub>, …, <em>ϕ</em><sub><em>k</em></sub></span></strong>
+来指定每个结果的概率。然而，这些参数是冗余的（因为 <strong><span
+class="math inline">$\sum_{i=1}^k \phi_i = 1$</span></strong>，知道其中
+<strong><span class="math inline"><em>k</em> − 1</span></strong>
+个就能确定最后一个）。因此，我们只用 <strong><span
+class="math inline"><em>k</em> − 1</span></strong> 个参数 <strong><span
+class="math inline"><em>ϕ</em><sub>1</sub>, …, <em>ϕ</em><sub><em>k</em> − 1</sub></span></strong>，其中
+<strong><span
+class="math inline"><em>ϕ</em><sub><em>i</em></sub> = <em>p</em>(<em>y</em> = <em>i</em>; <em>ϕ</em>)</span></strong>，<strong><span
+class="math inline">$p(y=k; \phi) = 1 - \sum_{i=1}^{k-1}
+\phi_i$</span></strong>。</p>
+<p>为了将多项式分布表达为指数分布族，我们定义 <span
+class="math inline"><em>T</em>(<em>y</em>) ∈ ℝ<sup><em>k</em> − 1</sup></span>
+如下（独热编码形式）：</p>
+<p><span
+class="math inline"><em>T</em>(1) = [1, 0, 0, …, 0]<sup><em>T</em></sup>, <em>T</em>(2) = [0, 1, 0, …, 0]<sup><em>T</em></sup>, …, <em>T</em>(<em>k</em> − 1) = [0, 0, 0, …, 1]<sup><em>T</em></sup>, <em>T</em>(<em>k</em>) = [0, 0, 0, …, 0]<sup><em>T</em></sup></span>。</p>
+<p>这里 <span class="math inline"><em>T</em>(<em>y</em>)</span> 是一个
+<span class="math inline"><em>k</em> − 1</span> 维向量。我们使用指示函数
+<span class="math inline">1{⋅}</span>，可以写成 <span
+class="math inline">(<em>T</em>(<em>y</em>))<sub><em>i</em></sub> = 1{<em>y</em> = <em>i</em>}</span>。此外，<span
+class="math inline"><em>E</em>[(<em>T</em>(<em>y</em>))<sub><em>i</em></sub>] = <em>P</em>(<em>y</em> = <em>i</em>) = <em>ϕ</em><sub><em>i</em></sub></span>。</p>
 <p>经过代数推导（详见原文公式），多项式分布可以写成：</p>
-<p>$$<br>
-p(y; \phi) = b(y) \exp(\eta^T T(y) - a(\eta))<br>
-$$</p>
+<p><span
+class="math display"><em>p</em>(<em>y</em>; <em>ϕ</em>) = <em>b</em>(<em>y</em>)exp (<em>η</em><sup><em>T</em></sup><em>T</em>(<em>y</em>) − <em>a</em>(<em>η</em>))</span></p>
 <p>其中，自然参数为：</p>
-<p>$$<br>
-\eta_i = \log(\phi_i / \phi_k)<br>
-$$</p>
-<p>反解出 $\phi$ 关于 $\eta$ 的函数（响应函数），我们得到：</p>
-<p>$$<br>
-\phi_i = \frac{e^{\eta_i}}{\sum_{j=1}^k e^{\eta_j}}<br>
-$$</p>
-<p>这个从 $\eta$ 到 $\phi$ 的映射函数被称为 Softmax 函数。</p>
-<p>根据假设 3，令 $\eta_i = \theta_i^T x$，我们的模型假设条件概率为：</p>
-<p>$$<br>
-p(y = i|x; \theta) = \frac{e^{\theta_i^T x}}{\sum_{j=1}^k e^{\theta_j^T x}}<br>
-$$</p>
+<p><span
+class="math display"><em>η</em><sub><em>i</em></sub> = log (<em>ϕ</em><sub><em>i</em></sub>/<em>ϕ</em><sub><em>k</em></sub>)</span></p>
+<p>反解出 <span class="math inline"><em>ϕ</em></span> 关于 <span
+class="math inline"><em>η</em></span> 的函数（响应函数），我们得到：</p>
+<p><span class="math display">$$
+\phi_i = \frac{e^{\eta_i}}{\sum_{j=1}^k e^{\eta_j}}
+$$</span></p>
+<p>这个从 <span class="math inline"><em>η</em></span> 到 <span
+class="math inline"><em>ϕ</em></span> 的映射函数被称为 Softmax
+函数。</p>
+<p>根据假设 3，令 <span
+class="math inline"><em>η</em><sub><em>i</em></sub> = <em>θ</em><sub><em>i</em></sub><sup><em>T</em></sup><em>x</em></span>，我们的模型假设条件概率为：</p>
+<p><span class="math display">$$
+p(y = i|x; \theta) = \frac{e^{\theta_i^T x}}{\sum_{j=1}^k e^{\theta_j^T
+x}}
+$$</span></p>
 <p>这个模型被称为 Softmax 回归。它是逻辑回归的推广。</p>
-<p>最后，关于参数拟合，我们可以通过最大化对数似然函数 $\ell(\theta)$ 来学习参数 $\theta_i$：</p>
-<p>$$<br>
-\ell(\theta) = \sum_{i=1}^n \log \prod_{l=1}^k \left( \frac{e^{\theta_l^T x^{(i)}}}{\sum_{j=1}^k e^{\theta_j^T x^{(i)}}} \right)^{1{y^{(i)}=l}}<br>
-$$</p>
+<p>最后，关于参数拟合，我们可以通过最大化对数似然函数 <span
+class="math inline"><em>ℓ</em>(<em>θ</em>)</span> 来学习参数 <span
+class="math inline"><em>θ</em><sub><em>i</em></sub></span>：</p>
+<p><span class="math display">$$
+\ell(\theta) = \sum_{i=1}^n \log \prod_{l=1}^k \left(
+\frac{e^{\theta_l^T x^{(i)}}}{\sum_{j=1}^k e^{\theta_j^T x^{(i)}}}
+\right)^{1\{y^{(i)}=l\}}
+$$</span></p>
 <p>我们可以使用梯度上升法或牛顿法来求解使该式最大化的参数。</p>
-<h1>统一梯度上升法</h1>
+<h1 id="统一梯度上升法">统一梯度上升法</h1>
 <p>在 GLM 中，所有分布都可以写成：</p>
-<p>$$<br>
-p(y; \eta) = b(y) \exp(\eta^T T(y) - a(\eta))<br>
-$$</p>
+<p><span
+class="math display"><em>p</em>(<em>y</em>; <em>η</em>) = <em>b</em>(<em>y</em>)exp (<em>η</em><sup><em>T</em></sup><em>T</em>(<em>y</em>) − <em>a</em>(<em>η</em>))</span></p>
 <p>那么，通用的对数似然函数直接就是：</p>
-<p>$$<br>
-\ell(\eta) = \sum_{i=1}^n [ \log b(y^{(i)}) + \eta^{(i)T} T(y^{(i)}) - a(\eta^{(i)}) ]<br>
-$$</p>
-<h3 id="第一步：利用链式法则拆解">第一步：利用链式法则拆解</h3>
-<p>对于第 $i$ 个样本的对数似然 $\ell^{(i)}$，我们有：</p>
-<p>$$<br>
-\frac{\partial \ell^{(i)}}{\partial \theta_j} = \frac{\partial \ell^{(i)}}{\partial \eta} \cdot \frac{\partial \eta}{\partial \theta_j}<br>
-$$</p>
-<h3 id="第二步：对-eta-求导">第二步：对 <strong>$\eta$</strong> 求导</h3>
-<p>观察对数似然公式：<strong>$\ell^{(i)} = \log b(y^{(i)}) + \eta^T T(y^{(i)}) - a(\eta)$</strong></p>
-<ol>
-<li><strong>$\log b(y^{(i)})$</strong> 与 <strong>$\eta$</strong> 无关，导数为 <strong>$0$</strong>。</li>
-<li><strong>$\eta^T T(y^{(i)})$</strong> 对 <strong>$\eta$</strong> 求导，结果是  <strong>$T(y^{(i)})$</strong> 。</li>
-<li><strong>$a(\eta)$</strong> 对 <strong>$\eta$</strong> 求导，这是指数分布族的一个 <strong>核心性质</strong> ：
-<blockquote>
-<p>性质： 对数配分函数 $a(\eta)$ 的一阶导数等于充分统计量的期望值。</p>
-<p>$$<br>
-\frac{da}{d\eta} = E[T(y) | x; \theta]<br>
-$$</p>
-</blockquote>
-</li>
+<p><span class="math display">$$
+\ell(\eta) = \sum_{i=1}^n [ \log b(y^{(i)}) + \eta^{(i)T} T(y^{(i)}) -
+a(\eta^{(i)}) ]
+$$</span></p>
+<h3 id="第一步利用链式法则拆解">第一步：利用链式法则拆解</h3>
+<p>对于第 <span class="math inline"><em>i</em></span> 个样本的对数似然
+<span
+class="math inline"><em>ℓ</em><sup>(<em>i</em>)</sup></span>，我们有：</p>
+<p><span class="math display">$$
+\frac{\partial \ell^{(i)}}{\partial \theta_j} = \frac{\partial
+\ell^{(i)}}{\partial \eta} \cdot \frac{\partial \eta}{\partial \theta_j}
+$$</span></p>
+<h3 id="第二步对-eta-求导">第二步：对 <strong><span
+class="math inline"><em>η</em></span></strong> 求导</h3>
+<p>观察对数似然公式：<strong><span
+class="math inline"><em>ℓ</em><sup>(<em>i</em>)</sup> = log <em>b</em>(<em>y</em><sup>(<em>i</em>)</sup>) + <em>η</em><sup><em>T</em></sup><em>T</em>(<em>y</em><sup>(<em>i</em>)</sup>) − <em>a</em>(<em>η</em>)</span></strong></p>
+<ol type="1">
+<li><strong><span
+class="math inline">log <em>b</em>(<em>y</em><sup>(<em>i</em>)</sup>)</span></strong>
+与 <strong><span class="math inline"><em>η</em></span></strong>
+无关，导数为 <strong><span class="math inline">0</span></strong>。</li>
+<li><strong><span
+class="math inline"><em>η</em><sup><em>T</em></sup><em>T</em>(<em>y</em><sup>(<em>i</em>)</sup>)</span></strong>
+对 <strong><span class="math inline"><em>η</em></span></strong>
+求导，结果是 <strong><span
+class="math inline"><em>T</em>(<em>y</em><sup>(<em>i</em>)</sup>)</span></strong>
+。</li>
+<li><strong><span
+class="math inline"><em>a</em>(<em>η</em>)</span></strong> 对
+<strong><span class="math inline"><em>η</em></span></strong>
+求导，这是指数分布族的一个 <strong>核心性质</strong> ： &gt; 性质：
+对数配分函数 <span class="math inline"><em>a</em>(<em>η</em>)</span>
+的一阶导数等于充分统计量的期望值。 &gt; &gt; <span
+class="math display">$$
+&gt; \frac{da}{d\eta} = E[T(y) | x; \theta]
+&gt; $$</span> &gt;</li>
 </ol>
 <p>所以：</p>
-<p>$$<br>
-\frac{\partial \ell^{(i)}}{\partial \eta} = T(y^{(i)}) - E[T(y^{(i)}) | x^{(i)}; \theta]<br>
-$$</p>
-<h3 id="第三步：对-theta-求导">第三步：对 <strong>$\theta$</strong> 求导</h3>
-<p>根据假设 $\eta = \theta^T x = \sum_{j=0}^d \theta_j x_j$，那么：</p>
-<p>$$<br>
-\frac{\partial \eta}{\partial \theta_j} = x_j<br>
-$$</p>
-<h3 id="第四步：合并结果">第四步：合并结果</h3>
+<p><span class="math display">$$
+\frac{\partial \ell^{(i)}}{\partial \eta} = T(y^{(i)}) - E[T(y^{(i)}) |
+x^{(i)}; \theta]
+$$</span></p>
+<h3 id="第三步对-theta-求导">第三步：对 <strong><span
+class="math inline"><em>θ</em></span></strong> 求导</h3>
+<p>根据假设 <span class="math inline">$\eta = \theta^T x = \sum_{j=0}^d
+\theta_j x_j$</span>，那么：</p>
+<p><span class="math display">$$
+\frac{\partial \eta}{\partial \theta_j} = x_j
+$$</span></p>
+<h3 id="第四步合并结果">第四步：合并结果</h3>
 <p>将上述两步合并：</p>
-<p>$$<br>
-\frac{\partial \ell^{(i)}}{\partial \theta_j} = \left( T(y^{(i)}) - E[T(y^{(i)}) | x^{(i)}; \theta] \right) x_j^{(i)}<br>
-$$</p>
-<p>在大多数常见模型（线性回归、逻辑回归）中，$T(y) = y$，且根据 GLM 假设，期望值 $E[y|x]$ 就是我们的预测函数 $h_\theta(x)$。</p>
+<p><span class="math display">$$
+\frac{\partial \ell^{(i)}}{\partial \theta_j} = \left( T(y^{(i)}) -
+E[T(y^{(i)}) | x^{(i)}; \theta] \right) x_j^{(i)}
+$$</span></p>
+<p>在大多数常见模型（线性回归、逻辑回归）中，<span
+class="math inline"><em>T</em>(<em>y</em>) = <em>y</em></span>，且根据
+GLM 假设，期望值 <span
+class="math inline"><em>E</em>[<em>y</em>|<em>x</em>]</span>
+就是我们的预测函数 <span
+class="math inline"><em>h</em><sub><em>θ</em></sub>(<em>x</em>)</span>。</p>
 <p>所以公式简化为：</p>
-<p>$$<br>
-\frac{\partial \ell^{(i)}}{\partial \theta_j} = (y^{(i)} - h_\theta(x^{(i)})) x_j^{(i)}<br>
-$$</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/01/21/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/">https://kjore.github.io/2026/01/21/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/01/23/%E7%94%9F%E6%88%90%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95/" title="生成式学习算法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">生成式学习算法</div></div><div class="info-2"><div class="info-item-1">判别式模型 vs. 生成式模型 在分类问题中，我们的最终目标是确定样本 $x$ 属于类别 $y$ 的概率。 判别式模型 (Discriminative Learning Algorithms)  目标： 直接学习 $p(y|x)$ 或从输入空间 $X$ 到标签 ${0, 1}$ 的映射。 直觉： 寻找不同类别之间的 决策边界（Decision Boundary） 。 例子： “我不需要知道大象长什么样，我只需要知道大象和狗之间那条区分的线在哪里。” 代表算法： 逻辑回归 (Logistic Regression)、感知机 (Perceptron)、SVM。  生成式模型 (Generative Learning Algorithms)  目标： 学习 $p(x|y)$（给定类别下特征的分布）和 $p(y)$（类别的先验概率）。 直觉： 学习每一个类别 具体的特征模型 。 例子： “我先学习大象长什么样，再学习狗长什么样。新来一个动物时，看它更像谁。” 代表算法： 朴素贝叶斯 (Naive Bayes)、高斯判别分析 (GDA)、HMM。  Q: 为什么有了判别式模型我们却还需要生...</div></div></div></a><a class="pagination-related" href="/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/" title="线性回归与梯度下降"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">线性回归与梯度下降</div></div><div class="info-2"><div class="info-item-1">线性回归基础 基本术语与符号 以一个波特兰市的房价预测模型作为例子，假设我们有如下数据：  输入特征 ($x^{(i)}$)：例如房子的建筑面积。 输出/目标变量 ($y^{(i)}$)：我们要预测的值，例如房价。 训练示例 ($(x^{(i)}, y^{(i)})$)：一组输入和输出的配对。 训练集：包含 $n$ 个训练示例的数据集。 假设 ($h$)：我们要学习的预测函数，输入 $x$ 并输出预测值。 回归问题：当预测的目标变量是连续值（如价格）时。 分类问题：当预测目标是离散值（如判断是“住宅”还是“公寓”）时。     概念 常见维度符号 在 d 个特征、n 个样本下的具体维度     单条输入特征$x$ $x \in \mathbb{R}^{d+1}$ $(d+1) \times 1$(列向量)   单条输出变量$y$ $y \in \mathbb{R}$ $1 \times 1$(标量)   参数$\theta$ $\theta \in \mathbb{R}^{d+1}$ $(d+1) \times 1$(列向量)   设计矩阵$X$ $X \in \mathbb{R...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">指数分布族 Exponential Family Distributions</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%AF%E5%8A%AA%E5%88%A9%E5%88%86%E5%B8%83%EF%BC%88Bernoulli-Distribution%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">伯努利分布（Bernoulli Distribution）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%EF%BC%88Gaussian-Distribution%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">高斯分布（Gaussian Distribution）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">构建广义线性模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95-Ordinary-Least-Squares"><span class="toc-number">2.1.</span> <span class="toc-text">普通最小二乘法 (Ordinary Least Squares)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92-Logistic-Regression"><span class="toc-number">2.2.</span> <span class="toc-text">逻辑回归 (Logistic Regression)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Softmax-%E5%9B%9E%E5%BD%92-Softmax-Regression"><span class="toc-number">2.3.</span> <span class="toc-text">Softmax 回归 (Softmax Regression)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">统一梯度上升法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%88%A9%E7%94%A8%E9%93%BE%E5%BC%8F%E6%B3%95%E5%88%99%E6%8B%86%E8%A7%A3"><span class="toc-number">3.0.1.</span> <span class="toc-text">第一步：利用链式法则拆解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%AF%B9-eta-%E6%B1%82%E5%AF%BC"><span class="toc-number">3.0.2.</span> <span class="toc-text">第二步：对 $\eta$ 求导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%AF%B9-theta-%E6%B1%82%E5%AF%BC"><span class="toc-number">3.0.3.</span> <span class="toc-text">第三步：对 $\theta$ 求导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E5%90%88%E5%B9%B6%E7%BB%93%E6%9E%9C"><span class="toc-number">3.0.4.</span> <span class="toc-text">第四步：合并结果</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/26/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E5%AE%9E%E7%8E%B0/" title="cs336作业五实现">cs336作业五实现</a><time datetime="2026-02-26T07:28:02.000Z" title="发表于 2026-02-26 15:28:02">2026-02-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="SQL查询多样性与相似性度量方法">SQL查询多样性与相似性度量方法</a><time datetime="2026-02-07T09:22:03.000Z" title="发表于 2026-02-07 17:22:03">2026-02-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/06/python%E8%AF%AD%E6%B3%95/" title="一些python语法">一些python语法</a><time datetime="2026-02-06T09:22:03.000Z" title="发表于 2026-02-06 17:22:03">2026-02-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/" title="cs336作业五文档">cs336作业五文档</a><time datetime="2026-02-04T09:22:03.000Z" title="发表于 2026-02-04 17:22:03">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理">推理</a><time datetime="2026-01-29T16:00:00.000Z" title="发表于 2026-01-30 00:00:00">2026-01-30</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+<p><span class="math display">$$
+\frac{\partial \ell^{(i)}}{\partial \theta_j} = (y^{(i)} -
+h_\theta(x^{(i)})) x_j^{(i)}
+$$</span></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/01/21/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/">https://kjore.github.io/2026/01/21/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/01/23/%E7%94%9F%E6%88%90%E5%BC%8F%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95/" title="生成式学习算法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">生成式学习算法</div></div><div class="info-2"><div class="info-item-1">判别式模型 vs. 生成式模型 在分类问题中，我们的最终目标是确定样本 x 属于类别 y 的概率。 判别式模型 (Discriminative Learning Algorithms)  目标： 直接学习 p(y|x) 或从输入空间 X 到标签 {0, 1} 的映射。 直觉： 寻找不同类别之间的 决策边界（Decision Boundary） 。 例子： “我不需要知道大象长什么样，我只需要知道大象和狗之间那条区分的线在哪里。” 代表算法： 逻辑回归 (Logistic Regression)、感知机 (Perceptron)、SVM。  生成式模型 (Generative Learning Algorithms)  目标： 学习 p(x|y)（给定类别下特征的分布）和 p(y)（类别的先验概率）。 直觉： 学习每一个类别 具体的特征模型 。 例子： “我先学习大象长什么样，再学习狗长什么样。新来一个动物时，看它更像谁。” 代表算法： 朴素贝叶斯 (Naive Bayes)、高斯判别分析 (GDA)、HMM。  Q: 为什么有了...</div></div></div></a><a class="pagination-related" href="/2026/01/20/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E4%B8%8E%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/" title="线性回归与梯度下降"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">线性回归与梯度下降</div></div><div class="info-2"><div class="info-item-1">线性回归基础 基本术语与符号 以一个波特兰市的房价预测模型作为例子，假设我们有如下数据：  输入特征 (x(i))：例如房子的建筑面积。 输出/目标变量 (y(i))：我们要预测的值，例如房价。 训练示例 ((x(i), y(i)))：一组输入和输出的配对。 训练集：包含 n 个训练示例的数据集。 假设 (h)：我们要学习的预测函数，输入 x 并输出预测值。 回归问题：当预测的目标变量是连续值（如价格）时。 分类问题：当预测目标是离散值（如判断是“住宅”还是“公寓”）时。          概念 常见维度符号 在 d 个特征、n 个样本下的具体维度     单条输入特征x x ∈ ℝd + 1 (d + 1) × 1(列向量)   单条输出变量y y ∈ ℝ 1 × 1(标量)   参数θ θ ∈ ℝd + 1 (d + 1) × 1(列向量)   设计矩阵X X ∈ ℝn × (d + 1) n × (d + 1)(矩阵)   目标向量y⃗ y⃗ ∈ ℝn n × 1(向量) ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8C%87%E6%95%B0%E5%88%86%E5%B8%83%E6%97%8F-exponential-family-distributions"><span class="toc-number">1.</span> <span class="toc-text">指数分布族
+Exponential Family Distributions</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%AF%E5%8A%AA%E5%88%A9%E5%88%86%E5%B8%83bernoulli-distribution"><span class="toc-number">1.1.</span> <span class="toc-text">伯努利分布（Bernoulli
+Distribution）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83gaussian-distribution"><span class="toc-number">1.2.</span> <span class="toc-text">高斯分布（Gaussian
+Distribution）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">构建广义线性模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95-ordinary-least-squares"><span class="toc-number">2.1.</span> <span class="toc-text">普通最小二乘法 (Ordinary
+Least Squares)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92-logistic-regression"><span class="toc-number">2.2.</span> <span class="toc-text">逻辑回归 (Logistic
+Regression)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#softmax-%E5%9B%9E%E5%BD%92-softmax-regression"><span class="toc-number">2.3.</span> <span class="toc-text">Softmax 回归 (Softmax
+Regression)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%9F%E4%B8%80%E6%A2%AF%E5%BA%A6%E4%B8%8A%E5%8D%87%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">统一梯度上升法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%E5%88%A9%E7%94%A8%E9%93%BE%E5%BC%8F%E6%B3%95%E5%88%99%E6%8B%86%E8%A7%A3"><span class="toc-number">3.0.1.</span> <span class="toc-text">第一步：利用链式法则拆解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%E5%AF%B9-eta-%E6%B1%82%E5%AF%BC"><span class="toc-number">3.0.2.</span> <span class="toc-text">第二步：对 η 求导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%E5%AF%B9-theta-%E6%B1%82%E5%AF%BC"><span class="toc-number">3.0.3.</span> <span class="toc-text">第三步：对 θ 求导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%E5%90%88%E5%B9%B6%E7%BB%93%E6%9E%9C"><span class="toc-number">3.0.4.</span> <span class="toc-text">第四步：合并结果</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/26/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E5%AE%9E%E7%8E%B0/" title="cs336作业五实现">cs336作业五实现</a><time datetime="2026-02-26T07:28:02.000Z" title="发表于 2026-02-26 15:28:02">2026-02-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/07/%E8%A1%A1%E9%87%8FSQL%E5%A4%9A%E6%A0%B7%E6%80%A7/" title="SQL查询多样性与相似性度量方法">SQL查询多样性与相似性度量方法</a><time datetime="2026-02-07T09:22:03.000Z" title="发表于 2026-02-07 17:22:03">2026-02-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/06/python%E8%AF%AD%E6%B3%95/" title="一些python语法">一些python语法</a><time datetime="2026-02-06T09:22:03.000Z" title="发表于 2026-02-06 17:22:03">2026-02-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/cs336%E4%BD%9C%E4%B8%9A%E4%BA%94%E8%A6%81%E6%B1%82/" title="cs336作业五文档">cs336作业五文档</a><time datetime="2026-02-04T09:22:03.000Z" title="发表于 2026-02-04 17:22:03">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/30/%E6%8E%A8%E7%90%86/" title="推理">推理</a><time datetime="2026-01-29T16:00:00.000Z" title="发表于 2026-01-30 00:00:00">2026-01-30</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
   const loadMathjax = () => {
     if (!window.MathJax) {
       window.MathJax = {
