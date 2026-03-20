@@ -1,0 +1,362 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AI4DB综述 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="本文是对《AI-Driven autonomous database management: Self-tuning, predictive query optimization, and intelligent indexing in enterprise it environments》这篇论文的研读总结。该论文详细介绍了AI在自治数据库管理中的基础知识和应用，重点关注了自调优机制、预测性查询">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI4DB综述">
+<meta property="og:url" content="https://kjore.github.io/2026/03/10/AIforDB/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="本文是对《AI-Driven autonomous database management: Self-tuning, predictive query optimization, and intelligent indexing in enterprise it environments》这篇论文的研读总结。该论文详细介绍了AI在自治数据库管理中的基础知识和应用，重点关注了自调优机制、预测性查询">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-03-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-12T14:13:05.824Z">
+<meta property="article:author" content="kjore">
+<meta property="article:tag" content="综述">
+<meta property="article:tag" content="论文研读">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AI4DB综述",
+  "url": "https://kjore.github.io/2026/03/10/AIforDB/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-03-09T16:00:00.000Z",
+  "dateModified": "2026-03-12T14:13:05.824Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/03/10/AIforDB/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AI4DB综述',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">AI4DB综述</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">AI4DB综述</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-09T16:00:00.000Z" title="发表于 2026-03-10 00:00:00">2026-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-12T14:13:05.824Z" title="更新于 2026-03-12 22:13:05">2026-03-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI4DB/">AI4DB</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>本文是对《AI-Driven autonomous database management: Self-tuning, predictive query optimization, and intelligent indexing in enterprise it environments》这篇论文的研读总结。该论文详细介绍了AI在自治数据库管理中的基础知识和应用，重点关注了自调优机制、预测性查询优化和智能索引技术等方面。</p>
+<ul>
+<li>自调优机制。self-tuning mechanisms 利用 AI 分析工作负载、优化资源分配并动态调整系统参数，以保持峰值效率。</li>
+<li>预测性查询优化。predictive query optimization 利用深度学习算法来增强查询执行计划、降低延迟，并在性能问题影响业务运营之前对其进行预判。</li>
+<li>智能索引技术。intelligent indexing techniques 应用机器学习技术来自动化索引的选择、适配和维护，确保最佳的数据检索并缩短查询处理时间。通过整合这些 AI 驱动的机制，企业可以实现更高的运营效率、提高数据库可靠性，并减少性能调优中的人工干预。</li>
+</ul>
+<h1>自治数据库的基本概念</h1>
+<h2 id="Autonomous-Databases的定义">Autonomous Databases的定义</h2>
+<p>“Autonomous databases are self-managing, self-healing, and self-securing database systems that leverage artificial intelligence (AI) and machine learning (ML) to automate administrative tasks with minimal human intervention. These databases incorporate advanced automation capabilities such as self-tuning, self-repairing, and autonomous query optimization, reducing operational costs and improving system performance.”<br>
+自我管理，自我修复，自我安全的数据库系统，利用人工智能和机器学习来自动化管理任务，减少人工干预。</p>
+<ul>
+<li>动态自调优（Dynamic Self-tuning）： 与依赖人工手动配置索引、优化查询和打补丁的传统数据库截然不同，ADBMS 能够根据工作负载的实时波动，动态监控并调整数据库参数。它利用预测性分析来提前识别性能瓶颈，并自动应用实时纠正措施 。</li>
+<li>自动化安全防护（Security Automation）： 系统将安全防御前置，利用 AI 驱动的异常检测机制和自动加密协议，主动保护数据免受恶意网络攻击和各种潜在威胁 。</li>
+<li>自动弹性伸缩（Auto-scaling）：ADBMS 能够敏锐感知系统的运行压力，根据实际需求动态分配计算算力，从而确保硬件资源始终保持在最优利用率（既不闲置浪费，也不超载崩溃） 。</li>
+<li>高可用性与主动干预（High Availability）：通过分布式架构和强大的自我恢复机制，ADBMS 能确保将系统的停机时间降至最低。它会持续分析工作负载模式并精准检测异常，在隐患真正演变成影响系统性能的故障之前，就主动将其化解。</li>
+</ul>
+<h2 id="从传统数据库到自治数据库的演变">从传统数据库到自治数据库的演变</h2>
+<p>传统数据库需要人为的手动配置，维护和性能调优，这种方式耗时且容易出错。自治数据库通过引入AI和ML技术，实现了自动化的管理和优化，极大地减少了人工干预，提高了效率和可靠性。</p>
+<h2 id="目前局限性与挑战">目前局限性与挑战</h2>
+<ul>
+<li>遗留系统整合困难：很多企业还在用老旧的传统关系型数据库（RDBMS），要把它们迁移到自治环境中，需要大量的重新配置，既耗时又费钱 。</li>
+<li>黑盒效应引发的“信任危机”：AI 算法缺乏透明度（通常是个黑盒）。DBA 们往往不敢把关键业务的决策权完全交给 AI，因为一旦出了错，很难理解 AI 为什么会给出这样的建议 。</li>
+<li>性能权衡（计算开销）：AI 在后台持续进行监控和预测分析是需要消耗额外算力的。这在某些对时间极其敏感的应用中，可能会引入延迟问题 。</li>
+<li>高昂的初始成本：虽然长期来看能省钱，但前期投入的 AI 基础设施、软件和专业人才的成本相当可观，这让很多中小型企业望而却步 。</li>
+</ul>
+<h1>三大硬核技术深度剖析</h1>
+<h2 id="自调优机制（Self-tuning-Mechanisms）">自调优机制（Self-tuning Mechanisms）</h2>
+<p>这里调整的应该是指缓冲池大小，内存分配，最大连接数等数据库参数。</p>
+<p>随着组织规模的扩大和工作负载模式的动态变化，手动调优变得越来越不切实际。自调优数据库利用人工智能 (AI) 和机器学习 (ML) 自动执行性能优化过程，在降低管理开销的同时提高了查询执行速度。它们能够实时动态调整资源分配和索引策略，无需系统停机即可适应不断变化的工作负载。此外，自调优机制还能主动识别性能瓶颈并采取纠正措施，增强了系统的容错能力，并能根据实时威胁检测动态调整安全策略。</p>
+<p>系统如何“看懂”当前的运行压力，并据此做出自适应的调整呢？</p>
+<p>自动化工作负载分析允许自调优数据库根据历史和实时的性能数据动态调整配置参数。与依赖静态指标的传统方法不同，AI 驱动的分析使用预测性分析来预判性能趋势，并相应地优化数据库参数。AI 系统可以监控查询执行时间、资源利用率等指标，从而在性能出现下降之前检测出低效的查询模式并优化执行计划。自适应优化技术结合了机器学习模型（如强化学习），能够持续评估并优化缓冲区缓存分配、执行路径等参数，确保配置始终处于最佳状态而无需数据库管理员干预。这种自动化分析还在成本优化方面发挥着关键作用，例如在云数据库中根据需求动态分配计算资源，在保证性能的同时将运营开销降至最低 。</p>
+<p>关于强化学习的使用</p>
+<p>强化学习是一种机器学习方法，它使自治系统能够通过不断的迭代学习和试错优化来提升性能。在数据库管理中，强化学习被用于持续评估系统性能并进行渐进式调整，从而完善自调优机制并提高效率。它的一个主要应用场景是缓冲区管理优化：RL 能根据不断演变的查询模式动态调整缓冲区缓存分配，确保内存的有效使用和更快的数据检索。另一个关键应用是索引的选择与维护：RL模型通过分析执行模式来决定最有效的索引策略，并随工作负载波动而自动进化，无需人工干预 。RL还能通过高效分配计算资源来优化云数据库的成本效率，在维持性能标准的同时防止不必要的资金支出。</p>
+<table>
+<thead>
+<tr>
+<th><strong>特性 (Feature)</strong></th>
+<th><strong>传统调优 (Traditional Tuning)</strong></th>
+<th><strong>基于 AI 的自调优 (AI-Based Self-Tuning)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>查询优化 (Query Optimization)</strong></td>
+<td>需要人工干预</td>
+<td>AI 驱动的执行计划选择</td>
+</tr>
+<tr>
+<td><strong>工作负载分析 (Workload Analysis)</strong></td>
+<td>静态阈值</td>
+<td>动态实时自适应</td>
+</tr>
+<tr>
+<td><strong>索引策略 (Indexing Strategies)</strong></td>
+<td>手动配置</td>
+<td>基于机器学习 (ML) 的自适应索引</td>
+</tr>
+<tr>
+<td><strong>资源分配 (Resource Allocation)</strong></td>
+<td>固定资源配置 (Fixed provisioning)</td>
+<td>基于 AI 的自动扩缩容 (Auto-scaling)</td>
+</tr>
+<tr>
+<td><strong>性能瓶颈识别 (Performance Bottleneck Identification)</strong></td>
+<td>被动式监控 (Reactive monitoring)</td>
+<td>预测性异常检测</td>
+</tr>
+<tr>
+<td><strong>成本优化 (Cost Optimization)</strong></td>
+<td>手动成本控制</td>
+<td>AI 驱动的效率优化</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>传统的ML和RL方法多次重放负载，甚至需要达到上万次，才能找到一个好的配置，这对于时间和资源的消耗是非常大的。</li>
+<li>引入LLM的话就必须要考虑大模型的幻觉问题和上下文长度限制</li>
+<li>可移植性差，因为不同数据库系统的参数和性能指标不一样，训练好的模型可能无法直接应用到另一个系统上。</li>
+<li>传统经验知识，如操作手册，论坛讨论等，需要将自然语言整合成结构化的知识库，才能被AI系统有效利用.</li>
+<li>参数数量太多，必须进行维度优化，对于被挑选中的参数，也要进行范围的裁剪。</li>
+</ul>
+<p>GPTune解决问题的思路：</p>
+<ul>
+<li>通过引入LLM来处理非结构化的自然语言知识</li>
+<li>LLM比较源信息与生成信息之间的矛盾，通过多数投票来为同一份参数生成多份提取结果，最终选出最可靠的结果。这在一定程度上解决了大模型的幻觉问题。</li>
+<li>少样本学习（few-shots learning）来缓解大模型的上下文长度限制问题。</li>
+<li>从四个层面（系统级别，工作负载级别，查询级别，参数级别）来进行维度优化和范围裁剪，从而大幅缩小搜索空间。针对被选中的参数，GPTune 还会通过分析历史调优数据来进一步裁剪参数范围，确保调优算法在一个更小、更相关的搜索空间内进行探索。</li>
+<li>充分利用结构化的领域知识来优化搜索空间，提出了一个由粗粒度到细粒度的贝叶斯优化框架来高效探索这个优化后的空间</li>
+</ul>
+<p>AgentTune的思路：</p>
+<ul>
+<li>完全由Agent驱动，模仿DBA的思维方式来进行调优，工作负载分析器（Workload Analyzer）、参数选择器（Knob Selector）、范围剪枝器（Range Pruner）和配置推荐器（Configuration Recommender），多Agent协同工作来完成数据库调优的全过程。</li>
+<li>质心距离的排序机制，束搜索算法</li>
+<li>AgentTune 由提示工程和基于规则的工具驱动，在适应新环境时仅需极少的准备工作。例如，AgentTune 可以在不同的机器或 DBMS 平台之间实现无缝部署，而无需重新训练或进行大规模的数据收集</li>
+</ul>
+<p>可改进的想法？<br>
+将部分LLM的工作用硬编码实现以避免大模型幻觉和缩短响应时间？</p>
+<p>微调预训练模型达到专业的Agent?</p>
+<h2 id="预测性查询优化-（Predictive-query-optimization）">预测性查询优化 （Predictive query optimization）</h2>
+<p>传统数据库管理系统 (DBMS) 有以下困境</p>
+<ul>
+<li>严重依赖基于规则或基于成本的优化器，这些优化器主要根据预设的统计估计来生成执行计划。</li>
+<li>无法适应动态变化的工作负载和数据分布，导致性能下降。</li>
+<li>多表连接时，优化器可能会生成次优的执行计划，导致执行时间过长和资源浪费。</li>
+<li>基数估计不准确，尤其是表的数据量发生了改变，数据过时。</li>
+<li>缺少异常检测机制</li>
+</ul>
+<p>AI驱动的查询成本估算和执行计划<br>
+AI 利用深度神经网络，综合评估 CPU 使用率、内存分配、磁盘 I/O 和网络带宽等因素，实现极其精准的查询成本估算。AI 优化器会评估多条潜在的执行路径，并基于过去的执行模式，利用强化学习技术动态挑选出最高效的那一条。利用卷积神经网络 (CNNs) 和循环神经网络 (RNNs) 分析 SQL 结构，识别出低效的部分，并推荐出计算成本更低但结果相同的替代写法。（自动化查询重写）这在处理包含多重聚合和嵌套子查询的复杂分析时特别有效。</p>
+<h2 id="智能索引">智能索引</h2>
+<p>索引作为一种数据结构，能够让查询直接访问记录而无需扫描整张数据表，从而极大减少磁盘 I/O 操作并降低查询延迟。它能让关系型数据库在执行复杂的表连接（Join）操作时显著降低计算开销。<br>
+痛点：</p>
+<ul>
+<li>设计糟糕的索引会成为性能瓶颈，不仅占用大量存储空间，还会因为维护索引结构的开销而严重拖慢数据写入（Write）操作的速度。</li>
+<li>传统的静态索引策略在面对动态波动的工作负载时显得极其僵化，因此现代数据库必须转向基于 AI 的实时工作负载分析和自动化自适应索引</li>
+</ul>
+<p>监督学习 (Supervised Learning)： 决策树和神经网络等模型可以分析查询频率、列基数 (column cardinality) 和连接条件等特征，从而准确预测不同索引策略对查询性能的提升效果。<br>
+强化学习 (Reinforcement Learning, RL)： RL 算法能够在受控环境中不断试错，根据优化查询速度和资源利用率的“奖励函数”来寻找最完美的索引配置，同时将索引维护的开销降到最低。<br>
+这种 ML 驱动的策略在多云和分布式数据库中尤其强大，它能分析跨节点的查询趋势，这是传统索引技术根本做不到的</p>
+<p>三种前沿的动态索引构建技术：</p>
+<ul>
+<li>增量索引 (Incremental indexing)： 系统不再简单粗暴地一次性对所有数据建立索引，而是根据实际的查询访问模式“渐进式”地构建索引。这样既优先照顾了高频数据，又降低了维护成本。</li>
+<li>自调优索引 (Self-tuning indexing)： ML 算法会实时监控查询延迟和存储限制，果断地在后台自动创建、修改或删掉没用的冗余索引，从而最大化存储效率</li>
+<li>混合自适应索引 (Hybrid adaptive indexing)： 结合深度学习预测未来的查询工作负载，在流量高峰真正到来之前<strong>抢先</strong>调整好索引结构。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/03/10/AIforDB/">https://kjore.github.io/2026/03/10/AIforDB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%BA%E6%96%87%E7%A0%94%E8%AF%BB/">论文研读</a><a class="post-meta__tags" href="/tags/%E7%BB%BC%E8%BF%B0/">综述</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/03/10/openclaw/" title="openclaw在安装和应用上的笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">openclaw在安装和应用上的笔记</div></div><div class="info-2"><div class="info-item-1">安装 首先需要安装Node.js 22+ 然后使用npm安装openclaw： 1npm i -g openclaw@latest 然后使用以下命令快速配置： 1openclaw onboard 之后每次使用输入以下命令 1openclaw dashboard 安装问题一 登录网页后显示404，说明gateway没有正确启动，可能是端口被占用或者权限问题. 首先查看有没有这个文件 1dir &quot;$env:USERPROFILE\.openclaw\gateway.cmd&quot; 如果没有，说明安装过程中可能出现了问题，可以尝试重新安装openclaw。如果有这个文件，尝试手动运行它，看看是否有错误提示。 安装问题二 打开页面后，显示: 12⚠️ Agent failed before reply: No API key found for provider &quot;openai-codex&quot;. Auth store: C:\Users\86182.openclaw\agents\main\agent\auth-profiles.json (agentDi...</div></div></div></a><a class="pagination-related" href="/2026/03/10/AgentTune/" title="参数调优《AgentTune》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">参数调优《AgentTune》</div></div><div class="info-2"><div class="info-item-1">概述 现有方法通常需要数百次工作负载重放或依赖海量训练数据，导致调优效率低下或准备成本高昂。此外，这些方法还面临生成无效配置的风险，可能导致性能下降甚至数据库崩溃。  调优效率低。基于机器学习（ML）的方法,通常需要数百次迭代才能收敛到理想的配置。每次迭代都涉及在数据库管理系统（DBMS）上执行工作负载（即工作负载重放），导致调优过程可能持续数小时。尽管大语言模型（LLM）辅助的方法实现了更快的收敛，但它们仍受限于基于机器学习的参数调优器固有的低效性。 可靠性低。尽管基于机器学习（ML）的调优通过平衡探索与利用来避免局部最优解，但它经常产生无效配置——即那些导致性能低于默认水平甚至使数据库管理系统（DBMS）崩溃的配置。同样，初步研究表明，直接使用大语言模型（LLMs）进行参数推荐可能会导致不安全的值（例如，过小的缓冲池大小），这源于幻觉和有限的数值推理能力等问题。这些问题可能导致调优过程中的资源耗尽或系统不稳定。 准备工作耗费大量资源。为了提高效率，许多基于机器学习（ML）和大型语言模型（LLM）的方法利用历史调优数据进行模型初始化、缩小配置空间或微调端到端参数调优器。然而，收...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/03/13/%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" title="自动模式设计综述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-13</div><div class="info-item-2">自动模式设计综述</div></div><div class="info-2"><div class="info-item-1">《Self-tuning Database Systems: A Systematic Literature Review of Automatic Database Schema Design and Tuning》 探索 SQL 和 NoSQL 数据库自动化模式调优方法的实质性工作，也是首个提出用于评估和比较不同模式调优解决方案的分类体系的工作。本综述有助于探讨当前解决方案的动机与能力之间的差距，并据此确定未来的研究方向。通俗点来讲就是探究数据库内部数据结构设计的自动化方法，使其跑得更快，效果更好。 关系型数据库自动化模式设计 关系型数据库的自动化模式设计主要侧重于物理模型设计。 物理结构设计包括：  辅助加速对象：索引、物化视图 底层数据组织对象：在多维关系型数据库中使用的聚簇键，在无共享并行数据库系统中使用的分区键。  自动化物理设计通常三步走：  生成可能的备选方案 评估备选方案 选择代价最低的最佳方案  基于上述流程，研究人员将自动化物理设计拆解为两个最核心的技术维度：  代价模型 (Cost Model)：它是系统的“评估裁判” 。主要负责评估所有备选设计，并估算出...</div></div></div></a><a class="pagination-related" href="/2026/03/10/AgentTune/" title="参数调优《AgentTune》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-10</div><div class="info-item-2">参数调优《AgentTune》</div></div><div class="info-2"><div class="info-item-1">概述 现有方法通常需要数百次工作负载重放或依赖海量训练数据，导致调优效率低下或准备成本高昂。此外，这些方法还面临生成无效配置的风险，可能导致性能下降甚至数据库崩溃。  调优效率低。基于机器学习（ML）的方法,通常需要数百次迭代才能收敛到理想的配置。每次迭代都涉及在数据库管理系统（DBMS）上执行工作负载（即工作负载重放），导致调优过程可能持续数小时。尽管大语言模型（LLM）辅助的方法实现了更快的收敛，但它们仍受限于基于机器学习的参数调优器固有的低效性。 可靠性低。尽管基于机器学习（ML）的调优通过平衡探索与利用来避免局部最优解，但它经常产生无效配置——即那些导致性能低于默认水平甚至使数据库管理系统（DBMS）崩溃的配置。同样，初步研究表明，直接使用大语言模型（LLMs）进行参数推荐可能会导致不安全的值（例如，过小的缓冲池大小），这源于幻觉和有限的数值推理能力等问题。这些问题可能导致调优过程中的资源耗尽或系统不稳定。 准备工作耗费大量资源。为了提高效率，许多基于机器学习（ML）和大型语言模型（LLM）的方法利用历史调优数据进行模型初始化、缩小配置空间或微调端到端参数调优器。然而，收...</div></div></div></a><a class="pagination-related" href="/2025/11/14/DARLING/" title="《共同加强语言模型生成的多样性和质量》论文深度研读"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-14</div><div class="info-item-2">《共同加强语言模型生成的多样性和质量》论文深度研读</div></div><div class="info-2"><div class="info-item-1">论文链接：https://arxiv.org/abs/2509.02534 深度解析：DARLING论文《联合增强语言模型生成的“多样性”与“质量”》 导言：现代大语言模型的核心困境 大型语言模型（LLMs）的后训练（Post-training）过程，例如基于人类反馈的强化学习（RLHF），显著提升了模型的准确性和实用性。然而，这种优化带来了一个严重的副作用：模型的多样性（diversity）大幅下降 。 在抽象（Abstract）和引言（Introduction）部分（第1节），论文指出了当前方法的核心矛盾：为了追求质量，模型被训练得“过度锐化”（overly sharpened），其输出分布变得极窄 。这意味着，模型倾向于为同一个提示（prompt）生成高度相似、甚至近乎重复的答案。这种“多样性崩塌”（diversity collapse）现象，极大地限制了 LLMs 在需要创意和探索性任务（如头脑风暴、讲故事或解决复杂问题）中的应用价值 。 为解决这一挑战，研究人员提出了 DARLING (Diversity-Aware Reinforcement Learning)，即“...</div></div></div></a><a class="pagination-related" href="/2026/03/11/GPTune/" title="参数调优《GPTune》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-11</div><div class="info-item-2">参数调优《GPTune》</div></div><div class="info-2"><div class="info-item-1">当前的调优系统通常利用贝叶斯优化（BO）或强化学习（RL）通过试错来探索空间 。然而，这些方法依然会产生高昂的调优成本，通常需要数百到数千次耗时的迭代才能找到理想配置 。 难点 1：参数太多。现有方法要么选择固定的参数子集，牺牲了灵活性；要么需要极其消耗资源的大量运行来识别重要参数 。 难点 2：搜索空间太大。现有方法大多直接使用 DBMS 供应商提供的默认值域，这些值域过于宽泛，不仅使调优过程复杂化，还引入了系统崩溃的风险。 挑战一（C1）：很难在平衡成本与质量的前提下，将异构的自然语言知识统一为机器可读的结构化视图。现有的数据提取和清理工作流复杂且难以满足需求 。 挑战二（C2）：即使有了结构化知识，BO 和 RL 等标准优化算法在设计上并不支持直接集成外部领域知识。而单纯人工提取的静态规则又无法适应多变的工作负载环境 。 GPTUNER 的创新设计： 解决 C1：针对 LLM 容易产生幻觉的脆弱特性，设计了一个包含双重纠错机制的 LLM 管道。该管道涵盖数据摄取、基于 LLM 的数据清洗过滤、冲突处理集成以及事实一致性校对。 解决 C2：在调优前利用 LLM 的文本分析能力...</div></div></div></a><a class="pagination-related" href="/2026/03/11/LLMOpt/" title="LLMOpt——《A Query Optimization Method Utilizing Large Language Models》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-11</div><div class="info-item-2">LLMOpt——《A Query Optimization Method Utilizing Large Language Models》</div></div><div class="info-2"><div class="info-item-1">背景 查询优化是数据库的关键任务，需要在海量策略中找到最高效的执行计划 。但传统方法依赖启发式搜索和代价预测，往往因为搜索空间太复杂或性能估计不准，导致选出来的计划不是最优的。 下图展示了传统查询优化器“先搜后选”的pipeline:  Candidate Searching: 对于n个表的查询，会产生$O(n!)$的复杂度，传统数据库采用动态规划或启发式算法来剪枝搜索空间。如图所示，可以向 DBMS 施加外部的“限制”以影响搜索过程。例如，一些方法会调整特定的数据库控制参数（Knobs），来启用或禁用特定的连接（Join）或扫描（Scan）操作，从而迫使优化器生成不同的候选计划集合。 容易出现的情况是，优化器在搜索过程中可能会错过一些潜在的高效计划，或者由于代价模型的不准确而选择了一个次优计划。这些问题导致了查询性能的下降，尤其是在复杂查询或大规模数据集上。即搜不全 Candidate Selection: 候选计划的结构和数值细节（例如表和过滤条件之间的关联方式，或特定的节点类型）会被编码为特征。图中的“代价模型”会评估这些特征，以近似计算查询执行所需的时间。传统的代价模型依...</div></div></div></a><a class="pagination-related" href="/2026/03/14/dbot/" title="D-Bot：基于LLM的数据库诊断系统"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-14</div><div class="info-item-2">D-Bot：基于LLM的数据库诊断系统</div></div><div class="info-2"><div class="info-item-1">背景 数据库异常种类繁多，不可能用预定义的规则全面覆盖，往往依靠DBA的专业知识进行逐步分析。然而，人类DBA和令人望而生畏的异常问题之间存在巨大差距。  培训一个DBA需要大量的时间， 几乎不可能雇用足够的DBA来管理海量的数据库实例 在紧急情况下，DBA分析问题可能需要较长时间，在这期间会造成巨大的经济损失。  基于此，现在的数据库系统配备了半自动化工具，但是这些工具大多是（1.经验规则和小模型能力太窄)基于经验规则或者小型ML模型进行的，(2.泛化能力差)这些方法不能灵活地应用到变化的场景中。对于经验规则来说，重新根据新文档变换经验规则是很繁琐的，而ML模型需要重新设计输入指标和标签，并针对新场景重新训练模型。（3.缺乏像 DBA 一样的推理和交互能力）真实诊断需要递归地查看不同系统视图、结合工具结果调整下一步动作，而传统方法做不到这种“边诊断边探索”的过程。 因此，作者希望构建出具有以下三个特点的数据库系统：  精确诊断，可以制定诊断计划来准确地找到该优化的参数 节省费用和时间 通用性强，可以自己学习给定的文档，灵活分析未见的异常  即能够读文档学知识、知道当前该调用什么...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">自治数据库的基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Autonomous-Databases%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">Autonomous Databases的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%BC%A0%E7%BB%9F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%B0%E8%87%AA%E6%B2%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%BC%94%E5%8F%98"><span class="toc-number">1.2.</span> <span class="toc-text">从传统数据库到自治数据库的演变</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%89%8D%E5%B1%80%E9%99%90%E6%80%A7%E4%B8%8E%E6%8C%91%E6%88%98"><span class="toc-number">1.3.</span> <span class="toc-text">目前局限性与挑战</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">三大硬核技术深度剖析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E8%B0%83%E4%BC%98%E6%9C%BA%E5%88%B6%EF%BC%88Self-tuning-Mechanisms%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">自调优机制（Self-tuning Mechanisms）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E6%80%A7%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96-%EF%BC%88Predictive-query-optimization%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">预测性查询优化 （Predictive query optimization）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E7%B4%A2%E5%BC%95"><span class="toc-number">2.3.</span> <span class="toc-text">智能索引</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/20/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E5%85%A5%E9%97%A8/" title="知识图谱入门">知识图谱入门</a><time datetime="2026-03-20T07:28:02.000Z" title="发表于 2026-03-20 15:28:02">2026-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/14/dbot/" title="D-Bot：基于LLM的数据库诊断系统">D-Bot：基于LLM的数据库诊断系统</a><time datetime="2026-03-13T16:00:00.000Z" title="发表于 2026-03-14 00:00:00">2026-03-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/13/%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" title="自动模式设计综述">自动模式设计综述</a><time datetime="2026-03-12T16:00:00.000Z" title="发表于 2026-03-13 00:00:00">2026-03-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/11/GPTune/" title="参数调优《GPTune》">参数调优《GPTune》</a><time datetime="2026-03-10T16:00:00.000Z" title="发表于 2026-03-11 00:00:00">2026-03-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/11/LLMOpt/" title="LLMOpt——《A Query Optimization Method Utilizing Large Language Models》">LLMOpt——《A Query Optimization Method Utilizing Large Language Models》</a><time datetime="2026-03-10T16:00:00.000Z" title="发表于 2026-03-11 00:00:00">2026-03-11</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

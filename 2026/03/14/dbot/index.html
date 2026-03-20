@@ -1,0 +1,503 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>D-Bot：基于LLM的数据库诊断系统 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="背景 数据库异常种类繁多，不可能用预定义的规则全面覆盖，往往依靠DBA的专业知识进行逐步分析。然而，人类DBA和令人望而生畏的异常问题之间存在巨大差距。  培训一个DBA需要大量的时间， 几乎不可能雇用足够的DBA来管理海量的数据库实例 在紧急情况下，DBA分析问题可能需要较长时间，在这期间会造成巨大的经济损失。  基于此，现在的数据库系统配备了半自动化工具，但是这些工具大多是（1.经验规则和小模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="D-Bot：基于LLM的数据库诊断系统">
+<meta property="og:url" content="https://kjore.github.io/2026/03/14/dbot/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="背景 数据库异常种类繁多，不可能用预定义的规则全面覆盖，往往依靠DBA的专业知识进行逐步分析。然而，人类DBA和令人望而生畏的异常问题之间存在巨大差距。  培训一个DBA需要大量的时间， 几乎不可能雇用足够的DBA来管理海量的数据库实例 在紧急情况下，DBA分析问题可能需要较长时间，在这期间会造成巨大的经济损失。  基于此，现在的数据库系统配备了半自动化工具，但是这些工具大多是（1.经验规则和小模">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-03-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-18T06:30:09.553Z">
+<meta property="article:author" content="kjore">
+<meta property="article:tag" content="参数调优">
+<meta property="article:tag" content="论文研读">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "D-Bot：基于LLM的数据库诊断系统",
+  "url": "https://kjore.github.io/2026/03/14/dbot/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-03-13T16:00:00.000Z",
+  "dateModified": "2026-03-18T06:30:09.553Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/03/14/dbot/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'D-Bot：基于LLM的数据库诊断系统',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">D-Bot：基于LLM的数据库诊断系统</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">D-Bot：基于LLM的数据库诊断系统</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-13T16:00:00.000Z" title="发表于 2026-03-14 00:00:00">2026-03-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-18T06:30:09.553Z" title="更新于 2026-03-18 14:30:09">2026-03-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI4DB/">AI4DB</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>背景</h1>
+<p>数据库异常种类繁多，不可能用预定义的规则全面覆盖，往往依靠DBA的专业知识进行逐步分析。然而，人类DBA和令人望而生畏的异常问题之间存在巨大差距。</p>
+<ol>
+<li>培训一个DBA需要大量的时间，</li>
+<li>几乎不可能雇用足够的DBA来管理海量的数据库实例</li>
+<li>在紧急情况下，DBA分析问题可能需要较长时间，在这期间会造成巨大的经济损失。</li>
+</ol>
+<p>基于此，现在的数据库系统配备了半自动化工具，但是这些工具大多是（1.经验规则和小模型能力太窄)基于经验规则或者小型ML模型进行的，(2.泛化能力差)这些方法不能灵活地应用到变化的场景中。对于经验规则来说，重新根据新文档变换经验规则是很繁琐的，而ML模型需要重新设计输入指标和标签，并针对新场景重新训练模型。（3.缺乏像 DBA 一样的推理和交互能力）真实诊断需要递归地查看不同系统视图、结合工具结果调整下一步动作，而传统方法做不到这种“边诊断边探索”的过程。</p>
+<p>因此，作者希望构建出具有以下三个特点的数据库系统：</p>
+<ol>
+<li>精确诊断，可以制定诊断计划来准确地找到该优化的参数</li>
+<li>节省费用和时间</li>
+<li>通用性强，可以自己学习给定的文档，灵活分析未见的异常</li>
+</ol>
+<p>即能够读文档学知识、知道当前该调用什么工具、能多步推理、还能给出最终报告。</p>
+<p>最近大语言模型的发展为实现这些目标提供了可能，但是仍需解决以下问题：</p>
+<ul>
+<li>LLM 本身有理解和生成能力，但缺数据库知识与工具使用能力。</li>
+<li>只给 LLM 一个问题不够，必须动态匹配相关知识和工具。</li>
+<li>单次链式推理不稳定，需要树搜索和多专家协作来提高可靠性。</li>
+</ul>
+<p>作者为了解决上述问题构建了Dbot:</p>
+<ol>
+<li>首先，离线从文档中提取有用的知识块（基于摘要树的知识提取），并构建包含详细使用说明的工具层次结构，在此基础上初始化 LLM 诊断的提示模板。</li>
+<li>其次，根据提示模板，通过匹配最相关的知识（知识匹配）和工具（工具检索）生成新的提示，LLM 可以利用这些提示获取监控和优化结果，从而进行合理诊断。</li>
+<li>第三，引入了基于树状结构的搜索策略，引导 LLM 反思过去的诊断尝试并选择最有希望的一个，从而显著提高诊断性能。</li>
+<li>最后，针对复杂的异常情况（如具有多个根源），提出了一种协作诊断机制，即多个 LLM 专家可以异步方式（如共享分析结果、进行交叉审查）进行诊断，以解决给定的异常情况。</li>
+</ol>
+<p>贡献：</p>
+<ol>
+<li>设计了一个基于 LLM 的数据库诊断框架，以实现精确诊断。</li>
+<li>提出了一种诊断提示生成方法，通过与从文档中提取的相关知识进行匹配，以及利用微调嵌入模型检索工具，增强 LLM 执行诊断的能力。</li>
+<li>提出了一种根本原因分析方法，利用基于<strong>树搜索</strong>的算法提高诊断性能，引导 LLM 进行多步骤分析。</li>
+<li>提出了一种协同诊断机制来提高诊断效率，即多个 LLM 同时利用各自的领域知识分析问题。</li>
+</ol>
+<h1>系统设计</h1>
+<p>D-Bot 并不是一个单纯的对话机器人，而是一个标准的<strong>实时监控 -&gt; 触发报警 -&gt; 上下文画像组装 -&gt; LLM 大脑深度推理 -&gt; 输出修复方案</strong>的自动化闭环管线。<br>
+<img src="image/dbot/1773555352150.png" alt="1773555352150"></p>
+<ol>
+<li>异常监控器 (Anomaly Monitor)：底层模块持续收集各类 Metrics（如 CPU、内存、I/O 读写率）。一旦某项指标越界，触发预设规则，就会通过 Webhook Server 将警报（Alerts）发送出去。</li>
+<li>异常画像器 (Anomaly Profiler)：单一的警报往往信息碎片化。画像器接收警报后，会去抓取案发时间段内的数据库基础信息（如系统配置 Config）和查询日志（Query Logs），把它们拼接组装成一份结构化的“异常描述（Anomaly Description）”，作为后续诊断的输入基底。</li>
+<li>数据库诊断核心 (Database Diagnosis)：这是 D-Bot 的“大脑”。它首先在离线阶段准备好诊断知识和工具库。在在线阶段，动态检索最匹配当前画像的知识和工具，然后召唤单体 LLM（基于树搜索）或多个 LLM 专家（多智能体协作）进行多轮深度推理，最终输出一份详尽的诊断报告。</li>
+</ol>
+<h1>详解</h1>
+<h2 id="离线知识与工具准备-Offline-Preparation">离线知识与工具准备 (Offline Preparation)</h2>
+<p>目标：</p>
+<ul>
+<li>把人类 DBA 读的冗长官方文档，变成 LLM 随时可用的结构化知识；</li>
+<li>把 DBA 敲的代码脚本，变成 LLM 可调用的工具 API。</li>
+</ul>
+<ol>
+<li>
+<p>基于 Summary-Tree 的<strong>知识提取</strong> ，长篇排错文档如果直接 Chunking 会导致上下文语意丢失。作者设计了三步提取法：<br>
+<img src="image/dbot/1773814530070.png" alt="1773814530070"></p>
+<ol>
+<li>章节拆分：根据官方文档的章节层级关系进行切块，如果章节过大的话再递归拆小。</li>
+<li>构建摘要树：把文档标题作为根节点，各切分块作为子节点，构成树结构。接着用 LLM 为每个节点生成一段“摘要（Summary）”作为文本索引。作者专门设计了 summarization prompt，让模型概括工作流、特征、应用场景等关键信息。</li>
+<li>知识提取与聚类：LLM 拿着提示词遍历文档块及其子节点，遇到不确定的内容就去相似摘要的节点里找线索。</li>
+<li>知识块格式化：最终提取出包含 “名称 (Name)”、“内容/影响 (Content)”、“相关指标 (Metrics)”和“排查步骤 (Steps)” 四要素的标准知识块。</li>
+<li>去重与保留：知识块抽出来以后，系统会判断与已有知识是否重复。若 LLM 认为冗余概率低，就直接保留；若可能重复，则人工检查，只有确实没有新增信息才去掉。作者强调这样可以尽量覆盖诊断知识，同时减少冗余。</li>
+<li>聚类：最后用embedding + DBSCAN 聚类，发现这些知识块大致按 root cause 类型聚集，比如 workload、query operator、index、memory、I/O 等。这个聚类结果后面直接用来定义“专家角色”</li>
+</ol>
+</li>
+<li>
+<p><strong>工具封装与注册</strong> (Tool Preparation)</p>
+<ol>
+<li>建立工具层级结构：作者把工具按层级组织成：categories → tools → APIs<br>
+例如：
+<ul>
+<li>optimization
+<ul>
+<li>configuration tool
+<ul>
+<li>heuristic_index_selection</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>给每个api写详细说明，包括这个api做什么，参数是什么，在什么场景下使用。例如索引推荐 API 会说明：根据查询模式和 workload 自动推荐降低成本的索引，参数包括查询频率、数据量、索引空间约束等。</li>
+<li>动态注册 API：系统遍历工具模块，把 API 名称和说明注册进去，这样后续 LLM 在推理时就能调用这些工具。</li>
+</ol>
+</li>
+<li>
+<p><strong>构建专家模板</strong><br>
+不是只有一个通用 agent，而是依据知识聚类构造多个专家角色。<br>
+每个专家模板里包括：</p>
+<ul>
+<li>角色说明（例如 CPU expert）</li>
+<li>任务说明</li>
+<li>基本诊断步骤</li>
+<li>可用知识范围</li>
+<li>可用工具/API 列表</li>
+<li>demo examples</li>
+</ul>
+<p>比如 CPU expert 会更擅长 CPU 相关问题，并能调用 cpu_usage_api、index_tuning_api 等。<br>
+这一步相当于把“知识分工”和“工具权限”绑定到不同 agent 上。</p>
+</li>
+</ol>
+<h2 id="诊断提示词的动态生成-Prompt-Generation">诊断提示词的动态生成(Prompt Generation)</h2>
+<p>当真实异常发生时，如果把所有知识和工具全塞给 LLM 会导致 Context 撑爆，且干扰信息过多。D-Bot 设计了在线生成上下文相关的prompt：</p>
+<ol>
+<li>
+<p>构造异常描述<br>
+输入包括：</p>
+<ul>
+<li>触发的 alert</li>
+<li>发生时间</li>
+<li>严重程度</li>
+<li>状态信息</li>
+<li>基础数据库信息</li>
+<li>某些统计信息（如异常时段的查询统计）<br>
+这些内容由 Anomaly Profiler 从告警和数据库基础信息中生成。</li>
+</ul>
+</li>
+<li>
+<p>知识检索：BM25 算法</p>
+<p>检索当前的异常需要哪些知识来解决。</p>
+<p>作者使用 <strong>BM25</strong> 对知识块做检索，但不是用原始文本全文匹配，而是主要基于知识块中的 <strong>Metrics 字段</strong> 来匹配当前异常涉及的异常指标。</p>
+<p>其直觉是：如果当前观察到的异常指标与某个知识块常处理的指标相近，那么该知识块大概率有帮助。</p>
+<p>论文中的 BM25 公式本质上是在给每个知识块打分：</p>
+<ul>
+<li>某个异常指标在知识块里出现越多，分越高；</li>
+<li>越稀有、区分度越高的指标，权重越大；</li>
+<li>文档长度会做归一化，避免长块天然占优。</li>
+</ul>
+</li>
+<li>
+<p>工具匹配：微调 Sentence-BERT</p>
+<p>难点：API 的名字往往偏底层（某个 API 名叫 <code>sort_remove</code>，你单看名字并不知道它和慢查询有关），不包含明显的业务语义，BM25 查字面量会完全失效。</p>
+<p>方案：作者使用二元交叉熵损失函数（Cross-Entropy Loss）微调了一个 Sentence-BERT 模型：<br>
+$\mathcal{L}=-\sum_{i=1}^{n}\sum_{j=1}^{m}y_{ij}\log(p_{ij})+(1-y_{ij})\log(1-p_{ij})$</p>
+<p>训练数据是：</p>
+<ul>
+<li>诊断上下文 $s_i$</li>
+<li>工具 $t_j$</li>
+<li>它们是否相关的标签 $y_{ij}$</li>
+</ul>
+<p>微调后，系统将当前的异常上下文 $s$ 和 API 工具 $t_j$ 分别进行 编码 Embedding，然后通过计算两者的余弦相似度（Cosine Similarity） $\frac{emb(s)\cdot emb(t_j)}{||emb(s)||_2 ||emb(t_j)||_2}$，精准召回 Top-k 的最合适排障工具。</p>
+<p>最后把工具名、函数说明、参数列表一起塞进 prompt。</p>
+</li>
+<li>
+<p>加入历史消息：D-Bot 的诊断不是一次性完成，而是多轮进行。历史消息包括：</p>
+<ul>
+<li>之前的 tool call</li>
+<li>观察结果</li>
+<li>已尝试的推理路径</li>
+<li>已有中间判断<br>
+这些信息后面会供树搜索使用。</li>
+</ul>
+</li>
+</ol>
+<h2 id="基于树搜索的推理引擎-Tree-Search-Based-Diagnosis">基于树搜索的推理引擎 (Tree Search Based Diagnosis)</h2>
+<p>为了克服原生 LLM 容易产生事实幻觉和“过早停止推理”的顽疾，作者将诊断过程建模为一个类似蒙特卡洛树搜索（MCTS）的马尔可夫决策过程。</p>
+<ol>
+<li>
+<p>树的初始化：每个节点代表 LLM 的一次动作（调用某个 API，或者得出一个中间结论），边代表动作的流向。</p>
+</li>
+<li>
+<p>模拟执行：从根到叶不断进行推理，在选择节点时要进行UCT选择</p>
+<p>UCT 探索算法：系统不盲目深搜，而是利用置信上限算法决定探索路径：<br>
+$UCT(n)=\frac{W(n)}{N(n)}+C\sqrt{\frac{2\ln N(p)}{N(n)}}$<br>
+其中 $N(n)$ 是当前节点访问次数，$N(p)$ 是父节点访问次数。第一项$\frac{W(n)}{N(n)}$表示获得投票数越多越靠谱，第二项$C\sqrt{\frac{2\ln N(p)}{N(n)}}$是探索奖励，访问越少的节点奖励越大，防止系统只盯着当前最优路径。最关键的 $W(n)$（获胜数）是由系统后台的多个“裁判 LLM”对叶子节点的排查结果有效性进行投票得出的。</p>
+</li>
+<li>
+<p>节点评估与投票：<br>
+树搜索不是只靠一个 LLM 自己决定下一步，而是让多个评估 LLM 对叶节点投票，判断哪条路径更有前景。<br>
+评价依据包括：找到的 root cause 数量，是否准确，推理过程是否合理。<br>
+这样可以缓解单个 LLM 判断不稳定的问题。</p>
+</li>
+<li>
+<p>反思与剪枝 (Reflection &amp; Pruning)：这是防幻觉的核心。每走一步，LLM 必须对自己刚刚的动作进行“反思（Reflection）”。这些 reflection 会附加到后继节点 prompt 中，帮助后续分支少走弯路。如果一个动作没有增加有效信息，该节点会被标记为 pruned。如果判定调用的这个 API 并没有拿到有用信息，就会触发节点剪枝（Prune node），直接回溯。这避免了算力浪费在无效的排查路径上。</p>
+</li>
+</ol>
+<h2 id="协同诊断-Collaborative-Diagnosis">协同诊断 (Collaborative Diagnosis)</h2>
+<p>数据库经常会遇到并发症（如慢查询引发 I/O 飙升，进而导致 CPU 打满）。单体 LLM 的 Context Window 和搜索深度有限，极易陷入局部最优（例如只看到了慢查询，忽略了 I/O 硬件瓶颈）。</p>
+<ol>
+<li>
+<p><strong>专家角色划分</strong>：根据之前的知识聚类结果，系统预设了多个专家角色（如 CPU Expert、I/O Expert、Workload Expert）。每个专家都专注于自己领域的诊断，拥有特定的知识和工具权限。</p>
+</li>
+<li>
+<p><strong>专家分配</strong>：一个专职做 Routing 的 LLM 调度员，根据最初的异常描述，动态唤醒特定的领域专家（如Load_High → CPU Expert，Out_of_Memory → Memory Expert）。</p>
+</li>
+<li>
+<p><strong>异步发布-订阅机制</strong>：多个专家 Agent 并行开启树搜索。底层通信采用非阻塞的事件驱动模型。例如 CPU 专家查到了导致 I/O 飙升的线索，它会 Publish 这个发现；订阅了该状态的其它专家立刻感知，并利用这个新线索裁剪自己的搜索树。</p>
+</li>
+<li>
+<p><strong>交叉审查</strong>：</p>
+<ol>
+<li>诊断摘要：因为单个专家的轨迹很长，先把每一步动作、结果逐步压缩成 running summary。这样别的专家 review 时不需要看整条原始轨迹。</li>
+<li>审查建议：每个专家根据其他专家的结果给出纠错或补充建议。例如指出“根因过于宽泛”“缺少关键证据”“忽略了某个配置项”。</li>
+<li>诊断修正：被审查的专家根据建议调整自己的诊断结论，必要时重新调用工具补充证据。</li>
+</ol>
+</li>
+<li>
+<p><strong>最终报告整合</strong>：当所有专家都完成诊断后，系统会把他们的结论进行整合，形成一份全面的诊断报告。</p>
+<ul>
+<li>标题</li>
+<li>异常时间</li>
+<li>异常描述</li>
+<li>根因</li>
+<li>解决方案</li>
+<li>诊断过程摘要</li>
+</ul>
+</li>
+</ol>
+<h1>模块概览：</h1>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>与其他模块的协同</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Anomaly Monitor</td>
+<td>持续监控数据库，触发告警</td>
+<td>把 alert 发给 Anomaly Profiler</td>
+</tr>
+<tr>
+<td>Anomaly Profiler</td>
+<td>把 alert + 基础 DB 信息整理成异常描述</td>
+<td>给后续 prompt generation 提供输入</td>
+</tr>
+<tr>
+<td>Document Learning</td>
+<td>从文档抽取知识块，构建总结树</td>
+<td>产出知识库，供知识检索使用</td>
+</tr>
+<tr>
+<td>Tool Preparation</td>
+<td>整理并注册工具/API</td>
+<td>产出工具库，供工具匹配和执行使用</td>
+</tr>
+<tr>
+<td>Prompt Generation</td>
+<td>结合异常描述、知识、工具、历史消息生成 prompt</td>
+<td>是 LLM 进入推理前的核心拼装器</td>
+</tr>
+<tr>
+<td>Tree Search Diagnosis</td>
+<td>做多步推理、试错、回溯、投票、剪枝</td>
+<td>单专家诊断的核心执行引擎</td>
+</tr>
+<tr>
+<td>Collaborative Mechanism</td>
+<td>多专家并行诊断、共享中间结果、交叉审查</td>
+<td>用于复杂多根因场景</td>
+</tr>
+<tr>
+<td>Report Generation</td>
+<td>汇总结果输出最终报告</td>
+<td>面向用户/DBA 使用</td>
+</tr>
+</tbody>
+</table>
+<h1>展望</h1>
+<ol>
+<li>诊断排查的覆盖范围有限：D-Bot目前的诊断主要聚焦在数据库系统内部的瓶颈。文章明确指出，发生在应用程序端（application side）或网络端（network side）的异常被排除在了这项工作的范围之外 。</li>
+<li>本地微调模型的泛化能力较弱：在使用特定样本微调本地开源大模型（如 Llama 2、CodeLlama、Baichuan 2）时，模型很容易对微调数据产生过拟合，有时甚至会丧失正常的文本生成能力，转而生成令人困惑的简短回复 。此外，这些本地化大模型对于未见过的、不熟悉的异常（例如由于训练样本数量较少而导致的删除操作异常）缺乏泛化能力，其表现极大地受限于微调样本的多样性 。个人觉得解决这个问题的根本还是数据集的质量。需要构造更多涉及多原因的复杂异常，让模型学会分析异常原因的思维链。</li>
+<li>树搜索推理带来的时间与计算开销：基于树搜索的诊断成本会随着系统配备的诊断知识块和工具数量的增加而显著上升 。虽然系统通过多智能体协作机制提升了效率，但对于包含多个根因的相对复杂的异常，诊断依然需要几分钟到十几分钟的时间（例如处理一个复合异常耗时 5.38 分钟） 。或许可以根据异常的复杂程度来决定是否用多专家并行解决？比如简单异常单专家直接解决，中等异常双专家讨论，复杂异常多专家协同会诊，但是如何判断异常的复杂程度又是一个问题。</li>
+<li>整个pipeline最后是输出分析报告，并没有更改真实的数据库来看效果如何。可以结合Agentune的验证方法，真正的修改参数再把反馈情况作为最开始的输入进行循环验证。</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/03/14/dbot/">https://kjore.github.io/2026/03/14/dbot/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%BA%E6%96%87%E7%A0%94%E8%AF%BB/">论文研读</a><a class="post-meta__tags" href="/tags/%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98/">参数调优</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/03/20/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E5%85%A5%E9%97%A8/" title="知识图谱入门"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">知识图谱入门</div></div><div class="info-2"><div class="info-item-1">Neo4j 1. 什么是Neo4j Neo4j是一个基于图形数据库的开源项目，专门用于存储和查询图形数据。它使用图形结构来表示数据，其中节点表示实体，边表示实体之间的关系。这种结构使得Neo4j非常适合处理复杂的关系数据，如社交网络、推荐系统和知识图谱等。 2. Neo4j的存储方式 Neo4j使用节点，关系，属性来存储数据。   节点（Node）：   表示图中的实体，并由标签标记。每个节点可以有一个或多个标签，标签用于分类节点。例如，图中节点标签为&quot;person&quot;和&quot;actor&quot; 节点可以有属性，属性是键值对，用于存储节点的具体信息。例如，一个人的节点可能有属性“name”和“born”。 被索引并受约束   关系（Relationship）：   提供两个节点间的命名链接，必须有起始节点和结束节点。 关系也可以有属性，用于存储关系的具体信息。例如，一个“WORKS_FOR”关系可能有属性“since”，表示某人从什么时候开始在某公司工作。 必须有方向 节点可以拥有多种类型的多个关系。   属性（Property）：   属性是键值对，...</div></div></div></a><a class="pagination-related" href="/2026/03/13/%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" title="自动模式设计综述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">自动模式设计综述</div></div><div class="info-2"><div class="info-item-1">《Self-tuning Database Systems: A Systematic Literature Review of Automatic Database Schema Design and Tuning》 探索 SQL 和 NoSQL 数据库自动化模式调优方法的实质性工作，也是首个提出用于评估和比较不同模式调优解决方案的分类体系的工作。本综述有助于探讨当前解决方案的动机与能力之间的差距，并据此确定未来的研究方向。通俗点来讲就是探究数据库内部数据结构设计的自动化方法，使其跑得更快，效果更好。 关系型数据库自动化模式设计 关系型数据库的自动化模式设计主要侧重于物理模型设计。 物理结构设计包括：  辅助加速对象：索引、物化视图 底层数据组织对象：在多维关系型数据库中使用的聚簇键，在无共享并行数据库系统中使用的分区键。  自动化物理设计通常三步走：  生成可能的备选方案 评估备选方案 选择代价最低的最佳方案  基于上述流程，研究人员将自动化物理设计拆解为两个最核心的技术维度：  代价模型 (Cost Model)：它是系统的“评估裁判” 。主要负责评估所有备选设计，并估算出...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/03/10/AgentTune/" title="参数调优《AgentTune》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-10</div><div class="info-item-2">参数调优《AgentTune》</div></div><div class="info-2"><div class="info-item-1">概述 现有方法通常需要数百次工作负载重放或依赖海量训练数据，导致调优效率低下或准备成本高昂。此外，这些方法还面临生成无效配置的风险，可能导致性能下降甚至数据库崩溃。  调优效率低。基于机器学习（ML）的方法,通常需要数百次迭代才能收敛到理想的配置。每次迭代都涉及在数据库管理系统（DBMS）上执行工作负载（即工作负载重放），导致调优过程可能持续数小时。尽管大语言模型（LLM）辅助的方法实现了更快的收敛，但它们仍受限于基于机器学习的参数调优器固有的低效性。 可靠性低。尽管基于机器学习（ML）的调优通过平衡探索与利用来避免局部最优解，但它经常产生无效配置——即那些导致性能低于默认水平甚至使数据库管理系统（DBMS）崩溃的配置。同样，初步研究表明，直接使用大语言模型（LLMs）进行参数推荐可能会导致不安全的值（例如，过小的缓冲池大小），这源于幻觉和有限的数值推理能力等问题。这些问题可能导致调优过程中的资源耗尽或系统不稳定。 准备工作耗费大量资源。为了提高效率，许多基于机器学习（ML）和大型语言模型（LLM）的方法利用历史调优数据进行模型初始化、缩小配置空间或微调端到端参数调优器。然而，收...</div></div></div></a><a class="pagination-related" href="/2026/03/10/AIforDB/" title="AI4DB综述"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-10</div><div class="info-item-2">AI4DB综述</div></div><div class="info-2"><div class="info-item-1">本文是对《AI-Driven autonomous database management: Self-tuning, predictive query optimization, and intelligent indexing in enterprise it environments》这篇论文的研读总结。该论文详细介绍了AI在自治数据库管理中的基础知识和应用，重点关注了自调优机制、预测性查询优化和智能索引技术等方面。  自调优机制。self-tuning mechanisms 利用 AI 分析工作负载、优化资源分配并动态调整系统参数，以保持峰值效率。 预测性查询优化。predictive query optimization 利用深度学习算法来增强查询执行计划、降低延迟，并在性能问题影响业务运营之前对其进行预判。 智能索引技术。intelligent indexing techniques 应用机器学习技术来自动化索引的选择、适配和维护，确保最佳的数据检索并缩短查询处理时间。通过整合这些 AI 驱动的机制，企业可以实现更高的运营效率、提高数据库可靠性，并减少性能调优中的人工...</div></div></div></a><a class="pagination-related" href="/2025/11/14/DARLING/" title="《共同加强语言模型生成的多样性和质量》论文深度研读"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-14</div><div class="info-item-2">《共同加强语言模型生成的多样性和质量》论文深度研读</div></div><div class="info-2"><div class="info-item-1">论文链接：https://arxiv.org/abs/2509.02534 深度解析：DARLING论文《联合增强语言模型生成的“多样性”与“质量”》 导言：现代大语言模型的核心困境 大型语言模型（LLMs）的后训练（Post-training）过程，例如基于人类反馈的强化学习（RLHF），显著提升了模型的准确性和实用性。然而，这种优化带来了一个严重的副作用：模型的多样性（diversity）大幅下降 。 在抽象（Abstract）和引言（Introduction）部分（第1节），论文指出了当前方法的核心矛盾：为了追求质量，模型被训练得“过度锐化”（overly sharpened），其输出分布变得极窄 。这意味着，模型倾向于为同一个提示（prompt）生成高度相似、甚至近乎重复的答案。这种“多样性崩塌”（diversity collapse）现象，极大地限制了 LLMs 在需要创意和探索性任务（如头脑风暴、讲故事或解决复杂问题）中的应用价值 。 为解决这一挑战，研究人员提出了 DARLING (Diversity-Aware Reinforcement Learning)，即“...</div></div></div></a><a class="pagination-related" href="/2026/03/11/GPTune/" title="参数调优《GPTune》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-11</div><div class="info-item-2">参数调优《GPTune》</div></div><div class="info-2"><div class="info-item-1">当前的调优系统通常利用贝叶斯优化（BO）或强化学习（RL）通过试错来探索空间 。然而，这些方法依然会产生高昂的调优成本，通常需要数百到数千次耗时的迭代才能找到理想配置 。 难点 1：参数太多。现有方法要么选择固定的参数子集，牺牲了灵活性；要么需要极其消耗资源的大量运行来识别重要参数 。 难点 2：搜索空间太大。现有方法大多直接使用 DBMS 供应商提供的默认值域，这些值域过于宽泛，不仅使调优过程复杂化，还引入了系统崩溃的风险。 挑战一（C1）：很难在平衡成本与质量的前提下，将异构的自然语言知识统一为机器可读的结构化视图。现有的数据提取和清理工作流复杂且难以满足需求 。 挑战二（C2）：即使有了结构化知识，BO 和 RL 等标准优化算法在设计上并不支持直接集成外部领域知识。而单纯人工提取的静态规则又无法适应多变的工作负载环境 。 GPTUNER 的创新设计： 解决 C1：针对 LLM 容易产生幻觉的脆弱特性，设计了一个包含双重纠错机制的 LLM 管道。该管道涵盖数据摄取、基于 LLM 的数据清洗过滤、冲突处理集成以及事实一致性校对。 解决 C2：在调优前利用 LLM 的文本分析能力...</div></div></div></a><a class="pagination-related" href="/2026/03/11/LLMOpt/" title="LLMOpt——《A Query Optimization Method Utilizing Large Language Models》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-11</div><div class="info-item-2">LLMOpt——《A Query Optimization Method Utilizing Large Language Models》</div></div><div class="info-2"><div class="info-item-1">背景 查询优化是数据库的关键任务，需要在海量策略中找到最高效的执行计划 。但传统方法依赖启发式搜索和代价预测，往往因为搜索空间太复杂或性能估计不准，导致选出来的计划不是最优的。 下图展示了传统查询优化器“先搜后选”的pipeline:  Candidate Searching: 对于n个表的查询，会产生$O(n!)$的复杂度，传统数据库采用动态规划或启发式算法来剪枝搜索空间。如图所示，可以向 DBMS 施加外部的“限制”以影响搜索过程。例如，一些方法会调整特定的数据库控制参数（Knobs），来启用或禁用特定的连接（Join）或扫描（Scan）操作，从而迫使优化器生成不同的候选计划集合。 容易出现的情况是，优化器在搜索过程中可能会错过一些潜在的高效计划，或者由于代价模型的不准确而选择了一个次优计划。这些问题导致了查询性能的下降，尤其是在复杂查询或大规模数据集上。即搜不全 Candidate Selection: 候选计划的结构和数值细节（例如表和过滤条件之间的关联方式，或特定的节点类型）会被编码为特征。图中的“代价模型”会评估这些特征，以近似计算查询执行所需的时间。传统的代价模型依...</div></div></div></a><a class="pagination-related" href="/2025/11/14/%E7%94%A8%E4%BA%8E%E8%87%AA%E9%80%82%E5%BA%94%E5%B9%B3%E8%A1%A1%E5%A4%A7%E5%9E%8B%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8E%A2%E7%B4%A2%E5%92%8C%E5%88%A9%E7%94%A8%E7%9A%84%20Pass@k%20%E8%AE%AD%E7%BB%83/" title="《Pass@k 训练》论文深度研读"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-14</div><div class="info-item-2">《Pass@k 训练》论文深度研读</div></div><div class="info-2"><div class="info-item-1">原文链接：http://arxiv.org/abs/2508.10751 《Pass@k 训练》论文深度研读 这篇论文《Pass@k Training for Adaptively Balancing Exploration and Exploitation of Large Reasoning Models》，是大型语言模型（LLM）推理能力训练领域的一篇重要技术报告。它不仅提出了一种新颖且效果显著的训练方法，更重要的是，它为解决强化学习（ReinCforcement Learning, RL）中的一个经典难题——“探索与利用的平衡”——提供了深刻的洞见。 我们的目标是，在阅读完本报告后，您不仅能理解这篇论文“做了什么”，更能深刻理解它“为什么这么做”以及“它背后的数学原理”。  第一部分：问题的提出（摘要与第1节：引言） 在进入复杂的公式之前，我们必须首先理解论文试图解决的“问题”是什么。 1.1 核心场景：RLVR 与大型推理模型 论文的背景是使用**强化学习与可验证奖励（Reinforcement Learning with Verifiable Rewards, RLV...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="mailto:zhangjingye@bupt.edu.cn" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">系统设计</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A6%BB%E7%BA%BF%E7%9F%A5%E8%AF%86%E4%B8%8E%E5%B7%A5%E5%85%B7%E5%87%86%E5%A4%87-Offline-Preparation"><span class="toc-number">3.1.</span> <span class="toc-text">离线知识与工具准备 (Offline Preparation)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%8A%E6%96%AD%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E5%8A%A8%E6%80%81%E7%94%9F%E6%88%90-Prompt-Generation"><span class="toc-number">3.2.</span> <span class="toc-text">诊断提示词的动态生成(Prompt Generation)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%A0%91%E6%90%9C%E7%B4%A2%E7%9A%84%E6%8E%A8%E7%90%86%E5%BC%95%E6%93%8E-Tree-Search-Based-Diagnosis"><span class="toc-number">3.3.</span> <span class="toc-text">基于树搜索的推理引擎 (Tree Search Based Diagnosis)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E5%90%8C%E8%AF%8A%E6%96%AD-Collaborative-Diagnosis"><span class="toc-number">3.4.</span> <span class="toc-text">协同诊断 (Collaborative Diagnosis)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">模块概览：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">展望</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/20/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E5%85%A5%E9%97%A8/" title="知识图谱入门">知识图谱入门</a><time datetime="2026-03-20T07:28:02.000Z" title="发表于 2026-03-20 15:28:02">2026-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/14/dbot/" title="D-Bot：基于LLM的数据库诊断系统">D-Bot：基于LLM的数据库诊断系统</a><time datetime="2026-03-13T16:00:00.000Z" title="发表于 2026-03-14 00:00:00">2026-03-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/13/%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" title="自动模式设计综述">自动模式设计综述</a><time datetime="2026-03-12T16:00:00.000Z" title="发表于 2026-03-13 00:00:00">2026-03-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/11/GPTune/" title="参数调优《GPTune》">参数调优《GPTune》</a><time datetime="2026-03-10T16:00:00.000Z" title="发表于 2026-03-11 00:00:00">2026-03-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/11/LLMOpt/" title="LLMOpt——《A Query Optimization Method Utilizing Large Language Models》">LLMOpt——《A Query Optimization Method Utilizing Large Language Models》</a><time datetime="2026-03-10T16:00:00.000Z" title="发表于 2026-03-11 00:00:00">2026-03-11</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
