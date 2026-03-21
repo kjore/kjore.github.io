@@ -1,24 +1,24 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>决策树 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="关键是划分最优属性 结点的纯度要越来越高，三种度量节点纯度的指标：   信息增益 香农用“信息熵”来描述信源的不确定性 信息熵：当前样本集合D中第$i$类样本所占的比例为$p_i$，则D的信息熵定义为： $$ H(D) &#x3D; -\sum_{i&#x3D;1}^{n} p_i \log_2 p_i $$ H(D) 越大，数据集 D 的纯度越低；H(D) 越小，数据集 D 的纯度越高。对于二分类问题，n等于2.">
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>决策树 Decision Tree | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="决策树 决策树是一种树形结构的分类和回归模型。每个内部节点表示一个属性测试，每个分支表示一个测试结果，每个叶子节点表示一个类别或一个数值预测。决策树通过递归地划分数据集来构建模型，直到满足某个停止条件为止。  划分选择 关键是划分最优属性 结点的纯度要越来越高，三种度量节点纯度的指标： 信息增益 香农用“信息熵”来描述信源的不确定性 信息熵：当前样本集合D中第$i$类样本所占的比例为$p_i$，则">
 <meta property="og:type" content="article">
-<meta property="og:title" content="决策树">
+<meta property="og:title" content="决策树 Decision Tree">
 <meta property="og:url" content="https://kjore.github.io/2026/03/10/%E5%86%B3%E7%AD%96%E6%A0%91/index.html">
 <meta property="og:site_name" content="kjore&#39;s blog">
-<meta property="og:description" content="关键是划分最优属性 结点的纯度要越来越高，三种度量节点纯度的指标：   信息增益 香农用“信息熵”来描述信源的不确定性 信息熵：当前样本集合D中第$i$类样本所占的比例为$p_i$，则D的信息熵定义为： $$ H(D) &#x3D; -\sum_{i&#x3D;1}^{n} p_i \log_2 p_i $$ H(D) 越大，数据集 D 的纯度越低；H(D) 越小，数据集 D 的纯度越高。对于二分类问题，n等于2.">
+<meta property="og:description" content="决策树 决策树是一种树形结构的分类和回归模型。每个内部节点表示一个属性测试，每个分支表示一个测试结果，每个叶子节点表示一个类别或一个数值预测。决策树通过递归地划分数据集来构建模型，直到满足某个停止条件为止。  划分选择 关键是划分最优属性 结点的纯度要越来越高，三种度量节点纯度的指标： 信息增益 香农用“信息熵”来描述信源的不确定性 信息熵：当前样本集合D中第$i$类样本所占的比例为$p_i$，则">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kjore.github.io/img/head.png">
 <meta property="article:published_time" content="2026-03-09T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-18T13:35:38.999Z">
+<meta property="article:modified_time" content="2026-03-21T07:39:28.411Z">
 <meta property="article:author" content="kjore">
 <meta property="article:tag" content="笔记">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "决策树",
+  "headline": "决策树 Decision Tree",
   "url": "https://kjore.github.io/2026/03/10/%E5%86%B3%E7%AD%96%E6%A0%91/",
   "image": "https://kjore.github.io/img/head.png",
   "datePublished": "2026-03-09T16:00:00.000Z",
-  "dateModified": "2026-03-18T13:35:38.999Z",
+  "dateModified": "2026-03-21T07:39:28.411Z",
   "author": [
     {
       "@type": "Person",
@@ -155,16 +155,18 @@
   },
   autoDarkmode: false
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '决策树',
+  title: '决策树 Decision Tree',
   isHighlightShrink: false,
-  isToc: false,
+  isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">决策树</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">决策树</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-09T16:00:00.000Z" title="发表于 2026-03-10 00:00:00">2026-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-18T13:35:38.999Z" title="更新于 2026-03-18 21:35:38">2026-03-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>关键是划分最优属性</p>
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">决策树 Decision Tree</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">决策树 Decision Tree</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-09T16:00:00.000Z" title="发表于 2026-03-10 00:00:00">2026-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-21T07:39:28.411Z" title="更新于 2026-03-21 15:39:28">2026-03-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>决策树</h1>
+<p>决策树是一种树形结构的分类和回归模型。每个内部节点表示一个属性测试，每个分支表示一个测试结果，每个叶子节点表示一个类别或一个数值预测。决策树通过递归地划分数据集来构建模型，直到满足某个停止条件为止。<br>
+<img src="/image/%E5%86%B3%E7%AD%96%E6%A0%91/1774074531978.png" alt="1774074531978"></p>
+<h1>划分选择</h1>
+<p>关键是划分最优属性</p>
 <p>结点的纯度要越来越高，三种度量节点纯度的指标：</p>
-<ul>
-<li>
-<p>信息增益<br>
-香农用“信息熵”来描述信源的不确定性<br>
+<h2 id="信息增益">信息增益</h2>
+<p>香农用“信息熵”来描述信源的不确定性<br>
 <strong>信息熵</strong>：当前样本集合D中第$i$类样本所占的比例为$p_i$，则D的信息熵定义为：</p>
 <p>$$<br>
 H(D) = -\sum_{i=1}^{n} p_i \log_2 p_i<br>
@@ -175,30 +177,156 @@ $$</p>
 G(D, A) = H(D) - \sum_{v=1}^{V} \frac{|D^v|}{|D|} H(D^v)<br>
 $$</p>
 <p>其中，$D^v$ 表示属性A取第v个值时，数据集D中对应的子集。<br>
-信息增益准则对可取值较多的属性有偏好，倾向于选择取值较多的属性进行划分。</p>
-</li>
-<li>
-<p>增益率<br>
-增益率是信息增益的改进版本，旨在解决信息增益对取值较多属性的偏好问题。增益率定义为：</p>
+信息增益准则对可取值较多的属性有偏好，倾向于选择取值较多的属性进行划分。为什么这样说呢，因为下面的数据集如果将编号也作为属性的话，编号的信息增益是1，因为每个编号对应的样本都是纯的，但显然编号并不是一个有意义的划分属性。<br>
+参考以下数据集，其中“是否购买”是目标属性，其他属性是特征属性：</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>年龄</th>
+<th>是否试听</th>
+<th>是否有优惠券</th>
+<th>是否购买</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>青年</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>2</td>
+<td>青年</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>3</td>
+<td>青年</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td>4</td>
+<td>中年</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>5</td>
+<td>中年</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td>6</td>
+<td>中年</td>
+<td>是</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>7</td>
+<td>老年</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+</tr>
+<tr>
+<td>8</td>
+<td>老年</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+<p>首先选择第一个属性，根节点信息熵：<br>
+$$<br>
+H(D) = -\left( \frac{4}{8} \log_2 \frac{4}{8} + \frac{4}{8} \log_2 \frac{4}{8} \right) = 1<br>
+$$<br>
+计算年龄属性的信息增益：<br>
+$$<br>
+G(D, \text{年龄}) = H(D) - \left( \frac{3}{8} H(D^{\text{青年}}) + \frac{3}{8} H(D^{\text{中年}}) + \frac{2}{8} H(D^{\text{老年}}) \right)<br>
+$$<br>
+其中：<br>
+$$<br>
+H(D^{\text{青年}}) = -\left( \frac{2}{3} \log_2 \frac{2}{3} + \frac{1}{3} \log_2 \frac{1}{3} \right) \approx 0.918<br>
+$$<br>
+$$<br>
+H(D^{\text{中年}}) = -\left( \frac{2}{3} \log_2 \frac{2}{3} + \frac{1}{3} \log_2 \frac{1}{3} \right) \approx 0.918<br>
+$$<br>
+$$<br>
+H(D^{\text{老年}}) = -\left( \frac{0}{2} \log_2 \frac{0}{2} + \frac{2}{2} \log_2 \frac{2}{2} \right) = 0<br>
+$$<br>
+因此：<br>
+$$<br>
+G(D, \text{年龄}) = 1 - \left( \frac{3}{8} \times 0.918 + \frac{3}{8} \times 0.918 + \frac{2}{8} \times 0 \right) \approx 0.311<br>
+$$<br>
+同理，计算“是否试听”属性的信息增益：<br>
+$$<br>
+G(D, \text{是否试听}) = H(D) - \left( \frac{4}{8} H(D^{\text{是}}) + \frac{4}{8} H(D^{\text{否}}) \right)<br>
+$$<br>
+其中：<br>
+$$<br>
+H(D^{\text{是}}) = 0<br>
+$$<br>
+$$<br>
+H(D^{\text{否}}) = 0<br>
+$$<br>
+因此：<br>
+$$<br>
+G(D, \text{是否试听}) = 1 - \left( \frac{4}{8} \times 0 + \frac{4}{8} \times 0 \right) = 1<br>
+$$</p>
+<h2 id="增益率">增益率</h2>
+<p>增益率是信息增益的改进版本，旨在解决信息增益对取值较多属性的偏好问题。增益率定义为：</p>
 <p>$$<br>
 GR(D, A) = \frac{G(D, A)}{IV(A)}<br>
 $$</p>
-<p>其中，$IV(A)$ 是属性A的<strong>信息增益率</strong>，定义为：</p>
+<p>其中，$IV(A)$ 是属性A的<strong>固有值</strong>，定义为：</p>
 <p>$$<br>
 IV(A) = -\sum_{v=1}^{V} \frac{|D^v|}{|D|} \log_2 \frac{|D^v|}{|D|}<br>
 $$</p>
-<p>增益率准则对可取值数目较少的属性有所偏好</p>
-</li>
-<li>
-<p>基尼系数<br>
-基尼系数是 CART（Classification and Regression Trees）算法中使用的纯度度量指标。对于数据集D，基尼系数定义为：</p>
+<p>增益率准则对可取值数目较少的属性有所偏好。因为IV(A)越大，说明属性A的取值分布越均匀，划分后的子集数量越多，增益率就会被打折扣。相反，如果属性A的取值较少，IV(A)较小，增益率就会相对较大，更有可能被选为划分属性。</p>
+<h2 id="基尼指数">基尼指数</h2>
+<p>基尼指数是 CART（Classification and Regression Trees）算法中使用的纯度度量指标。对于数据集D，基尼值定义为：</p>
 <p>$$<br>
 Gini(D) = 1 - \sum_{i=1}^{n} p_i^2<br>
+$$<br>
+基尼指数定义为：<br>
+$$<br>
+Gini_index(D, A) = \sum_{v=1}^{V} \frac{|D^v|}{|D|} Gini(D^v)<br>
 $$</p>
-<p>基尼系数越小，数据集 D 的纯度越高；基尼系数越大，数据集 D 的纯度越低。对于二分类问题，n等于2.</p>
+<p>基尼指数越小，数据集 D 的纯度越高；基尼指数越大，数据集 D 的纯度越低。对于二分类问题，n等于2.</p>
+<p><strong>举个例子：</strong><br>
+继续使用上述的信息增益中关于“年龄”划分的数据集：<br>
+总数据集 $D$ 有 8 个样本（4个购买，4个不购买），其基尼值为：<br>
+$$ Gini(D) = 1 - \left( \left(\frac{4}{8}\right)^2 + \left(\frac{4}{8}\right)^2 \right) = 0.5 $$</p>
+<p>按“年龄”属性（分为青年、中年、老年）计算各个子集的基尼值：</p>
+<ul>
+<li>
+<p>$D^{\text{青年}}$ 有 3 个样本（2个购买，1个不购买）：<br>
+$$ Gini(D^{\text{青年}}) = 1 - \left( \left(\frac{2}{3}\right)^2 + \left(\frac{1}{3}\right)^2 \right) = \frac{4}{9} \approx 0.444 $$</p>
+</li>
+<li>
+<p>$D^{\text{中年}}$ 有 3 个样本（2个购买，1个不购买）：<br>
+$$ Gini(D^{\text{中年}}) = 1 - \left( \left(\frac{2}{3}\right)^2 + \left(\frac{1}{3}\right)^2 \right) = \frac{4}{9} \approx 0.444 $$</p>
+</li>
+<li>
+<p>$D^{\text{老年}}$ 有 2 个样本（0个购买，2个不购买）：<br>
+$$ Gini(D^{\text{老年}}) = 1 - \left( \left(\frac{0}{2}\right)^2 + \left(\frac{2}{2}\right)^2 \right) = 0 $$</p>
 </li>
 </ul>
-<p>决策树算法：</p>
+<p>所以，“年龄”属性的基尼指数为：<br>
+$$ Gini_index(D, \text{年龄}) = \frac{3}{8} \times \frac{4}{9} + \frac{3}{8} \times \frac{4}{9} + \frac{2}{8} \times 0 = \frac{1}{3} \approx 0.333 $$</p>
+<h1>决策树算法：</h1>
 <ol>
 <li>决定分类属性</li>
 <li>对目前的数据表，建立一个节点N</li>
@@ -207,17 +335,72 @@ $$</p>
 <li>否则，根据属性选择方法选择一个最优属性A，并根据A的不同取值划分数据表，得到若干个子数据表</li>
 <li>对于每个子数据表，递归调用步骤2-5，建立子节点，并将其连接到N上</li>
 </ol>
-<p>决策树剪枝：</p>
-<p>预剪枝</p>
-<p>后剪枝</p>
-<p>回归树：</p>
+<h1>剪枝：</h1>
+<h2 id="预剪枝">预剪枝</h2>
+<p>因为决策树会不断往下分。如果不加限制，它可以：</p>
+<p>把每个分支分得越来越细<br>
+直到一个叶子里只剩很少样本，甚至只剩 1 个样本</p>
+<p>这样训练准确率会很高，但泛化能力往往下降。<br>
+通常把数据分成：</p>
+<p>训练集 和 验证集</p>
+<p>在某个结点上，比较：</p>
+<p>不划分时，当前结点作为叶结点，在验证集上的精度<br>
+划分后，子树在验证集上的精度</p>
+<p>如果划分后没有变好，就不要继续长树。<br>
+<img src="/image/%E5%86%B3%E7%AD%96%E6%A0%91/1774077006949.png" alt="1774077006949"><br>
+<img src="/image/%E5%86%B3%E7%AD%96%E6%A0%91/1774076942857.png" alt="1774076942857"><br>
+如上图，如果就在脐部结点停止划分，那么在验证集的概率是 3/7；如果继续划分，验证集上挑选到好瓜的概率是5/7（三个好瓜，两个坏瓜），所以就继续划分。</p>
+<blockquote>
+<p>课件应该是将脐部提前剪枝后的节点表示为坏瓜，这样验证集里面是坏瓜的概率是3/7，</p>
+</blockquote>
+<h2 id="后剪枝">后剪枝</h2>
+<p>先得到完整树<br>
+从最底层非叶结点开始<br>
+比较：<br>
+保留子树时验证集精度<br>
+把这棵子树整体替换成一个叶结点时验证集精度<br>
+如果替换后更好，就剪枝<br>
+<img src="/image/%E5%86%B3%E7%AD%96%E6%A0%91/1774077899840.png" alt="1774077899840"><br>
+例如，未剪枝树的验证精度为：3/7<br>
+当考察某个底层结点（如结点⑥）时，剪掉它后验证集精度提升到：4/7<br>
+说明这一小段子树其实是在记训练集细节，对验证集没帮助，所以应该剪掉。</p>
+<h1>回归树：</h1>
 <p>连续属性离散化技术：<br>
-考虑n-1个切分点，计算每个切分点的信息增益，选择信息增益最大的切分点进行划分。</p>
-<p>属性缺失：<br>
-每个样本的部分属性值缺失。<br>
-如果大多数缺失在同一个属性，就直接舍弃这个属性。<br>
-如果属性缺失较为分散，可以使用样本的其他属性来预测缺失值，或者在计算信息增益时只考虑非缺失值的样本。</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/03/10/%E5%86%B3%E7%AD%96%E6%A0%91/">https://kjore.github.io/2026/03/10/%E5%86%B3%E7%AD%96%E6%A0%91/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/03/11/LLMOpt/" title="LLMOpt——《A Query Optimization Method Utilizing Large Language Models》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">LLMOpt——《A Query Optimization Method Utilizing Large Language Models》</div></div><div class="info-2"><div class="info-item-1">背景 查询优化是数据库的关键任务，需要在海量策略中找到最高效的执行计划 。但传统方法依赖启发式搜索和代价预测，往往因为搜索空间太复杂或性能估计不准，导致选出来的计划不是最优的。 下图展示了传统查询优化器“先搜后选”的pipeline:  Candidate Searching: 对于n个表的查询，会产生$O(n!)$的复杂度，传统数据库采用动态规划或启发式算法来剪枝搜索空间。如图所示，可以向 DBMS 施加外部的“限制”以影响搜索过程。例如，一些方法会调整特定的数据库控制参数（Knobs），来启用或禁用特定的连接（Join）或扫描（Scan）操作，从而迫使优化器生成不同的候选计划集合。 容易出现的情况是，优化器在搜索过程中可能会错过一些潜在的高效计划，或者由于代价模型的不准确而选择了一个次优计划。这些问题导致了查询性能的下降，尤其是在复杂查询或大规模数据集上。即搜不全 Candidate Selection: 候选计划的结构和数值细节（例如表和过滤条件之间的关联方式，或特定的节点类型）会被编码为特征。图中的“代价模型”会评估这些特征，以近似计算查询执行所需的时间。传统的代价模型依...</div></div></div></a><a class="pagination-related" href="/2026/03/10/openclaw/" title="openclaw在安装和应用上的笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">openclaw在安装和应用上的笔记</div></div><div class="info-2"><div class="info-item-1">安装 首先需要安装Node.js 22+ 然后使用npm安装openclaw： 1npm i -g openclaw@latest 然后使用以下命令快速配置： 1openclaw onboard 之后每次使用输入以下命令 1openclaw dashboard 安装问题一 登录网页后显示404，说明gateway没有正确启动，可能是端口被占用或者权限问题. 首先查看有没有这个文件 1dir &quot;$env:USERPROFILE\.openclaw\gateway.cmd&quot; 如果没有，说明安装过程中可能出现了问题，可以尝试重新安装openclaw。如果有这个文件，尝试手动运行它，看看是否有错误提示。 安装问题二 打开页面后，显示: 12⚠️ Agent failed before reply: No API key found for provider &quot;openai-codex&quot;. Auth store: C:\Users\86182.openclaw\agents\main\agent\auth-profiles.json (agentDi...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/11/11/SQL/" title="SQL"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-11</div><div class="info-item-2">SQL</div></div><div class="info-2"><div class="info-item-1">SQL数据定义  char(n) :n个长度的固定字符串 varchar(n) :最大n个长度的可变长字符串 int :整数 smallint :小整数 numeric(p,d) :这个数有p位数字，小数点后d位数字。如numeric(3,1)可以存储33.3 ,44.4 float(n) :精度至少为n的单精度浮点数 double :双精度浮点数 date :日期，格式YYYY-MM-DD time :时间，格式HH:MM:SS timestamp :时间戳，格式YYYY-MM-DD HH:MM:SS  DDL DDL是数据库定义语言，用于创建修改删除数据库的结构 创建数据库 1234567891011create table table_name(    id int,    name char(10) not null,    age int,    gender char(1) default &#x27;M&#x27;,    address varchar(50),    primary key(id),    unique(name),    check(age&g...</div></div></div></a><a class="pagination-related" href="/2026/03/10/openclaw/" title="openclaw在安装和应用上的笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-10</div><div class="info-item-2">openclaw在安装和应用上的笔记</div></div><div class="info-2"><div class="info-item-1">安装 首先需要安装Node.js 22+ 然后使用npm安装openclaw： 1npm i -g openclaw@latest 然后使用以下命令快速配置： 1openclaw onboard 之后每次使用输入以下命令 1openclaw dashboard 安装问题一 登录网页后显示404，说明gateway没有正确启动，可能是端口被占用或者权限问题. 首先查看有没有这个文件 1dir &quot;$env:USERPROFILE\.openclaw\gateway.cmd&quot; 如果没有，说明安装过程中可能出现了问题，可以尝试重新安装openclaw。如果有这个文件，尝试手动运行它，看看是否有错误提示。 安装问题二 打开页面后，显示: 12⚠️ Agent failed before reply: No API key found for provider &quot;openai-codex&quot;. Auth store: C:\Users\86182.openclaw\agents\main\agent\auth-profiles.json (agentDi...</div></div></div></a><a class="pagination-related" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-22</div><div class="info-item-2">关系模型</div></div><div class="info-2"><div class="info-item-1">关系模型 Relational Model 关系模型的结构 Relational Model Structure 关系：笛卡尔乘积的有意义的有限子集 属性：关系的列，属性的顺序不重要，属性必须是原子的 元组：关系的行，或者一条记录，元组的顺序不重要 域(domain)：属性的取值范围 关系模式：关系的结构描述，一个属性列表及属性所对应的域 关系实例：关系在某一时刻的具体数据，快照 关系模型的约束  Constraints of Relational Model 超键(superkey)：能唯一标识元组的属性集合。如学号加姓名 候选键(candidate key)：最小超键，不能再去掉任何属性的超键。如学号。候选键不唯一，比如学号可以是候选键，身份证号也可以是候选键  唯一性 最小性  主键(primary key)：从候选键中选出的用于唯一标识元组的属性集合。如学号 外键(foreign key)：一个关系中的属性，其值引用另一个关系的主键或候选键 完整性约束： 实体完整性：主键属性不能为空 参照完整性：外键值要么为空，要么必须在引用的关系中存在对应的主键值（外键作为主键的那个表...</div></div></div></a><a class="pagination-related" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-21</div><div class="info-item-2">数据库设计</div></div><div class="info-2"><div class="info-item-1">数据库设计 概念模式设计 E-R模型 实体集 entity sets 具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。 下图为实体集的E-R图  属性 attributes  简单属性（Simple）：不可再分的属性 复合属性（composite）：可在分的属性  用缩进表示  根据用户需求来确定属性是简单的还是复杂的。比如姓名这个属性，根据用户需求可看成一整个名字的简单属性，也可以看成姓和名的复合属性。  单值属性（Single-valued）：在这个属性上的取值只有一个。比如性别，要么是男，要么是女，不可能同时是男和女。 多值属性（multivalued）：比如联系方式，可以填多个电话或邮箱 用{}表示 导出属性（Derived）：可以由其他属性推导出来。比如年龄可以根据生日算出。导出属性可以在数据库中存也可以不存，存的话得到属性比较快，但是，不仅占空间，而且需要维护它和其他属性的一致性。所以对于一些简单的逻辑关系，就不保存了。 用（）表示   联系集 relationship sets 实体集之间存在的某种语义关...</div></div></div></a><a class="pagination-related" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="死锁"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-28</div><div class="info-item-2">死锁</div></div><div class="info-2"><div class="info-item-1">死锁 deadlock 概念 定义 在计算机科学中，死锁（Deadlock）是指两个或多个进程在执行过程中，由于竞争资源而造成的一种互相等待的现象，从而导致这些进程无法继续执行。 死锁与饥饿的区别  发生饥饿的进程可以只有一个，发生死锁的进程有两个或两个以上。 发生饥饿的进程可能处于就绪态，比如SJF调度算法中，优先级低的进程可能一直得不到执行机会而处于就绪态，也可能处于阻塞态，如长期得不到I/O设备。而发生死锁的进程一般都处于阻塞态，等待其他进程释放资源。  死锁的必要条件  互斥条件（mutual exclusion）：至少有一个资源必须处于非共享模式，即某个资源一次只能被一个进程占用。 占有且等待条件（hold and wait）：持有至少一种资源的进程正在等待获取其他进程持有的其他资源 非抢占式（no preemption）：进程已获得的资源在未使用完之前，不能被强制剥夺，只能在进程完成其任务后由进程自己释放。 循环等待条件（circular wait）：存在一种进程资源的循环等待关系，即P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源。 四者缺...</div></div></div></a><a class="pagination-related" href="/2025/12/10/%E7%B4%A2%E5%BC%95/" title="物理存储结构与索引"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-10</div><div class="info-item-2">物理存储结构与索引</div></div><div class="info-2"><div class="info-item-1">存储与文件结构 文件组织 定长记录与变长记录  定长记录（fixed-length record）：每条记录的长度相同，便于计算和存取 变长记录（variable-length record）：每条记录的长度不同，节省空间，但存取较复杂  文件中记录的组织 堆文件组织（heap file organization） 记录无特定顺序存储，适用于插入频繁但查询较少的场景 顺序文件组织（sequential file organization） 记录按某一属性排序存储，适用于范围查询和顺序访问 散列文件组织（hashed file organization） 记录通过哈希函数映射到存储位置，适用于等值查询 多表聚簇文件组织 (clustered file organization) 将相关表的数据存储在一起，提高联接查询效率 数据字典 (Data Dictionary / System Catalog) 它是“数据库的数据库”。 存什么？ 元数据 (Metadata)。即关于数据的数据。  表名、列名、列的类型。 完整性约束（主键、外键）。 用户权限信息。 统计信息（表有多少行？索引树...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/20/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E5%85%A5%E9%97%A8/" title="知识图谱入门">知识图谱入门</a><time datetime="2026-03-20T07:28:02.000Z" title="发表于 2026-03-20 15:28:02">2026-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/14/dbot/" title="D-Bot：基于LLM的数据库诊断系统">D-Bot：基于LLM的数据库诊断系统</a><time datetime="2026-03-13T16:00:00.000Z" title="发表于 2026-03-14 00:00:00">2026-03-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/13/%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" title="自动模式设计综述">自动模式设计综述</a><time datetime="2026-03-12T16:00:00.000Z" title="发表于 2026-03-13 00:00:00">2026-03-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/11/LLMOpt/" title="LLMOpt——《A Query Optimization Method Utilizing Large Language Models》">LLMOpt——《A Query Optimization Method Utilizing Large Language Models》</a><time datetime="2026-03-10T16:00:00.000Z" title="发表于 2026-03-11 00:00:00">2026-03-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/11/GPTune/" title="参数调优《GPTune》">参数调优《GPTune》</a><time datetime="2026-03-10T16:00:00.000Z" title="发表于 2026-03-11 00:00:00">2026-03-11</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+考虑n-1个切分点，计算每个切分点的信息增益，选择信息增益最大的切分点进行划分。<br>
+与离散属性不同，连续属性在后代结点中还可以再次被选为划分属性。</p>
+<h1>属性缺失：</h1>
+<p>在实际的数据集中，样本的某些属性往往由于各种原因导致缺失。决策树算法（如C4.5）通过赋予样本权重的方式来处理缺失值问题。</p>
+<h2 id="1-属性值缺失时，如何选择划分属性、如何计算信息增益？">1. 属性值缺失时，如何选择划分属性、如何计算信息增益？</h2>
+<p>基本思路：<strong>仅根据没有缺失值的样本子集来判断属性的优劣。</strong></p>
+<p>给定训练集 $D$ 和属性 $A$，设 $\tilde{D}$ 表示 $D$ 中在属性 $A$ 上没有缺失值的样本子集。我们可以先基于 $\tilde{D}$ 计算出信息增益，然后再乘以一个比例系数 $\rho$：<br>
+$$<br>
+G(D, A) = \rho \times G(\tilde{D}, A)<br>
+$$<br>
+其中，$\rho = \frac{|\tilde{D}|}{|D|}$，即无缺失值样本占总样本的比例。这意味着一个属性上缺失值越多，其信息增益就会被打越大的折扣。</p>
+<p><strong>举个例子：</strong><br>
+假设有 10 个西瓜样本，其中 8 个样本的“色泽”属性是已知的，2 个是缺失的。<br>
+首先，我们仅计算这 8 个已知色泽的样本在该属性上的信息增益，算出来假设为 $0.5$。<br>
+那么，在包含缺失值的这 10 个原始样本集上，“色泽”属性的最终信息增益就是：$\frac{8}{10} \times 0.5 = 0.4$。</p>
+<h2 id="2-已经决定用某属性划分时，如果某样本在这个属性上的值缺失，怎么把它分到子结点？">2. 已经决定用某属性划分时，如果某样本在这个属性上的值缺失，怎么把它分到子结点？</h2>
+<p>基本思路：<strong>将该样本以不同的概率（权重）同时划分到所有子结点中。</strong></p>
+<p>假设样本在到达某结点时权重为 $w_x$（初始状态所有样本权重均为 1）。如果样本 $x$ 在属性 $A$ 上的取值已知，就将其直接划入对应的子结点，权重保持 $w_x$。</p>
+<p>如果样本 $x$ 在属性 $A$ 上的取值缺失，则将它<strong>同时</strong>划入所有子结点，但在第 $v$ 个分支子结点中，该样本的权重会调整为：<br>
+$$<br>
+w_x^v = \tilde{r}_v \times w_x<br>
+$$<br>
+其中，$\tilde{r}_v$ 是无缺失样本集中，在属性 $A$ 上取值为 $v$ 的样本所占的比例。<br>
+直观来看，就是让同一个样本按照不同特征值出现的频率“分身”到各个分支继续参与后续的决策树构建。</p>
+<p><strong>举个例子：</strong><br>
+假设当前结点最终选定了“色泽”作为划分属性，分为“青绿”、“乌黑”和“浅白”三个分支。<br>
+在当前所有色泽<strong>已知</strong>的样本中，属于“青绿”的样本占比 $50%$，属于“乌黑”的占比 $30%$，属于“浅白”的占比 $20%$。<br>
+此时有一个测试样本 $x$（到达当前结点时的权重为 $1$），但它的“色泽”值缺失了。那么样本 $x$ 应该去哪个分支呢？它会<strong>同时</strong>分到三个结点里：</p>
+<ul>
+<li>进入“青绿”分支时，它带着的权重变为 $1 \times 50% = 0.5$；</li>
+<li>进入“乌黑”分支时，它带着的权重变为 $1 \times 30% = 0.3$；</li>
+<li>进入“浅白”分支时，它带着的权重变为 $1 \times 20% = 0.2$。<br>
+这样，缺失部分属性的样本依然能够依据其他已知样本的分布规律参与后续子结点的判断。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/03/10/%E5%86%B3%E7%AD%96%E6%A0%91/">https://kjore.github.io/2026/03/10/%E5%86%B3%E7%AD%96%E6%A0%91/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/03/11/LLMOpt/" title="LLMOpt——《A Query Optimization Method Utilizing Large Language Models》"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">LLMOpt——《A Query Optimization Method Utilizing Large Language Models》</div></div><div class="info-2"><div class="info-item-1">背景 查询优化是数据库的关键任务，需要在海量策略中找到最高效的执行计划 。但传统方法依赖启发式搜索和代价预测，往往因为搜索空间太复杂或性能估计不准，导致选出来的计划不是最优的。 下图展示了传统查询优化器“先搜后选”的pipeline:  Candidate Searching: 对于n个表的查询，会产生$O(n!)$的复杂度，传统数据库采用动态规划或启发式算法来剪枝搜索空间。如图所示，可以向 DBMS 施加外部的“限制”以影响搜索过程。例如，一些方法会调整特定的数据库控制参数（Knobs），来启用或禁用特定的连接（Join）或扫描（Scan）操作，从而迫使优化器生成不同的候选计划集合。 容易出现的情况是，优化器在搜索过程中可能会错过一些潜在的高效计划，或者由于代价模型的不准确而选择了一个次优计划。这些问题导致了查询性能的下降，尤其是在复杂查询或大规模数据集上。即搜不全 Candidate Selection: 候选计划的结构和数值细节（例如表和过滤条件之间的关联方式，或特定的节点类型）会被编码为特征。图中的“代价模型”会评估这些特征，以近似计算查询执行所需的时间。传统的代价模型依...</div></div></div></a><a class="pagination-related" href="/2026/03/10/openclaw/" title="openclaw在安装和应用上的笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">openclaw在安装和应用上的笔记</div></div><div class="info-2"><div class="info-item-1">安装 首先需要安装Node.js 22+ 然后使用npm安装openclaw： 1npm i -g openclaw@latest 然后使用以下命令快速配置： 1openclaw onboard 之后每次使用输入以下命令 1openclaw dashboard 安装问题一 登录网页后显示404，说明gateway没有正确启动，可能是端口被占用或者权限问题. 首先查看有没有这个文件 1dir &quot;$env:USERPROFILE\.openclaw\gateway.cmd&quot; 如果没有，说明安装过程中可能出现了问题，可以尝试重新安装openclaw。如果有这个文件，尝试手动运行它，看看是否有错误提示。 安装问题二 打开页面后，显示: 12⚠️ Agent failed before reply: No API key found for provider &quot;openai-codex&quot;. Auth store: C:\Users\86182.openclaw\agents\main\agent\auth-profiles.json (agentDi...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/11/11/SQL/" title="SQL"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-11</div><div class="info-item-2">SQL</div></div><div class="info-2"><div class="info-item-1">SQL数据定义  char(n) :n个长度的固定字符串 varchar(n) :最大n个长度的可变长字符串 int :整数 smallint :小整数 numeric(p,d) :这个数有p位数字，小数点后d位数字。如numeric(3,1)可以存储33.3 ,44.4 float(n) :精度至少为n的单精度浮点数 double :双精度浮点数 date :日期，格式YYYY-MM-DD time :时间，格式HH:MM:SS timestamp :时间戳，格式YYYY-MM-DD HH:MM:SS  DDL DDL是数据库定义语言，用于创建修改删除数据库的结构 创建数据库 1234567891011create table table_name(    id int,    name char(10) not null,    age int,    gender char(1) default &#x27;M&#x27;,    address varchar(50),    primary key(id),    unique(name),    check(age&g...</div></div></div></a><a class="pagination-related" href="/2026/03/10/openclaw/" title="openclaw在安装和应用上的笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-10</div><div class="info-item-2">openclaw在安装和应用上的笔记</div></div><div class="info-2"><div class="info-item-1">安装 首先需要安装Node.js 22+ 然后使用npm安装openclaw： 1npm i -g openclaw@latest 然后使用以下命令快速配置： 1openclaw onboard 之后每次使用输入以下命令 1openclaw dashboard 安装问题一 登录网页后显示404，说明gateway没有正确启动，可能是端口被占用或者权限问题. 首先查看有没有这个文件 1dir &quot;$env:USERPROFILE\.openclaw\gateway.cmd&quot; 如果没有，说明安装过程中可能出现了问题，可以尝试重新安装openclaw。如果有这个文件，尝试手动运行它，看看是否有错误提示。 安装问题二 打开页面后，显示: 12⚠️ Agent failed before reply: No API key found for provider &quot;openai-codex&quot;. Auth store: C:\Users\86182.openclaw\agents\main\agent\auth-profiles.json (agentDi...</div></div></div></a><a class="pagination-related" href="/2025/10/22/%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="关系模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-22</div><div class="info-item-2">关系模型</div></div><div class="info-2"><div class="info-item-1">关系模型 Relational Model 关系模型的结构 Relational Model Structure 关系：笛卡尔乘积的有意义的有限子集 属性：关系的列，属性的顺序不重要，属性必须是原子的 元组：关系的行，或者一条记录，元组的顺序不重要 域(domain)：属性的取值范围 关系模式：关系的结构描述，一个属性列表及属性所对应的域 关系实例：关系在某一时刻的具体数据，快照 关系模型的约束  Constraints of Relational Model 超键(superkey)：能唯一标识元组的属性集合。如学号加姓名 候选键(candidate key)：最小超键，不能再去掉任何属性的超键。如学号。候选键不唯一，比如学号可以是候选键，身份证号也可以是候选键  唯一性 最小性  主键(primary key)：从候选键中选出的用于唯一标识元组的属性集合。如学号 外键(foreign key)：一个关系中的属性，其值引用另一个关系的主键或候选键 完整性约束： 实体完整性：主键属性不能为空 参照完整性：外键值要么为空，要么必须在引用的关系中存在对应的主键值（外键作为主键的那个表...</div></div></div></a><a class="pagination-related" href="/2025/10/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" title="数据库设计"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-21</div><div class="info-item-2">数据库设计</div></div><div class="info-2"><div class="info-item-1">数据库设计 概念模式设计 E-R模型 实体集 entity sets 具有相同属性attributes的实体构成一个实体集。实体指一个具体的个体，如一个特殊的人，一个公司，一件事。 下图为实体集的E-R图  属性 attributes  简单属性（Simple）：不可再分的属性 复合属性（composite）：可在分的属性  用缩进表示  根据用户需求来确定属性是简单的还是复杂的。比如姓名这个属性，根据用户需求可看成一整个名字的简单属性，也可以看成姓和名的复合属性。  单值属性（Single-valued）：在这个属性上的取值只有一个。比如性别，要么是男，要么是女，不可能同时是男和女。 多值属性（multivalued）：比如联系方式，可以填多个电话或邮箱 用{}表示 导出属性（Derived）：可以由其他属性推导出来。比如年龄可以根据生日算出。导出属性可以在数据库中存也可以不存，存的话得到属性比较快，但是，不仅占空间，而且需要维护它和其他属性的一致性。所以对于一些简单的逻辑关系，就不保存了。 用（）表示   联系集 relationship sets 实体集之间存在的某种语义关...</div></div></div></a><a class="pagination-related" href="/2025/10/28/%E6%AD%BB%E9%94%81/" title="死锁"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-28</div><div class="info-item-2">死锁</div></div><div class="info-2"><div class="info-item-1">死锁 deadlock 概念 定义 在计算机科学中，死锁（Deadlock）是指两个或多个进程在执行过程中，由于竞争资源而造成的一种互相等待的现象，从而导致这些进程无法继续执行。 死锁与饥饿的区别  发生饥饿的进程可以只有一个，发生死锁的进程有两个或两个以上。 发生饥饿的进程可能处于就绪态，比如SJF调度算法中，优先级低的进程可能一直得不到执行机会而处于就绪态，也可能处于阻塞态，如长期得不到I/O设备。而发生死锁的进程一般都处于阻塞态，等待其他进程释放资源。  死锁的必要条件  互斥条件（mutual exclusion）：至少有一个资源必须处于非共享模式，即某个资源一次只能被一个进程占用。 占有且等待条件（hold and wait）：持有至少一种资源的进程正在等待获取其他进程持有的其他资源 非抢占式（no preemption）：进程已获得的资源在未使用完之前，不能被强制剥夺，只能在进程完成其任务后由进程自己释放。 循环等待条件（circular wait）：存在一种进程资源的循环等待关系，即P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源。 四者缺...</div></div></div></a><a class="pagination-related" href="/2025/12/10/%E7%B4%A2%E5%BC%95/" title="物理存储结构与索引"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-10</div><div class="info-item-2">物理存储结构与索引</div></div><div class="info-2"><div class="info-item-1">存储与文件结构 文件组织 定长记录与变长记录  定长记录（fixed-length record）：每条记录的长度相同，便于计算和存取 变长记录（variable-length record）：每条记录的长度不同，节省空间，但存取较复杂  文件中记录的组织 堆文件组织（heap file organization） 记录无特定顺序存储，适用于插入频繁但查询较少的场景 顺序文件组织（sequential file organization） 记录按某一属性排序存储，适用于范围查询和顺序访问 散列文件组织（hashed file organization） 记录通过哈希函数映射到存储位置，适用于等值查询 多表聚簇文件组织 (clustered file organization) 将相关表的数据存储在一起，提高联接查询效率 数据字典 (Data Dictionary / System Catalog) 它是“数据库的数据库”。 存什么？ 元数据 (Metadata)。即关于数据的数据。  表名、列名、列的类型。 完整性约束（主键、外键）。 用户权限信息。 统计信息（表有多少行？索引树...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">决策树</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">划分选择</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E5%A2%9E%E7%9B%8A"><span class="toc-number">2.1.</span> <span class="toc-text">信息增益</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A2%9E%E7%9B%8A%E7%8E%87"><span class="toc-number">2.2.</span> <span class="toc-text">增益率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E5%B0%BC%E6%8C%87%E6%95%B0"><span class="toc-number">2.3.</span> <span class="toc-text">基尼指数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">决策树算法：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">剪枝：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E5%89%AA%E6%9E%9D"><span class="toc-number">4.1.</span> <span class="toc-text">预剪枝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E5%89%AA%E6%9E%9D"><span class="toc-number">4.2.</span> <span class="toc-text">后剪枝</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">回归树：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">6.</span> <span class="toc-text">属性缺失：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%B1%9E%E6%80%A7%E5%80%BC%E7%BC%BA%E5%A4%B1%E6%97%B6%EF%BC%8C%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%88%92%E5%88%86%E5%B1%9E%E6%80%A7%E3%80%81%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E4%BF%A1%E6%81%AF%E5%A2%9E%E7%9B%8A%EF%BC%9F"><span class="toc-number">6.1.</span> <span class="toc-text">1. 属性值缺失时，如何选择划分属性、如何计算信息增益？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%B7%B2%E7%BB%8F%E5%86%B3%E5%AE%9A%E7%94%A8%E6%9F%90%E5%B1%9E%E6%80%A7%E5%88%92%E5%88%86%E6%97%B6%EF%BC%8C%E5%A6%82%E6%9E%9C%E6%9F%90%E6%A0%B7%E6%9C%AC%E5%9C%A8%E8%BF%99%E4%B8%AA%E5%B1%9E%E6%80%A7%E4%B8%8A%E7%9A%84%E5%80%BC%E7%BC%BA%E5%A4%B1%EF%BC%8C%E6%80%8E%E4%B9%88%E6%8A%8A%E5%AE%83%E5%88%86%E5%88%B0%E5%AD%90%E7%BB%93%E7%82%B9%EF%BC%9F"><span class="toc-number">6.2.</span> <span class="toc-text">2. 已经决定用某属性划分时，如果某样本在这个属性上的值缺失，怎么把它分到子结点？</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/20/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E5%85%A5%E9%97%A8/" title="知识图谱入门">知识图谱入门</a><time datetime="2026-03-20T07:28:02.000Z" title="发表于 2026-03-20 15:28:02">2026-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/14/dbot/" title="D-Bot：基于LLM的数据库诊断系统">D-Bot：基于LLM的数据库诊断系统</a><time datetime="2026-03-13T16:00:00.000Z" title="发表于 2026-03-14 00:00:00">2026-03-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/13/%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" title="自动模式设计综述">自动模式设计综述</a><time datetime="2026-03-12T16:00:00.000Z" title="发表于 2026-03-13 00:00:00">2026-03-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/11/LLMOpt/" title="LLMOpt——《A Query Optimization Method Utilizing Large Language Models》">LLMOpt——《A Query Optimization Method Utilizing Large Language Models》</a><time datetime="2026-03-10T16:00:00.000Z" title="发表于 2026-03-11 00:00:00">2026-03-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/11/GPTune/" title="参数调优《GPTune》">参数调优《GPTune》</a><time datetime="2026-03-10T16:00:00.000Z" title="发表于 2026-03-11 00:00:00">2026-03-11</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
   const loadMathjax = () => {
     if (!window.MathJax) {
       window.MathJax = {
