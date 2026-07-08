@@ -458,15 +458,19 @@
 <p>目标：最大化期望回报 <strong>$J(\theta) = \mathbb{E}<em>{\tau \sim \pi</em>\theta}[R(\tau)]$</strong>。</p>
 <h2 id="6-4-原始策略梯度-Vanilla-Policy-Gradient">6.4 原始策略梯度 (Vanilla Policy Gradient)</h2>
 <p>REINFORCE 策略梯度公式：</p>
-<p>$$<br>
-\nabla_\theta J(\pi_\theta) = \mathbb{E}<em>{\tau \sim \pi</em>\theta} [\sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t|s_t) R(\tau)]<br>
-$$</p>
+<div class="mathjax-display">
+$$
+\nabla_\theta J(\pi_\theta) = \mathbb{E}_{\tau \sim \pi_\theta} [\sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t|s_t) R(\tau)]
+$$
+</div>
 <p>（文档中提供了推导过程，包括对数导数技巧）。</p>
 <p><strong>[页 18]</strong></p>
 <p><strong>梯度的样本估计</strong> ：</p>
-<p>$$<br>
-\hat{g} = \frac{1}{N} \sum_{i=1}^N \sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t^{(i)}|s_t^{(i)}) R(\tau^{(i)})<br>
-$$</p>
+<div class="mathjax-display">
+$$
+\hat{g} = \frac{1}{N} \sum_{i=1}^N \sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t^{(i)}|s_t^{(i)}) R(\tau^{(i)})
+$$
+</div>
 <h2 id="6-5-策略梯度基线-Baselines">6.5 策略梯度基线 (Baselines)</h2>
 <p>为了减少方差，我们从奖励中减去一个基线 <strong>$b(s_t)$</strong>。只要基线仅依赖于状态，梯度估计就是无偏的。</p>
 <p><strong>关于“策略梯度损失 (pg_loss)”的说明</strong> ：</p>
@@ -481,9 +485,11 @@ $$</p>
 <p><strong>优势估计 (Advantage Estimation)</strong></p>
 <p>GRPO 的核心思想是对每个问题采样多个输出，并利用它们计算基线。这避免了训练价值函数 <strong>$V_\phi(s)$</strong> 的需要。</p>
 <p>DeepSeekMath 和 R1 计算组归一化优势：</p>
-<p>$$<br>
-A^{(i)} = \frac{r^{(i)} - \text{mean}({r}) }{\text{std}({r}) + \epsilon}<br>
-$$</p>
+<div class="mathjax-display">
+$$
+A^{(i)} = \frac{r^{(i)} - \text{mean}(\{r\}) }{\text{std}(\{r\}) + \epsilon}
+$$
+</div>
 <p>Dr. GRPO 提出了一种简化版本，仅减去均值而不除以标准差，我们稍后会比较这两种方法。</p>
 <p><strong>GRPO 目标函数</strong></p>
 <p>结合了三个思想：</p>
@@ -496,9 +502,11 @@ $$</p>
 <p><strong>算法 3：GRPO</strong></p>
 <p>（表格形式展示了 GRPO 的训练循环：采样问题 -&gt; 采样 G 个输出 -&gt; 计算奖励和优势 -&gt; 内部循环更新策略）。</p>
 <p><strong>GRPO-Clip 目标函数</strong> ：</p>
-<p>$$<br>
-\text{per-token objective} = \min \left( \frac{\pi}{\pi_{old}} A, \text{clip}\left(\frac{\pi}{\pi_{old}}, 1-\epsilon, 1+\epsilon\right) A \right)<br>
-$$</p>
+<div class="mathjax-display">
+$$
+\text{per-token objective} = \min \left( \frac{\pi}{\pi_{old}} A, \text{clip}\left(\frac{\pi}{\pi_{old}}, 1-\epsilon, 1+\epsilon\right) A \right)
+$$
+</div>
 <p>（文档解释了裁剪如何防止策略变化过大）。</p>
 <h2 id="7-2-实现">7.2 实现</h2>
 <p><strong>计算优势（组归一化奖励）</strong></p>
@@ -525,11 +533,11 @@ $$</p>
 <li>实现带裁剪的目标函数。</li>
 <li><strong>测试</strong> ：<code>pytest -k test_compute_grpo_clip_loss</code>。</li>
 </ul>
-<p>$$</p>
-<ul>
-<li>\min \left( \frac{\pi_\theta(o_t|q, o_{&lt;t})}{\pi_{\theta_{old}}(o_t|q, o_{&lt;t})} A_t, \text{clip} \left( \frac{\pi_\theta(o_t|q, o_{&lt;t})}{\pi_{\theta_{old}}(o_t|q, o_{&lt;t})}, 1-\epsilon, 1+\epsilon \right) A_t \right)<br>
-$$</li>
-</ul>
+<div class="mathjax-display">
+$$
+- \min \left( \frac{\pi_\theta(o_t|q, o_{<t})}{\pi_{\theta_{old}}(o_t|q, o_{<t})} A_t, \text{clip} \left( \frac{\pi_\theta(o_t|q, o_{<t})}{\pi_{\theta_{old}}(o_t|q, o_{<t})}, 1-\epsilon, 1+\epsilon \right) A_t \right)
+$$
+</div>
 <p><strong>[页 24]</strong></p>
 <p><strong>策略梯度损失包装器 (Wrapper)</strong></p>
 <p>我们需要对比三种版本：</p>

@@ -168,24 +168,30 @@
 $o = \text{ReLU}(z)$<br>
 $J = \frac{1}{2}(y - o)^2$</p>
 <p>求导 (链式法则)：<br>
-由链式法则可得：<br>
-$$<br>
-\frac{\partial J}{\partial w}<br>
-= \frac{\partial J}{\partial o}<br>
-\cdot \frac{\partial o}{\partial z}<br>
-\cdot \frac{\partial z}{\partial w}.<br>
-$$</p>
-<p>其中：<br>
-$$<br>
-\frac{\partial J}{\partial o} = o-y,\quad<br>
-\frac{\partial o}{\partial z} = \text{ReLU}'(z),\quad<br>
-\frac{\partial z}{\partial w} = x.<br>
-$$</p>
-<p>因此：<br>
-$$<br>
-\frac{\partial J}{\partial w}<br>
-= (o-y),\text{ReLU}'(z),x.<br>
-$$</p>
+由链式法则可得：</p>
+<div class="mathjax-display">
+$$
+\frac{\partial J}{\partial w}
+= \frac{\partial J}{\partial o}
+\cdot \frac{\partial o}{\partial z}
+\cdot \frac{\partial z}{\partial w}.
+$$
+</div>
+<p>其中：</p>
+<div class="mathjax-display">
+$$
+\frac{\partial J}{\partial o} = o-y,\quad
+\frac{\partial o}{\partial z} = \text{ReLU}'(z),\quad
+\frac{\partial z}{\partial w} = x.
+$$
+</div>
+<p>因此：</p>
+<div class="mathjax-display">
+$$
+\frac{\partial J}{\partial w}
+= (o-y)\,\text{ReLU}'(z)\,x.
+$$
+</div>
 <p>向量化：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    %% 样式定义</span><br><span class="line">    classDef input fill:#e1f5fe,stroke:#01579b,stroke-width:2px;</span><br><span class="line">    classDef weight fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;</span><br><span class="line">    classDef neuron fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;</span><br><span class="line">    classDef loss fill:#fce4ec,stroke:#880e4f,stroke-width:2px;</span><br><span class="line"></span><br><span class="line">    subgraph Vectorization_Input [向量化输入 x]</span><br><span class="line">        direction TB</span><br><span class="line">        x1((x1)):::input</span><br><span class="line">        x2((x2)):::input</span><br><span class="line">        x3((x3)):::input</span><br><span class="line">        x4((x4)):::input</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    subgraph Weights [权重 w]</span><br><span class="line">        w1[w1]:::weight</span><br><span class="line">        w2[w2]:::weight</span><br><span class="line">        w3[w3]:::weight</span><br><span class="line">        w4[w4]:::weight</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    subgraph Processing [计算过程]</span><br><span class="line">        z((z = wT*x + b)):::neuron</span><br><span class="line">        o((o = ReLU)):::neuron</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    J[Loss J = 1/2y-o^2]:::loss</span><br><span class="line"></span><br><span class="line">    %% 连接</span><br><span class="line">    x1 --&gt; w1 --&gt; z</span><br><span class="line">    x2 --&gt; w2 --&gt; z</span><br><span class="line">    x3 --&gt; w3 --&gt; z</span><br><span class="line">    x4 --&gt; w4 --&gt; z</span><br><span class="line">  </span><br><span class="line">    z --&gt; o --&gt; J</span><br><span class="line"></span><br><span class="line">    %% 备注：这里对应你手稿中的公式</span><br><span class="line">    %% z = w^T * x + b</span><br><span class="line">    %% J对w的导数 = (o-y) * ReLU&#x27;(z) * x</span><br></pre></td></tr></table></figure>
 <p>实际应用中，输入通常是一个特征向量 $\vec{x}$。</p>
