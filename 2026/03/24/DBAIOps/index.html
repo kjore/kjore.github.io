@@ -1,0 +1,336 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>kjore's blog | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="DBAIOps 中知识图谱的 schema DBAIOps 构建的是一个 面向异常诊断经验的异构知识图谱 。其 schema 可以概括如下。 节点类型  Trigger Vertex ：异常触发节点。 当系统识别到数据库中发生某类异常后，会先定位到对应的 Trigger 节点，并以该节点作为诊断入口，进一步搜索与之相关的其他节点，获取后续诊断所需的信息。 Experience ：经验节点。 表示用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kjore&#39;s blog">
+<meta property="og:url" content="https://kjore.github.io/2026/03/24/DBAIOps/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="DBAIOps 中知识图谱的 schema DBAIOps 构建的是一个 面向异常诊断经验的异构知识图谱 。其 schema 可以概括如下。 节点类型  Trigger Vertex ：异常触发节点。 当系统识别到数据库中发生某类异常后，会先定位到对应的 Trigger 节点，并以该节点作为诊断入口，进一步搜索与之相关的其他节点，获取后续诊断所需的信息。 Experience ：经验节点。 表示用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-03-24T13:47:45.693Z">
+<meta property="article:modified_time" content="2026-03-26T09:25:30.426Z">
+<meta property="article:author" content="kjore">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "",
+  "url": "https://kjore.github.io/2026/03/24/DBAIOps/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-03-24T13:47:45.693Z",
+  "dateModified": "2026-03-26T09:25:30.426Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/03/24/DBAIOps/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'kjore\'s blog',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">12</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">kjore's blog</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">无标题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-24T13:47:45.693Z" title="发表于 2026-03-24 21:47:45">2026-03-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-26T09:25:30.426Z" title="更新于 2026-03-26 17:25:30">2026-03-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="DBAIOps-中知识图谱的-schema">DBAIOps 中知识图谱的 schema</h2>
+<p>DBAIOps 构建的是一个 <strong>面向异常诊断经验的异构知识图谱</strong> 。其 schema 可以概括如下。</p>
+<h3 id="节点类型">节点类型</h3>
+<ul>
+<li><strong>Trigger Vertex</strong> ：异常触发节点。<br>
+当系统识别到数据库中发生某类异常后，会先定位到对应的 Trigger 节点，并以该节点作为诊断入口，进一步搜索与之相关的其他节点，获取后续诊断所需的信息。</li>
+<li><strong>Experience</strong> ：经验节点。<br>
+表示用于异常分析的经验知识，包括异常解释、可能原因、解决方案以及背景知识等。</li>
+<li><strong>Tool</strong> ：工具节点。<br>
+表示面向特定异常诊断的可执行工具，通常是 Python 脚本或其他分析程序，用于自动化收集指标、验证假设、补充诊断证据。</li>
+<li><strong>Metric</strong> ：指标节点。<br>
+表示诊断过程中关注的指标项或统计项，例如 CPU 使用率、内存使用率、查询响应时间、等待时间等。<br>
+这里更偏向“指标概念 / 统计项”，而不是每一次实时采样值本身。</li>
+<li><strong>Tag</strong> ：标签节点。<br>
+用于标识和归类指标、经验、工具等知识片段，并增强图的连接性。很多经验、指标、工具虽然名称不同，但可能属于同一类问题，Tag 节点负责将它们组织到同一语义空间中，形成更紧密的关联网络。</li>
+<li><strong>Auxiliary</strong> ：辅助节点。<br>
+用于补充描述指标或诊断对象的附加信息，帮助系统更准确地理解某个指标，例如采样频率、统计方式、百分位数等。</li>
+</ul>
+<h3 id="边类型">边类型</h3>
+<ul>
+<li><strong>Containment Edge</strong> ：表示包含关系。<br>
+例如，一个 Trigger Vertex（如严重等待超时的 <code>LOG_FILE_SYNC</code> 异常）可以包含与之相关的 Experience Vertex（例如关于 redo log 分析步骤的经验说明）。</li>
+<li><strong>Relevance Edge</strong> ：表示相关关系。<br>
+主要用于连接 Trigger Vertex 和 Metric Vertex，表示某个异常与哪些指标相关。<br>
+例如，平均等待时间这一 Metric Vertex 与某个 Trigger Vertex 相关。</li>
+<li><strong>Diagnosis Edge</strong> ：表示诊断使用关系。<br>
+表示某个 Experience Vertex 在诊断过程中会使用某个 Metric Vertex。<br>
+例如，用于数据库 I/O 分析的 <code>ash_db_io_ana</code> 经验节点，会用到 <code>db file sequential read wait time</code> 这一指标节点。</li>
+<li><strong>Synonym Edge</strong> ：表示语义等价关系。<br>
+主要用于连接两个语义相同但表达不同的 Tag Vertex。<br>
+例如，<code>physical_read</code> 和 <code>disk_read</code>，<code>shared_pool</code> 和 <code>shared_buffer</code>。<br>
+该类关系的作用是统一语义等价标签，避免图谱碎片化，增强相关经验和知识片段的整合能力。</li>
+</ul>
+<h2 id="DBAIOps-中知识图谱的构建方式">DBAIOps 中知识图谱的构建方式</h2>
+<p>DBAIOps 的知识图谱并不是一次性从文档中抽取出所有实体和关系，而是围绕异常诊断过程逐步构建出来的。其整体流程可以概括为：</p>
+<ol>
+<li><strong>先人工定义一批 Trigger Vertex</strong> ，作为图的入口节点；</li>
+<li><strong>围绕这些 Trigger Vertex 自动抽取相关节点</strong> ，包括 Experience、Tool、Metric、Tag 等，并同时建立基础关系，从而形成初始图结构；</li>
+<li><strong>进行图增强</strong> ，主要利用 Tag 节点以及统计相似性等信息增强图的连接性，打通原本没有直接连接的节点；</li>
+<li><strong>根据新的异常报告和诊断经验持续更新图谱</strong> ，使图谱能够随着新知识不断演化。</li>
+</ol>
+<p>因此，DBAIOps 的知识图谱本质上是一个 <strong>面向异常诊断流程的动态图谱</strong> ，而不仅仅是一个静态知识库。</p>
+<p>总体来看，DBAIOps 中构建的知识图谱是一个 <strong>面向异常诊断经验的知识图谱</strong> 。<br>
+它的核心语料并不只是官方文档，而更依赖于：</p>
+<ul>
+<li>异常诊断经验总结</li>
+<li>历史案例分析报告</li>
+<li>故障处理手册</li>
+<li>可执行诊断脚本</li>
+<li>经验化的排障知识</li>
+</ul>
+<p>也就是说，这个知识图谱不仅表示了“数据库中有哪些知识”，还把“ <strong>诊断流程本身</strong> ”建模进去了。因此，它更像一个 <strong>诊断决策图谱</strong> ，而不是单纯的静态知识库。</p>
+<p>我们当前希望构建的是一个 <strong>面向参数级别的知识图谱</strong> ，重点在于表示：</p>
+<ul>
+<li>参数之间复杂的依赖关系</li>
+<li>参数与指标之间的影响关系</li>
+<li>参数约束、联调关系</li>
+<li>参数作用机理</li>
+</ul>
+<p>从这个角度看，当前构建的图谱更接近一个 <strong>静态知识库</strong> ，重点是“参数知识的表达与组织”；<br>
+而 DBAIOps 的图谱更接近一个 <strong>诊断知识图谱</strong> ，重点是“异常如何被分析、证据如何被组织、诊断路径如何被扩展”。</p>
+<p>我们的最终目标仍然是服务于 <strong>异常诊断问题</strong> ，因此可以借鉴 DBAIOps 的思路，在现有参数知识图谱基础上逐步引入“诊断入口”和“诊断流程建模”。</p>
+<p>可以参考 DBAIOps，在当前参数知识图谱中新增  <strong>Trigger Vertex</strong> ，将其作为异常诊断的入口节点。<br>
+之后再将 Trigger 与相关节点连接起来，形成一条从“异常现象”到“参数分析”的路径。</p>
+<p>一个最基本的结构可以是：</p>
+<p><strong>Trigger → Metric</strong></p>
+<p>因为在当前图谱中，Metric 本身已经与 Parameter 建立了关系，所以顺着：</p>
+<p><strong>Trigger → Metric → Parameter</strong></p>
+<p>就可以从异常触发点逐步定位到与该异常可能相关的参数。</p>
+<p>这意味着，现有图谱可以从“参数中心”扩展为“异常入口驱动的参数诊断图谱”。</p>
+<h3 id="Tool-节点如何引入">Tool 节点如何引入</h3>
+<p>这个问题还有待解决</p>
+<h3 id="是否可以引入-Experience-节点">是否可以引入 Experience 节点</h3>
+<p>这一点我认为是<strong>可以借鉴，而且很有价值</strong>的。</p>
+<p>目前我的想法是，把经验拆分为：</p>
+<ul>
+<li>参数节点</li>
+<li>公式节点</li>
+<li>指标节点</li>
+</ul>
+<p>例如图中黄色节点表示一个公式关系，即：</p>
+<p><img src="https://file+.vscode-resource.vscode-cdn.net/d%3A/hexo/source/_posts/image/DBAIOps/1774367111955.png" alt="1774367111955"></p>
+<p><strong>参数 1 的推荐值由参数 2、3、4 的和决定</strong></p>
+<p>这种方式的优点是结构清晰，公式本身被显式表示出来。<br>
+但如果借鉴 DBAIOps 的思路，也可以考虑进一步将这类“公式节点”提升为 <strong>Experience 节点</strong> 。</p>
+<p>也就是说，不再把它单独理解为纯公式，而是理解为一条完整的经验知识</p>
+<p>这样的话，经验节点中可以同时包含：</p>
+<ul>
+<li>公式描述</li>
+<li>推荐值描述</li>
+<li>背景解释</li>
+<li>使用条件</li>
+<li>风险提示</li>
+</ul>
+<p>然后再由 Experience 节点连接到相关的 Parameter 节点和 Metric 节点。</p>
+<p>因此，一个可能的演化方向是：</p>
+<ul>
+<li>保留公式作为 Experience 节点中的一部分内容；</li>
+<li>将原本孤立的公式节点升级为更完整的经验节点；</li>
+<li>经验节点再连接参数、指标、触发条件和工具节点。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/03/24/DBAIOps/">https://kjore.github.io/2026/03/24/DBAIOps/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/06/01/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%AC%AC%E4%B8%80%E7%AB%A0/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2"></div></div><div class="info-2"><div class="info-item-1">计算机系统结构的基本概念 计算机系统的层次结构  计算机系统＝硬件/固件＋软件 计算机语言从低级向高级发展 高一级语言的语句相对于低一级语言来说功能更强， 更便于应用，但又都以低级语言为基础。 从计算机语言的角度，把计算机系统按功能划分成 多级层次结构。 每一层以一种语言为特征    物理机: 用硬件/固件实现的机器(最下面的两级机器) 虚拟机：由软件实现的机器  虚拟机中有些操作可以由硬件或固件实现。 固件：具有软件功能的硬件。   各机器级的实现主要靠翻译或解释，或两者的结合。  翻译：先用转换程序把高一级机器上的程序转换为低一级机器上等效的程序，然后再在这低一级机器上运行，实现程序的功能。 解释：对于高一级机器上的程序中的每一条语句或指令，都是转去执行低一级机器上的一段等效程序。执行完后，再去高一级机器取下一条语句或指令，再进行解释 执行，如此反复，直到解释执行完整个程序。       特性 翻译（编译） 解释     执行方式 一次性生成低级机器代码 → 直接运行 逐条解释执行，高级指令即时翻译为低级指令   执行速度 快 慢   存储空间 大 小   调试灵活性 较差 ...</div></div></div></a><a class="pagination-related" href="/2026/03/24/%E5%8F%82%E6%95%B0%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E6%8C%87%E5%8D%97/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2"></div></div><div class="info-2"><div class="info-item-1">每个参数的属性：  name：参数名称 type：参数类型 min_value：参数的最小值 max_value：参数的最大值 special_value：参数的特殊值及含义(可选) restart：是否需要重启数据库才能生效 since_version：参数从哪个版本开始引入（可选，文档没给就不写） default_value：参数的默认值 context：“user”（用户级参数）或&quot;superuser&quot;（超级用户级参数）,“postmaster” recommendation：调优建议（可选,一般在这个调优建议不涉及其他参数时就直接写进属性里，否则建模成关系） applicable_scenarios：适用场景（可选，明确说明了什么时候这个参数生效就添加这个属性） unit：参数的单位（可选，不写默认为个）  对于边的设计，尽量将边名称设计成两个节点之间关系的简要说明。一些比较复杂的（比如在主服务器上的A和在从服务器的A之间的关系，建模成A指向A）可以添加边属性来进一步说明 节点类型：  parameter：表示数据库参数 category：表示参数属于...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">12</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DBAIOps-%E4%B8%AD%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84-schema"><span class="toc-number">1.</span> <span class="toc-text">DBAIOps 中知识图谱的 schema</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.1.</span> <span class="toc-text">节点类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">边类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DBAIOps-%E4%B8%AD%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">DBAIOps 中知识图谱的构建方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Tool-%E8%8A%82%E7%82%B9%E5%A6%82%E4%BD%95%E5%BC%95%E5%85%A5"><span class="toc-number">2.1.</span> <span class="toc-text">Tool 节点如何引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E5%BC%95%E5%85%A5-Experience-%E8%8A%82%E7%82%B9"><span class="toc-number">2.2.</span> <span class="toc-text">是否可以引入 Experience 节点</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/08/transformer%E6%9E%B6%E6%9E%84/" title="Transformer架构详解">Transformer架构详解</a><time datetime="2026-07-07T16:00:00.000Z" title="发表于 2026-07-08 00:00:00">2026-07-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/01/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%AC%AC%E4%B8%80%E7%AB%A0/" title="无标题">无标题</a><time datetime="2026-06-01T03:02:21.620Z" title="发表于 2026-06-01 11:02:21">2026-06-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/24/DBAIOps/" title="无标题">无标题</a><time datetime="2026-03-24T13:47:45.693Z" title="发表于 2026-03-24 21:47:45">2026-03-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/24/%E5%8F%82%E6%95%B0%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E6%8C%87%E5%8D%97/" title="无标题">无标题</a><time datetime="2026-03-24T05:14:25.032Z" title="发表于 2026-03-24 13:14:25">2026-03-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/24/%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/" title="支持向量机 SVM">支持向量机 SVM</a><time datetime="2026-03-23T16:00:00.000Z" title="发表于 2026-03-24 00:00:00">2026-03-24</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
