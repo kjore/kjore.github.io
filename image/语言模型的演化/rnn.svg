@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280">
+  <rect width="900" height="280" fill="#f8fafc"/>
+  <style>
+    .title{font:700 25px Arial,"Microsoft YaHei",sans-serif;fill:#111827}
+    .node{fill:#ffffff;stroke:#2f6f8f;stroke-width:2;rx:10}
+    .text{font:18px Arial,"Microsoft YaHei",sans-serif;fill:#111827}
+    .small{font:15px Arial,"Microsoft YaHei",sans-serif;fill:#475569}
+    .arrow{stroke:#64748b;stroke-width:3;marker-end:url(#arrow)}
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <text x="40" y="45" class="title">RNN：隐藏状态沿时间传递</text>
+  <rect x="90" y="125" width="110" height="65" class="node"/>
+  <text x="126" y="164" class="text">RNN</text>
+  <rect x="300" y="125" width="110" height="65" class="node"/>
+  <text x="336" y="164" class="text">RNN</text>
+  <rect x="510" y="125" width="110" height="65" class="node"/>
+  <text x="546" y="164" class="text">RNN</text>
+  <rect x="720" y="125" width="110" height="65" class="node"/>
+  <text x="756" y="164" class="text">RNN</text>
+  <line x1="200" y1="158" x2="290" y2="158" class="arrow"/>
+  <line x1="410" y1="158" x2="500" y2="158" class="arrow"/>
+  <line x1="620" y1="158" x2="710" y2="158" class="arrow"/>
+  <text x="225" y="145" class="small">h1</text>
+  <text x="435" y="145" class="small">h2</text>
+  <text x="645" y="145" class="small">h3</text>
+  <text x="126" y="225" class="text">我</text>
+  <text x="336" y="225" class="text">喜欢</text>
+  <text x="546" y="225" class="text">机器</text>
+  <text x="756" y="225" class="text">学习</text>
+  <line x1="145" y1="215" x2="145" y2="195" class="arrow"/>
+  <line x1="355" y1="215" x2="355" y2="195" class="arrow"/>
+  <line x1="565" y1="215" x2="565" y2="195" class="arrow"/>
+  <line x1="775" y1="215" x2="775" y2="195" class="arrow"/>
+</svg>

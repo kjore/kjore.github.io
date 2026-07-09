@@ -1,0 +1,464 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>语言模型的演化 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="语言模型最核心的问题其实很简单：给定前面的词，预测下一个词。  $$ P(w_1,w_2,\dots,w_T)&#x3D;\prod_{t&#x3D;1}^{T}P(w_t\mid w_1,\dots,w_{t-1}) $$  但难点在于：上下文可能很长，词表可能很大，语言里还存在大量没有见过的新组合。因此语言模型的发展，基本就是一条不断扩大上下文、改进表示方式、增强长期依赖建模能力的路线。  N-gram模型 N-">
+<meta property="og:type" content="article">
+<meta property="og:title" content="语言模型的演化">
+<meta property="og:url" content="https://kjore.github.io/2026/07/09/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="语言模型最核心的问题其实很简单：给定前面的词，预测下一个词。  $$ P(w_1,w_2,\dots,w_T)&#x3D;\prod_{t&#x3D;1}^{T}P(w_t\mid w_1,\dots,w_{t-1}) $$  但难点在于：上下文可能很长，词表可能很大，语言里还存在大量没有见过的新组合。因此语言模型的发展，基本就是一条不断扩大上下文、改进表示方式、增强长期依赖建模能力的路线。  N-gram模型 N-">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-07-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-09T12:48:53.702Z">
+<meta property="article:author" content="kjore">
+<meta property="article:tag" content="LLM基础">
+<meta property="article:tag" content="agent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "语言模型的演化",
+  "url": "https://kjore.github.io/2026/07/09/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-07-08T16:00:00.000Z",
+  "dateModified": "2026-07-09T12:48:53.702Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/07/09/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '语言模型的演化',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">语言模型的演化</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">语言模型的演化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-08T16:00:00.000Z" title="发表于 2026-07-09 00:00:00">2026-07-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-09T12:48:53.702Z" title="更新于 2026-07-09 20:48:53">2026-07-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/LLM/">LLM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>语言模型最核心的问题其实很简单：给定前面的词，预测下一个词。</p>
+<div class="mathjax-display">
+$$
+P(w_1,w_2,\dots,w_T)=\prod_{t=1}^{T}P(w_t\mid w_1,\dots,w_{t-1})
+$$
+</div>
+<p>但难点在于：上下文可能很长，词表可能很大，语言里还存在大量没有见过的新组合。因此语言模型的发展，基本就是一条不断扩大上下文、改进表示方式、增强长期依赖建模能力的路线。</p>
+<p><img src="/image/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/evolution.svg" alt="语言模型演化路线"></p>
+<h1>N-gram模型</h1>
+<p>N-gram 是最早期、也最直观的统计语言模型。它的核心假设是：预测当前词时，不需要看完整历史，只需要看前面固定长度的 $N-1$ 个词。</p>
+<p>例如三元模型（trigram）会把句子概率近似为：</p>
+<div class="mathjax-display">
+$$
+P(w_t\mid w_1,\dots,w_{t-1})\approx P(w_t\mid w_{t-2},w_{t-1})
+$$
+</div>
+<p>也就是说，如果我们要预测“学习”，模型只看前面的两个词：</p>
+<p><img src="/image/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/ngram.svg" alt="N-gram窗口"></p>
+<p>N-gram 的训练方式非常朴素：在语料库里数频次。</p>
+<div class="mathjax-display">
+$$
+P(w_t\mid w_{t-2},w_{t-1})=
+\frac{count(w_{t-2},w_{t-1},w_t)}
+{count(w_{t-2},w_{t-1})}
+$$
+</div>
+<p>比如语料中“我 喜欢 学习”出现 10 次，“我 喜欢”出现 20 次，那么：</p>
+<div class="mathjax-display">
+$$
+P(\text{学习}\mid \text{我},\text{喜欢})=\frac{10}{20}=0.5
+$$
+</div>
+<p>这种方法的优点是可解释、实现简单、训练成本低。但它也有明显缺陷：</p>
+<ul>
+<li><strong>上下文太短</strong>：$N$ 固定，模型无法利用更远处的信息。</li>
+<li><strong>数据稀疏</strong>：词表很大时，很多合理组合在训练集中根本没出现过。</li>
+<li><strong>无法理解语义相似性</strong>：模型不知道“汽车”和“轿车”语义接近，只会把它们当作两个完全不同的符号。</li>
+<li><strong>存储开销大</strong>：$N$ 越大，需要统计的组合数量越爆炸。</li>
+</ul>
+<p>所以 N-gram 本质上是一个基于“记忆表”的模型：见过的组合能处理，没见过的组合就很难泛化。</p>
+<h1>神经网络语言模型与词嵌入</h1>
+<p>神经网络语言模型（Neural Network Language Model, NNLM）试图解决 N-gram 最大的问题：词与词之间没有可学习的语义关系。</p>
+<p>它不再把词看作离散符号，而是把每个词映射成一个连续向量，也就是词嵌入（word embedding）。</p>
+<p><img src="/image/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/embedding.svg" alt="词嵌入示意"></p>
+<p>词嵌入的关键思想是：语义相近的词，在向量空间里也应该更接近。比如“猫”和“狗”都经常出现在“宠物”“动物”“喂养”等上下文中，所以它们的向量会逐渐靠近。</p>
+<p>NNLM 的基本流程可以写成：</p>
+<div class="mathjax-display">
+$$
+token \rightarrow embedding \rightarrow hidden\ layer \rightarrow softmax
+$$
+</div>
+<p>输入是前面若干个词，模型先把它们转换成词向量，再经过神经网络，最后输出下一个词的概率分布。</p>
+<p>相比 N-gram，神经网络语言模型有几个重要进步：</p>
+<ul>
+<li><strong>可以泛化到没见过的组合</strong>：即使“我 喜欢 机器学习”没有在训练集中出现过，模型也能借助“机器学习”和其他相关词的向量关系做出判断。</li>
+<li><strong>词具有连续表示</strong>：词不再只是编号，而是有了可学习的语义位置。</li>
+<li><strong>参数共享</strong>：相似上下文可以共享模型参数，而不是为每个词组单独存一条统计记录。</li>
+</ul>
+<p>但早期 NNLM 通常仍然依赖固定窗口。例如只看前 5 个词或前 10 个词，因此它虽然解决了语义表示问题，却还没有真正解决长距离依赖问题。</p>
+<h1>循环神经网络RNN</h1>
+<p>RNN（Recurrent Neural Network）进一步放宽了固定窗口限制。它的想法是：模型按时间顺序读入 token，每读一个词，就把当前状态传递给下一个时间步。</p>
+<div class="mathjax-display">
+$$
+h_t=f(W_xx_t+W_hh_{t-1}+b)
+$$
+</div>
+<div class="mathjax-display">
+$$
+y_t = Softmax(W_yh_t)
+$$
+</div>
+<p>其中：</p>
+<ul>
+<li>$x_t$ 是当前词的输入向量。</li>
+<li>$h_t$ 是当前位置的隐藏状态。</li>
+<li>$h_{t-1}$ 是上一个位置传下来的历史信息。</li>
+<li>f是激活函数，一般取tanh</li>
+</ul>
+<p><img src="/image/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/rnn.svg" alt="RNN展开结构"></p>
+<p>从形式上看，RNN 不再只看固定的 $N-1$ 个词，而是可以把历史信息不断压缩进隐藏状态 $h_t$ 中。</p>
+<p>例如读句子：</p>
+<blockquote>
+<p>我 昨天 在 图书馆 看 了一 本 书</p>
+</blockquote>
+<p>RNN 会从左到右依次更新状态：</p>
+<div class="mathjax-display">
+$$
+h_1 \rightarrow h_2 \rightarrow h_3 \rightarrow \dots \rightarrow h_T
+$$
+</div>
+<p>理论上，最后的隐藏状态可以包含前面所有词的信息。这样模型就能处理任意长度的序列，这对语言建模、机器翻译、语音识别等任务都非常重要。</p>
+<p>RNN 的优势是：</p>
+<ul>
+<li><strong>天然适合序列数据</strong>：文本、语音、时间序列都可以按时间步处理。</li>
+<li><strong>参数量不随序列长度增长</strong>：同一组参数在每个时间步重复使用。</li>
+<li><strong>可以建模上下文历史</strong>：比固定窗口 NNLM 更灵活。</li>
+</ul>
+<p>但普通 RNN 有一个严重问题：长距离依赖很难学。</p>
+<p>反向传播时，梯度需要沿着时间链条一层层传回去。如果序列很长，梯度会不断乘以同一个权重矩阵，容易出现两种情况：</p>
+<div class="mathjax-display">
+$$
+\frac{\partial L}{\partial h_{t-k}}
+\approx
+\frac{\partial L}{\partial h_t}
+\prod_{i=t-k+1}^{t}
+\frac{\partial h_i}{\partial h_{i-1}}
+$$
+</div>
+<ul>
+<li>如果连乘结果越来越小，就会发生<strong>梯度消失</strong>，模型学不到很早之前的信息。</li>
+<li>如果连乘结果越来越大，就会发生<strong>梯度爆炸</strong>，训练变得不稳定。</li>
+</ul>
+<p>RNN 容易梯度消失或爆炸，是因为它在时间维度上递归传播隐藏状态。反向传播时，梯度需要经过很多时间步，每一步都会乘上隐藏状态转移矩阵 $W_h$和激活函数导数，因此整体梯度近似是多个矩阵的连乘。如果这些乘积的谱半径小于 1，梯度会指数级衰减；如果大于 1，梯度会指数级放大。</p>
+<p>Transformer 不采用时间递归结构，而是通过 self-attention 让不同位置的 token 直接交互，信息传播路径更短，不需要沿序列长度反复连乘同一个状态转移矩阵。同时 Transformer 中的残差连接和 LayerNorm 也能稳定梯度传播。所以 Transformer 不是完全没有梯度问题，但它不会像普通 RNN 那样因为长序列递归而特别容易梯度消失或爆炸。</p>
+<p>这就是为什么普通 RNN 在短句子上还可以，但遇到长文本时经常“记不住前文”。</p>
+<h1>长短时记忆网络 (LSTM)</h1>
+<p>LSTM（Long Short-Term Memory）是为了解决 RNN 长距离依赖问题而提出的结构。它的核心改进是：在普通隐藏状态之外，引入一条更稳定的记忆通道，也就是 cell state。</p>
+<p>RNN 长距离依赖问题分为梯度消失和梯度爆炸两种，其中梯度爆炸可以通过梯度裁剪解决，但是梯度消失是无解的。</p>
+<p>普通 RNN 像是每一步都要重新改写记忆，而 LSTM 更像是给记忆加了几个门，决定哪些信息保留、哪些信息遗忘、哪些信息输出。</p>
+<p><img src="/image/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/1783601106915.png" alt="1783601106915"></p>
+<p>LSTM 主要有三个门：</p>
+<ul>
+<li><strong>遗忘门</strong>：决定上一时刻的记忆 $c_{t-1}$ 保留多少。</li>
+<li><strong>输入门</strong>：决定当前输入产生的新信息写入多少。</li>
+<li><strong>输出门</strong>：决定当前记忆有多少暴露给隐藏状态 $h_t$。</li>
+</ul>
+<p>公式可以概括为：</p>
+<div class="mathjax-display">
+$$
+f_t=\sigma(W_f[x_t,h_{t-1}]+b_f)
+$$
+</div>
+<div class="mathjax-display">
+$$
+i_t=\sigma(W_i[x_t,h_{t-1}]+b_i)
+$$
+</div>
+<div class="mathjax-display">
+$$
+\tilde{c}_t=\tanh(W_c[x_t,h_{t-1}]+b_c)
+$$
+</div>
+<div class="mathjax-display">
+$$
+c_t=f_t\odot c_{t-1}+i_t\odot \tilde{c}_t
+$$
+</div>
+<div class="mathjax-display">
+$$
+o_t=\sigma(W_o[x_t,h_{t-1}]+b_o)
+$$
+</div>
+<div class="mathjax-display">
+$$
+h_t=o_t\odot\tanh(c_t)
+$$
+</div>
+<p>其中最关键的是这条更新：</p>
+<div class="mathjax-display">
+$$
+c_t=f_t\odot c_{t-1}+i_t\odot \tilde{c}_t
+$$
+</div>
+<p>它让记忆可以沿着时间方向比较稳定地传递，而不是每一步都被完全重写。这样 LSTM 就能比普通 RNN 更好地保存长期信息。</p>
+<p>举个例子：</p>
+<blockquote>
+<p>我出生在中国，后来去了很多国家旅行，但我最熟悉的语言仍然是中文。</p>
+</blockquote>
+<p>如果要预测最后的“中文”，模型需要记住很早之前出现的“中国”。普通 RNN 可能在中间一长串词之后逐渐忘掉这个信息，而 LSTM 的 cell state 可以通过门控机制把它保留下来。</p>
+<p>LSTM 的优点是：</p>
+<ul>
+<li><strong>缓解梯度消失</strong>：cell state 提供了更直接的信息流。</li>
+<li><strong>适合中长序列</strong>：比普通 RNN 更能记住远距离上下文。</li>
+<li><strong>门控机制可控</strong>：模型可以学习什么时候记忆、什么时候遗忘。</li>
+</ul>
+<p>但 LSTM 仍然没有彻底解决序列建模的效率问题：</p>
+<ul>
+<li>它仍然需要按时间步顺序计算，难以大规模并行。</li>
+<li>序列很长时，信息仍然要经过很多步传递。</li>
+<li>每个 token 对其他 token 的访问是间接的，不像注意力机制那样可以直接建立两两关系。</li>
+</ul>
+<p>这也是后来 Transformer 取代 RNN/LSTM 成为主流语言模型架构的重要原因。</p>
+<h1>小结</h1>
+<p>语言模型的演化可以粗略概括为下面这条路线：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>核心思想</th>
+<th>解决的问题</th>
+<th>主要限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N-gram</td>
+<td>数频次，查条件概率表</td>
+<td>简单可解释</td>
+<td>数据稀疏，窗口固定</td>
+</tr>
+<tr>
+<td>NNLM</td>
+<td>用词向量表示 token</td>
+<td>语义泛化能力更强</td>
+<td>上下文通常仍然固定</td>
+</tr>
+<tr>
+<td>RNN</td>
+<td>用隐藏状态传递历史</td>
+<td>支持变长序列</td>
+<td>长距离依赖困难</td>
+</tr>
+<tr>
+<td>LSTM</td>
+<td>用门控和 cell state 保存记忆</td>
+<td>缓解梯度消失</td>
+<td>计算难并行，长文本仍受限</td>
+</tr>
+<tr>
+<td>Transformer</td>
+<td>用注意力直接建模 token 关系</td>
+<td>并行、高效、长依赖更强</td>
+<td>注意力计算随长度平方增长</td>
+</tr>
+</tbody>
+</table>
+<p>从 N-gram 到 LSTM，模型一步步从“统计词组频率”走向“学习连续语义表示”和“建模序列记忆”。而 Transformer 的出现，则进一步把“按顺序传递信息”改成了“所有 token 之间直接交互”，这也是现代大语言模型的基础。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/07/09/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/">https://kjore.github.io/2026/07/09/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/LLM%E5%9F%BA%E7%A1%80/">LLM基础</a><a class="post-meta__tags" href="/tags/agent/">agent</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/07/09/%E6%A8%A1%E5%9E%8B%E9%87%87%E6%A0%B7%E5%8F%82%E6%95%B0/" title="大模型采样参数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">大模型采样参数</div></div><div class="info-2"><div class="info-item-1">temperature和top-p采样 在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。 temperature和Top-p都是 高-&gt;随机，有创造力。 低-&gt;确定，偏向保守。 原理 大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。  生成分数 大模型会为其词汇表中所有词（数量通常为几万到几十万）打分，该分数在 AI 领域称为 logit。以用户问题 “可以给我推荐一个讲 ai 的技术频道吗？” 为例，模型会对相关词进行打分，实际应用中通常展示分数最高的前几个词。 转换概率 通过 softmax 函数将分数转换为概率，公式为  $$ \sigma(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}} $$  其中$z_i$为第 i 个词的分数，K 为词的总量。转换后得到每个词的输出概率，使模型能按概率预测下一个词。  加权采样 根据概率生成预测值的过程称为加权采样。将每个词的概率对应分配到 0-100 的数轴区间，生成随机...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/07/09/%E6%A8%A1%E5%9E%8B%E9%87%87%E6%A0%B7%E5%8F%82%E6%95%B0/" title="大模型采样参数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-09</div><div class="info-item-2">大模型采样参数</div></div><div class="info-2"><div class="info-item-1">temperature和top-p采样 在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。 temperature和Top-p都是 高-&gt;随机，有创造力。 低-&gt;确定，偏向保守。 原理 大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。  生成分数 大模型会为其词汇表中所有词（数量通常为几万到几十万）打分，该分数在 AI 领域称为 logit。以用户问题 “可以给我推荐一个讲 ai 的技术频道吗？” 为例，模型会对相关词进行打分，实际应用中通常展示分数最高的前几个词。 转换概率 通过 softmax 函数将分数转换为概率，公式为  $$ \sigma(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}} $$  其中$z_i$为第 i 个词的分数，K 为词的总量。转换后得到每个词的输出概率，使模型能按概率预测下一个词。  加权采样 根据概率生成预测值的过程称为加权采样。将每个词的概率对应分配到 0-100 的数轴区间，生成随机...</div></div></div></a><a class="pagination-related" href="/2026/07/08/transformer%E6%9E%B6%E6%9E%84/" title="Transformer架构详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-08</div><div class="info-item-2">Transformer架构详解</div></div><div class="info-2"><div class="info-item-1">为什么现在主流大模型用的都是transformer架构？ 2017年提出的原始transformer架构 他与我们接下来所要学习的现代大模型架构是有一定出入的。 首先，原始transformer使用编码器-解码器架构，而现代大语言模型使用解码器结构。这是因为编码器负责理解，解码器负责生成 天然适合生成： GPT 不使用编码器，主要是因为它的核心任务是自回归生成，也就是根据前面的 token 预测下一个 token。这个任务天然适合 Decoder-only 架构。 训练目标统一： Decoder-only 目标简单，预测下一个token，不像Encoder-Decoder那样要分阶段、分任务，目标越统一，训练越稳定。 易扩展： Decoder-only模型只要在prompt里面多写几句例子，就能快速适应迁移任务。 然后，每个transformer块的结构也不同，原始transformer中是post-norm,而现代大模型是pre-norm 原始 Transformer 用 Post-Norm，是因为当时模型比较浅，只有 6 层 Encoder、6 层 Decoder，Post-...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">N-gram模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">神经网络语言模型与词嵌入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">循环神经网络RNN</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">长短时记忆网络 (LSTM)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">小结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/09/%E6%A8%A1%E5%9E%8B%E9%87%87%E6%A0%B7%E5%8F%82%E6%95%B0/" title="大模型采样参数">大模型采样参数</a><time datetime="2026-07-08T16:00:00.000Z" title="发表于 2026-07-09 00:00:00">2026-07-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/09/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/" title="语言模型的演化">语言模型的演化</a><time datetime="2026-07-08T16:00:00.000Z" title="发表于 2026-07-09 00:00:00">2026-07-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/08/transformer%E6%9E%B6%E6%9E%84/" title="Transformer架构详解">Transformer架构详解</a><time datetime="2026-07-07T16:00:00.000Z" title="发表于 2026-07-08 00:00:00">2026-07-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/22/ThemeKG/" title="ThemeKG在构建数据库参数信息这个特定主题的知识图谱上的启发">ThemeKG在构建数据库参数信息这个特定主题的知识图谱上的启发</a><time datetime="2026-03-21T16:00:00.000Z" title="发表于 2026-03-22 00:00:00">2026-03-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/20/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E5%85%A5%E9%97%A8/" title="知识图谱入门">知识图谱入门</a><time datetime="2026-03-20T07:28:02.000Z" title="发表于 2026-03-20 15:28:02">2026-03-20</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
