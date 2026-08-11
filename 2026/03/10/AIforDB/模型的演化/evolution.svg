@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="260" viewBox="0 0 960 260">
+  <rect width="960" height="260" fill="#f7fafc"/>
+  <style>
+    .title{font:700 28px Arial,"Microsoft YaHei",sans-serif;fill:#1f2937}
+    .box{fill:#ffffff;stroke:#2f6f8f;stroke-width:2;rx:10}
+    .h{font:700 20px Arial,"Microsoft YaHei",sans-serif;fill:#0f172a}
+    .p{font:15px Arial,"Microsoft YaHei",sans-serif;fill:#475569}
+    .arrow{stroke:#64748b;stroke-width:3;marker-end:url(#arrow)}
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <text x="40" y="45" class="title">语言模型的演化路线</text>
+  <rect x="40" y="95" width="150" height="95" class="box"/>
+  <text x="72" y="132" class="h">N-gram</text>
+  <text x="66" y="162" class="p">数频次</text>
+  <text x="62" y="183" class="p">固定窗口</text>
+  <line x1="200" y1="142" x2="250" y2="142" class="arrow"/>
+  <rect x="260" y="95" width="150" height="95" class="box"/>
+  <text x="304" y="132" class="h">NNLM</text>
+  <text x="292" y="162" class="p">词嵌入</text>
+  <text x="285" y="183" class="p">语义泛化</text>
+  <line x1="420" y1="142" x2="470" y2="142" class="arrow"/>
+  <rect x="480" y="95" width="150" height="95" class="box"/>
+  <text x="532" y="132" class="h">RNN</text>
+  <text x="512" y="162" class="p">隐藏状态</text>
+  <text x="505" y="183" class="p">顺序记忆</text>
+  <line x1="640" y1="142" x2="690" y2="142" class="arrow"/>
+  <rect x="700" y="95" width="150" height="95" class="box"/>
+  <text x="752" y="132" class="h">LSTM</text>
+  <text x="728" y="162" class="p">门控机制</text>
+  <text x="722" y="183" class="p">长期记忆</text>
+</svg>

@@ -1,0 +1,381 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>kjore's blog | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="H.264 与“闭眼抽帧”学习笔记 在 PPT、网页操作、数据看板这类屏幕录制视频里，不一定要先把每一帧都解码成图像再判断页面变化，而是可以先观察 H.264 压缩码流里的数据包大小变化。编码器本来就已经分析过相邻画面的差异；如果画面很容易预测，压缩数据通常很小，如果画面突然大面积变化，压缩数据往往会明显变大。 所以所谓“闭眼抽帧”，不是完全不处理视频，而是在候选检测阶段不看像素画面，只看压缩数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kjore&#39;s blog">
+<meta property="og:url" content="https://kjore.github.io/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="H.264 与“闭眼抽帧”学习笔记 在 PPT、网页操作、数据看板这类屏幕录制视频里，不一定要先把每一帧都解码成图像再判断页面变化，而是可以先观察 H.264 压缩码流里的数据包大小变化。编码器本来就已经分析过相邻画面的差异；如果画面很容易预测，压缩数据通常很小，如果画面突然大面积变化，压缩数据往往会明显变大。 所以所谓“闭眼抽帧”，不是完全不处理视频，而是在候选检测阶段不看像素画面，只看压缩数据">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-08-02T02:12:47.350Z">
+<meta property="article:modified_time" content="2026-08-02T02:19:52.100Z">
+<meta property="article:author" content="kjore">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "",
+  "url": "https://kjore.github.io/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-08-02T02:12:47.350Z",
+  "dateModified": "2026-08-02T02:19:52.100Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'kjore\'s blog',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">kjore's blog</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">无标题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-02T02:12:47.350Z" title="发表于 2026-08-02 10:12:47">2026-08-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-02T02:19:52.100Z" title="更新于 2026-08-02 10:19:52">2026-08-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>H.264 与“闭眼抽帧”学习笔记</h1>
+<p>在 PPT、网页操作、数据看板这类屏幕录制视频里，不一定要先把每一帧都解码成图像再判断页面变化，而是可以先观察 H.264 压缩码流里的数据包大小变化。编码器本来就已经分析过相邻画面的差异；如果画面很容易预测，压缩数据通常很小，如果画面突然大面积变化，压缩数据往往会明显变大。</p>
+<p>所以所谓“闭眼抽帧”，不是完全不处理视频，而是在候选检测阶段不看像素画面，只看压缩数据的时间变化；等找到可能的换页位置后，再解码少量代表帧。</p>
+<h2 id="一、为什么这个问题可以从编码数据里找线索">一、为什么这个问题可以从编码数据里找线索</h2>
+<p>DataAgent 的视频理解任务里，视频内容通常是界面操作、PPT 或类似页面讲解。这类视频有一个很明显的特点：大部分时间画面是静止的，只有在换页、弹窗、表格加载、动画出现时才发生大面积变化。</p>
+<p>如果按固定间隔抽帧，会遇到两个问题：一是同一个静止页面会被抽出很多重复帧；二是停留时间很短但重要的页面可能被错过。传统做法是解码所有帧，然后用像素差、直方图、SSIM、感知哈希或视觉模型比较前后画面。这样当然可行，但成本比较高。</p>
+<p>H.264 给了另一条线索。它的压缩依赖预测：能从当前画面内部或前后参考画面预测出来的内容，就不需要完整保存；预测不准的地方，才需要编码更多残差。于是，页面静止时包通常很小，页面切换时包大小会出现一簇明显上升。</p>
+<p>可以粗略理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">静止页面：预测准确 -&gt; 残差小 -&gt; 包小</span><br><span class="line">页面切换：预测失效 -&gt; 残差大 -&gt; 包变大</span><br></pre></td></tr></table></figure>
+<p>这个近似并不是在所有视频上都成立，但在静态 UI 和 PPT 类视频里通常很有用。</p>
+<h2 id="二、H-264-为什么能压缩视频">二、H.264 为什么能压缩视频</h2>
+<p>H.264，也叫 AVC，是一种视频压缩编码标准。如果每一帧都按完整图片保存，视频会非常大。它主要利用两类冗余来压缩：</p>
+<p>第一类是空间冗余。同一张画面内部，相邻区域经常很像。比如 PPT 里有大面积白色背景，没有必要把每个白色像素都完整记录一遍。</p>
+<p>第二类是时间冗余。相邻帧通常变化很小。比如一个页面停留 5 秒，标题、表格、背景都不动，可能只有鼠标移动了一点。编码器没必要反复保存整张页面，只要记录“哪些地方和参考画面不同”。</p>
+<p>一帧画面的编码过程可以简化成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">原始画面</span><br><span class="line">  -&gt; 分块</span><br><span class="line">  -&gt; 预测当前块</span><br><span class="line">  -&gt; 计算真实画面和预测画面的残差</span><br><span class="line">  -&gt; 变换与量化</span><br><span class="line">  -&gt; 熵编码</span><br><span class="line">  -&gt; 压缩码流</span><br></pre></td></tr></table></figure>
+<p>这里最关键的是预测和残差。预测越准，残差越小，需要保存的新信息越少；预测越失败，残差越大，压缩后的数据量也就越容易上升。换页、整屏刷新、弹出大面积内容，都会让原来的参考画面失效，这就是包大小能够反映画面变化的原因。</p>
+<h2 id="三、I-P-B-帧应该怎么理解">三、I/P/B 帧应该怎么理解</h2>
+<p>工程里经常说 I 帧、P 帧、B 帧。严格来说，H.264 中定义的是不同类型的 slice，但在抽帧讨论里，直接按帧类型理解问题不大。</p>
+<p>I 帧的 I 是 Intra，主要靠当前画面内部的信息进行压缩，不依赖其他视频帧来恢复当前画面。它可以理解为重新描述一张相对完整的画面，但它不是未压缩图片，仍然会经过帧内预测、残差、变换、量化和熵编码。I 帧通常比较大，也常用于随机访问、拖动进度条和错误恢复。工程上常把 I 帧叫关键帧，但更严格地说，适合随机访问的通常是 IDR 帧：IDR 帧通常是 I 帧，但 I 帧不一定都是 IDR 帧。</p>
+<p>P 帧的 P 是 Predictive，主要参考过去的画面。常见说法是 P 帧只记录“相对于上一帧发生了什么变化”，这个说法便于理解，但不够严谨，因为 P 帧可以参考不止一帧，也不一定只参考紧邻上一帧。对屏幕录制来说，如果当前页面基本没变，P 帧只需要记录很小的残差、少量运动向量或鼠标变化，数据可能只有几十或几百字节；如果页面从 A 切到 B，大量区域无法预测，P 帧也会变得很大。</p>
+<p>B 帧的 B 是 Bi-predictive，可以使用两组参考画面做预测，常见理解是同时参考前后画面。它通常压缩率更高，但编码顺序和播放顺序可能不同。比如播放顺序是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">I -&gt; B -&gt; B -&gt; P</span><br></pre></td></tr></table></figure>
+<p>为了让 B 帧参考后面的 P 帧，编码器可能先处理 I 和 P，再处理中间的 B 帧。</p>
+<p>三类帧可以简单对比：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>主要参考信息</th>
+<th>一般特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I 帧</td>
+<td>当前画面内部</td>
+<td>相对独立，通常较大</td>
+</tr>
+<tr>
+<td>P 帧</td>
+<td>过去的参考画面</td>
+<td>静止场景下通常较小，变化大时也会变大</td>
+</tr>
+<tr>
+<td>B 帧</td>
+<td>两组参考画面</td>
+<td>预测更充分，通常压缩率更高</td>
+</tr>
+</tbody>
+</table>
+<p>需要注意，帧类型不是包大小的唯一原因。量化参数、码率控制、分辨率、GOP/keyint、编码器的场景切换策略、封装格式，以及一个画面被拆成多少个包，都会影响最终大小。</p>
+<h2 id="四、包大小里的-burst-信号">四、包大小里的 burst 信号</h2>
+<p>对 PPT 或 UI 视频来说，包大小时间序列通常会呈现一种很清楚的形态。</p>
+<p>页面静止时，连续包可能是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">55 B、62 B、48 B、70 B、60 B</span><br></pre></td></tr></table></figure>
+<p>它们在时间轴上贴近底部，波动很小。页面切换或大面积动画出现时，可能变成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">60 B、1200 B、6800 B、11000 B、4000 B、900 B、70 B</span><br></pre></td></tr></table></figure>
+<p>这不是一根孤立的尖峰，而是一簇连续变大的包。这种连续突变可以称为 burst。换页、表格加载、元素飞入、整屏刷新，都可能形成 burst。</p>
+<p>真正需要警惕的是孤立大包。编码器可能根据 keyint 或 GOP 设置，周期性插入 I 帧或 IDR 帧。即使画面完全没变，这类帧也可能比周围 P/B 帧大很多：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">60 B、55 B、48 B、30000 B、62 B、51 B</span><br><span class="line">                   ^</span><br><span class="line">               周期性 I 帧</span><br></pre></td></tr></table></figure>
+<p>这根尖峰前后都很平静，更像是编码器强制插入的关键帧，而不是真实换页。真实换页更像：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">60 B、55 B、1500 B、6000 B、9000 B、2000 B、80 B</span><br><span class="line">              ^ 连续一簇变化</span><br></pre></td></tr></table></figure>
+<p>所以不能用“包大 = 换页”这种单点规则。更合理的判断是：连续出现一簇大包，前后状态发生明显变化，并且之后重新回到稳定小包，才更可能是真实页面变化。</p>
+<h2 id="五、“闭眼抽帧”的实际流程">五、“闭眼抽帧”的实际流程</h2>
+<p>传统抽帧是先解码全部视频帧，再比较图像差异：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">解码全部帧 -&gt; 比较前后画面 -&gt; 找换页 -&gt; 保留代表帧</span><br></pre></td></tr></table></figure>
+<p>闭眼抽帧则把前面的候选检测放到压缩码流上：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">读取包大小、时间戳、帧类型</span><br><span class="line">  -&gt; 建立包大小时间序列</span><br><span class="line">  -&gt; 检测连续 burst</span><br><span class="line">  -&gt; 过滤孤立关键帧</span><br><span class="line">  -&gt; 合并临近变化</span><br><span class="line">  -&gt; 在页面稳定后解码少量代表帧</span><br></pre></td></tr></table></figure>
+<p>它不是完全不解码。因为最终要得到图片，仍然需要解码候选帧；而且 P/B 帧依赖参考画面，解码器可能还要从前面的关键位置一路解码到目标时间。性能收益主要来自三点：不对所有帧做图像比较，不把所有帧送给视觉模型，最后只保留少量高清代表帧</p>
+<p>阈值一般应该偏向召回：宁可多保留几个候选点，也不要漏掉真正的页面。后续可以再用图像去重、OCR、版面分析或多模态模型筛掉重复帧。</p>
+<h2 id="六、为什么要在-burst-结束后取帧">六、为什么要在 burst 结束后取帧</h2>
+<p>页面切换不是瞬间完成的。比如 10 秒开始换页，过程可能是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">10.00 s：旧页面</span><br><span class="line">10.10 s：淡出</span><br><span class="line">10.20 s：新旧页面重叠</span><br><span class="line">10.30 s：新页面还没加载完整</span><br><span class="line">10.50 s：新页面稳定</span><br></pre></td></tr></table></figure>
+<p>如果在 burst 中间截图，很可能拿到过渡画面、模糊画面、新旧重叠画面，或者动画还没结束的半成品。因此更稳的方式是在 burst 结束、包大小重新回落后再取一张稳定帧。</p>
+<p>但这个稳定帧的“逻辑时间戳”可以记为 burst 开始时间：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">burst 开始：10.00 s</span><br><span class="line">实际截图：10.50 s</span><br><span class="line">逻辑时间戳：10.00 s</span><br></pre></td></tr></table></figure>
+<p>这样做的好处是和 ASR 旁白更容易对齐。讲解者往往在页面刚开始切换时说“接下来我们看这个页面”，而真正稳定的画面会晚一点出现。截图取稳定时刻，语义对齐用变化开始时刻，两者可以分开记录。</p>
+<h2 id="七、适用边界和工程注意点">七、适用边界和工程注意点</h2>
+<p>这种方法特别适合 PPT、操作界面、屏幕讲解、数据看板这类视频，因为它们通常满足几个条件：页面长时间静止，换页时变化面积大，自然运动少，同一页面停留数秒，换页前后有清晰稳定状态。</p>
+<p>它不适合一直在运动的视频，比如电影、足球比赛、手持自拍视频、游戏录像、高频动画、摄像机持续移动的视频。这些视频的包大小会持续波动，很难区分普通运动和真正场景切换。</p>
+<p>另外，“包大小反映画面变化”只是一个近似。更严谨地说，在编码参数相对稳定、内容主要是静态界面的条件下，编码数据量通常与画面预测难度和变化程度有较强相关性。实际实现时最好综合使用：</p>
+<ul>
+<li>包大小；</li>
+<li>时间连续性；</li>
+<li>帧类型；</li>
+<li>burst 形态；</li>
+<li>前后是否恢复稳定；</li>
+<li>相近 burst 是否属于同一页动画。</li>
+</ul>
+<p>孤立的大 I 帧要过滤，同一页里的多个小动画要合并，页面稳定后再截图。这样才能避免把编码器周期性关键帧当成换页，也避免同一个页面被重复抽很多次。</p>
+<h2 id="八、和-ASR、版面结构一起使用">八、和 ASR、版面结构一起使用</h2>
+<p>抽帧只是视频理解链路的一部分。最终送给下游模型的最好不是孤立图片，而是把代表帧、ASR 旁白和版面结构按时间轴对齐。</p>
+<p>可以理解成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">时间 10 s：ASR 旁白</span><br><span class="line">时间 11 s：稳定页面帧</span><br><span class="line">时间 11 s：页面标题、表格、按钮、字段等版面结构</span><br><span class="line">时间 18 s：下一段 ASR 旁白</span><br><span class="line">时间 19 s：下一张稳定页面帧</span><br></pre></td></tr></table></figure>
+<p>这样能处理一些只看画面容易误判的情况。比如某页包含很多数字和表格，看起来很重要，但旁白说“This is not the page we need.”，那么结合 ASR 后就能判断它可能是干扰页。</p>
+<p>我对这套方法的理解是：它不是用包大小替代视觉理解，而是用 H.264 编码器留下的变化信号，先低成本缩小候选范围。真正稳定可靠的系统，还是要把压缩码流信号、少量代表帧、ASR 文本和页面结构一起用。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">https://kjore.github.io/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/08/09/milvus/" title="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</div></div><div class="info-2"><div class="info-item-1">一句话回答 Milvus 是一个面向大规模向量检索的开源、云原生数据库。它把向量、标量元数据和索引作为可持久化、可过滤、可扩缩容的数据来管理，适合为 RAG、语义搜索、推荐和多模态检索提供低延迟 ANN 召回。 面试时可以先给出下面这条主线：  文档切块 → Embedding → 写入 Milvus → 对 Query 做 Embedding → 向量 ANN + 元数据过滤/BM25 → 融合与 Rerank → 组装上下文 → LLM 生成。  需要先强调一个容易加分的结论：  RAG 不一定必须使用专用向量数据库。 小规模、静态、单机数据可以用 NumPy/Faiss；已有 PostgreSQL 可以先用 pgvector；已有 Elasticsearch 且强依赖全文检索时可以直接做混合搜索。只有当数据量、并发、过滤、实时更新、持久化、高可用或独立扩缩容需求上来后，专用向量数据库的价值才明显。  为什么需要“向量数据库” 这个问题最好从传统关系数据库擅长什么讲起。 MySQL、PostgreSQL 等关系数据库主要面向结构化数据和精确查询。一条典型 SQL 可能是： 1...</div></div></div></a><a class="pagination-related" href="/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2"></div></div><div class="info-2"><div class="info-item-1">KDD Cup 2026 DataAgent Top1 ASR 方案学习笔记 这份笔记主要记录我对 DataAgent 赛题中视频 briefing 转写方案的理解。原始方案看起来并不复杂：先把视频里的旁白转成文字，再交给后面的 Agent 去理解任务、操作页面。但真正影响效果的地方不只是“选一个更强的 ASR 模型”，而是语言判断、模型规模、领域上下文、文本归一化和评测口径这些细节如何配合。 一、这个 ASR 模块解决什么问题 DataAgent 的部分任务会给一段 briefing 视频。视频旁白通常会告诉 Agent 当前页面状态、需要操作的表或字段、要关注哪些信息、哪些是干扰项，以及最终要完成什么操作。对 Agent 来说，这段旁白相当于任务说明书；如果转写错了，后面的理解和执行都会被带偏。 整个链路可以简化成： 1briefing 视频 -&gt; 抽取音频 -&gt; ASR 转写 -&gt; 文本后处理 -&gt; DataAgent 执行 这里的 ASR 指 Automatic Speech Recognition，也就是自动语音识别。它负责把语音变成文字。Whi...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">H.264 与“闭眼抽帧”学习笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B8%AA%E9%97%AE%E9%A2%98%E5%8F%AF%E4%BB%A5%E4%BB%8E%E7%BC%96%E7%A0%81%E6%95%B0%E6%8D%AE%E9%87%8C%E6%89%BE%E7%BA%BF%E7%B4%A2"><span class="toc-number">1.1.</span> <span class="toc-text">一、为什么这个问题可以从编码数据里找线索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81H-264-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E5%8E%8B%E7%BC%A9%E8%A7%86%E9%A2%91"><span class="toc-number">1.2.</span> <span class="toc-text">二、H.264 为什么能压缩视频</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81I-P-B-%E5%B8%A7%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3"><span class="toc-number">1.3.</span> <span class="toc-text">三、I&#x2F;P&#x2F;B 帧应该怎么理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%8C%85%E5%A4%A7%E5%B0%8F%E9%87%8C%E7%9A%84-burst-%E4%BF%A1%E5%8F%B7"><span class="toc-number">1.4.</span> <span class="toc-text">四、包大小里的 burst 信号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E2%80%9C%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E2%80%9D%E7%9A%84%E5%AE%9E%E9%99%85%E6%B5%81%E7%A8%8B"><span class="toc-number">1.5.</span> <span class="toc-text">五、“闭眼抽帧”的实际流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%9C%A8-burst-%E7%BB%93%E6%9D%9F%E5%90%8E%E5%8F%96%E5%B8%A7"><span class="toc-number">1.6.</span> <span class="toc-text">六、为什么要在 burst 结束后取帧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E9%80%82%E7%94%A8%E8%BE%B9%E7%95%8C%E5%92%8C%E5%B7%A5%E7%A8%8B%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">1.7.</span> <span class="toc-text">七、适用边界和工程注意点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%92%8C-ASR%E3%80%81%E7%89%88%E9%9D%A2%E7%BB%93%E6%9E%84%E4%B8%80%E8%B5%B7%E4%BD%BF%E7%94%A8"><span class="toc-number">1.8.</span> <span class="toc-text">八、和 ASR、版面结构一起使用</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/" title="上下文工程">上下文工程</a><time datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/milvus/" title="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/" title="RAG 混合检索">RAG 混合检索</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T02:12:47.350Z" title="发表于 2026-08-02 10:12:47">2026-08-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T00:51:39.679Z" title="发表于 2026-08-02 08:51:39">2026-08-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

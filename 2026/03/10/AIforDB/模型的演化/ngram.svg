@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="240" viewBox="0 0 840 240">
+  <rect width="840" height="240" fill="#f8fafc"/>
+  <style>
+    .word{fill:#ffffff;stroke:#334155;stroke-width:2;rx:8}
+    .target{fill:#fff7ed;stroke:#ea580c;stroke-width:2;rx:8}
+    .text{font:700 22px Arial,"Microsoft YaHei",sans-serif;fill:#111827}
+    .small{font:16px Arial,"Microsoft YaHei",sans-serif;fill:#475569}
+    .arrow{stroke:#64748b;stroke-width:3;marker-end:url(#arrow)}
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <text x="40" y="45" class="text">Trigram：只看前两个词预测下一个词</text>
+  <rect x="90" y="105" width="110" height="58" class="word"/>
+  <text x="123" y="141" class="text">我</text>
+  <rect x="230" y="105" width="110" height="58" class="word"/>
+  <text x="263" y="141" class="text">喜欢</text>
+  <line x1="350" y1="134" x2="430" y2="134" class="arrow"/>
+  <rect x="450" y="105" width="130" height="58" class="target"/>
+  <text x="493" y="141" class="text">学习</text>
+  <text x="90" y="190" class="small">条件概率：P(学习 | 我, 喜欢)</text>
+</svg>

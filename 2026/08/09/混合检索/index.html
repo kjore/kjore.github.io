@@ -1,0 +1,948 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>RAG 混合检索 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="一句话回答 混合检索（Hybrid Search）通常是把关键词&#x2F;稀疏检索与语义&#x2F;稠密检索并行执行，再通过分数融合或排序融合合并候选集，最后用 Reranker 精排。  稀疏检索擅长精确匹配：专有名词、型号、错误码、人名、数字。 稠密检索擅长语义匹配：同义表达、口语化问题、没有共享关键词的相关文本。 混合检索的目标不是简单地“多查一次”，而是利用两类检索器的互补性，提高 Recall@K，并在精">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG 混合检索">
+<meta property="og:url" content="https://kjore.github.io/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="一句话回答 混合检索（Hybrid Search）通常是把关键词&#x2F;稀疏检索与语义&#x2F;稠密检索并行执行，再通过分数融合或排序融合合并候选集，最后用 Reranker 精排。  稀疏检索擅长精确匹配：专有名词、型号、错误码、人名、数字。 稠密检索擅长语义匹配：同义表达、口语化问题、没有共享关键词的相关文本。 混合检索的目标不是简单地“多查一次”，而是利用两类检索器的互补性，提高 Recall@K，并在精">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-08-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-09T08:21:43.825Z">
+<meta property="article:author" content="kjore">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="信息检索">
+<meta property="article:tag" content="大模型">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "RAG 混合检索",
+  "url": "https://kjore.github.io/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-08-08T16:00:00.000Z",
+  "dateModified": "2026-08-09T08:21:43.825Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'RAG 混合检索',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">RAG 混合检索</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">RAG 混合检索</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-09T08:21:43.825Z" title="更新于 2026-08-09 16:21:43">2026-08-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/RAG/">RAG</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>一句话回答</h1>
+<p><strong>混合检索（Hybrid Search）通常是把关键词/稀疏检索与语义/稠密检索并行执行，再通过分数融合或排序融合合并候选集，最后用 Reranker 精排。</strong></p>
+<ul>
+<li>稀疏检索擅长精确匹配：专有名词、型号、错误码、人名、数字。</li>
+<li>稠密检索擅长语义匹配：同义表达、口语化问题、没有共享关键词的相关文本。</li>
+<li>混合检索的目标不是简单地“多查一次”，而是利用两类检索器的互补性，提高 Recall@K，并在精排后提高最终答案质量。</li>
+</ul>
+<p>面试时可以先给出下面这条主线：</p>
+<blockquote>
+<p>Query 预处理 → 稀疏检索与稠密检索并行召回 → 候选去重与融合 → Reranker 精排 → 上下文组装 → LLM 生成。</p>
+</blockquote>
+<h1>为什么需要混合检索</h1>
+<p>只用一种检索器会有明显盲区。</p>
+<table>
+<thead>
+<tr>
+<th>查询</th>
+<th>BM25/关键词检索</th>
+<th>向量检索</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ORA-01555</code>、<code>iPhone 15 Pro Max</code></td>
+<td>通常很好，能精确命中关键词</td>
+<td>可能因罕见 token 或向量平滑而漏召回</td>
+</tr>
+<tr>
+<td>“合同到期后还能续多久”与“协议期满可延长三个月”</td>
+<td>词面重合少，可能漏召回</td>
+<td>能利用语义相近性命中</td>
+</tr>
+<tr>
+<td>带数字、版本号、缩写的查询</td>
+<td>更稳定</td>
+<td>容易忽略数字或细粒度差异</td>
+</tr>
+<tr>
+<td>含同义词、改写、自然语言描述</td>
+<td>容易受词汇鸿沟影响</td>
+<td>更有优势</td>
+</tr>
+</tbody>
+</table>
+<p>因此，混合检索主要解决两个问题：</p>
+<ol>
+<li><strong>词汇鸿沟（lexical gap）</strong>：用户与文档表达相同含义时不一定使用相同词汇。</li>
+<li><strong>语义过度泛化</strong>：向量相似不等于答案相关，尤其容易混淆数字、否定词、实体和相近型号。</li>
+</ol>
+<h1>两类基础检索器</h1>
+<h2 id="稀疏检索：BM25">稀疏检索：BM25</h2>
+<p>BM25 是一种基于词频、逆文档频率和文档长度归一化的关键词检索算法。简化形式为：</p>
+<div class="mathjax-display">
+$$
+score(D,Q)=\sum_{q_i\in Q}IDF(q_i)\cdot
+\frac{f(q_i,D)(k_1+1)}
+{f(q_i,D)+k_1(1-b+b\cdot\frac{|D|}{avgdl})}
+$$
+</div>
+<p>其中：</p>
+<ul>
+<li>$f(q_i,D)$：词 $q_i$ 在文档 $D$ 中出现的次数；</li>
+<li>$IDF(q_i)$：词越稀有，区分度越高；</li>
+<li>$|D|/avgdl$：文档长度归一化；</li>
+<li>$k_1$：控制词频饱和，常见默认值约为 1.2～2.0；</li>
+<li>$b$：控制长度归一化程度，常见默认值约为 0.75。</li>
+</ul>
+<p>BM25 主要考虑三个因素</p>
+<p>① Query 中的词是否出现在文档中</p>
+<p>② 一个词是不是“稀有词”</p>
+<p>③ 词出现次数</p>
+<p>比如 Query：</p>
+<pre class="overflow-visible! px-0!" data-start="1579" data-end="1605"><div class="relative w-full mt-4 mb-1"><div class=""><div class="contents"><div class="relative"><div class="h-full min-h-0 min-w-0"><div class="h-full min-h-0 min-w-0"><div class="border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl"><div class="h-full w-full border-radius-3xl bg-(--code-block-surface) corner-superellipse/1.1 overflow-clip rounded-3xl [--code-block-surface:var(--bg-elevated-secondary)] dark:[--code-block-surface:var(--composer-surface-primary)] lxnfua_clipPathFallback"><div class="pointer-events-none absolute end-1.5 top-1 z-2 md:end-2 md:top-1"></div><div class="relative"><div class="pe-11 pt-3"><div class="relative z-0 flex max-w-full"><div id="code-block-viewer" dir="ltr" class="q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼs ͼ16"><div class="cm-scroller"><pre class="cm-content q9tKkq_readonly m-0"><code><span>shared_buffers</span></code></pre></div></div></div></div></div></div></div></div></div><div class=""><div class=""></div></div></div></div></div></div></pre>
+<p>文档 A 出现 5 次，文档 B 出现 1 次。</p>
+<p>通常 A 更可能相关。</p>
+<p>但是 BM25 不会让词频无限增长。</p>
+<p>大概是：</p>
+<pre class="overflow-visible! px-0!" data-start="1672" data-end="1718"><div class="relative w-full mt-4 mb-1"><div class=""><div class="contents"><div class="relative"><div class="h-full min-h-0 min-w-0"><div class="h-full min-h-0 min-w-0"><div class="border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl"><div class="h-full w-full border-radius-3xl bg-(--code-block-surface) corner-superellipse/1.1 overflow-clip rounded-3xl [--code-block-surface:var(--bg-elevated-secondary)] dark:[--code-block-surface:var(--composer-surface-primary)] lxnfua_clipPathFallback"><div class="pointer-events-none absolute end-1.5 top-1 z-2 md:end-2 md:top-1"></div><div class="relative"><div class="pe-11 pt-3"><div class="relative z-0 flex max-w-full"><div id="code-block-viewer" dir="ltr" class="q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼs ͼ16"><div class="cm-scroller"><pre class="cm-content q9tKkq_readonly m-0"><code><span>1次 → 有帮助
+3次 → 更有帮助
+10次 → 不会比3次高特别多</span></code></pre></div></div></div></div></div></div></div></div></div><div class=""><div class=""></div></div></div></div></div></div></pre>
+<p>避免一篇文档疯狂堆关键词就获得巨大分数。</p>
+<h2 id="稠密检索：Dense-Retrieval">稠密检索：Dense Retrieval</h2>
+<p>稠密检索使用 Embedding 模型把 Query 和 Chunk 编码为低维连续向量，然后以余弦相似度、点积或欧氏距离检索近邻：</p>
+<div class="mathjax-display">
+$$
+cos(q,d)=\frac{q\cdot d}{\|q\|\|d\|}
+$$
+</div>
+<p>文档量较大时通常使用 ANN（Approximate Nearest Neighbor，近似最近邻）索引，例如 HNSW、IVF 等，在召回率、延迟和内存之间做权衡。</p>
+<p>优势：能处理同义表达和语义改写。缺点：模型有领域偏差，对精确 token、数字、罕见实体和否定关系不一定敏感，而且向量召回结果不容易解释。</p>
+<blockquote>
+<p>注意：Embedding 相似度回答的是“语义上像不像”，并不直接等于“这段文档能不能回答问题”。这正是后续 Reranker 有价值的原因。</p>
+</blockquote>
+<h1>标准架构</h1>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">                         ┌─ BM25 / Sparse Top-N ─┐</span><br><span class="line">用户问题 → Query 处理 ──┤                       ├→ 合并、去重、融合 → Top-M → Reranker → Top-K → LLM</span><br><span class="line">                         └─ Vector / Dense Top-N ┘</span><br></pre></td></tr></table></figure>
+<p>各阶段职责：</p>
+<ol>
+<li><strong>Query 处理</strong>：规范化、纠错、实体识别、时间解析、必要时改写或拆分查询。</li>
+<li><strong>多路召回</strong>：每路重点保证 Recall，不必要求首轮排序非常精确。</li>
+<li><strong>融合</strong>：处理不同检索器的分数尺度，合并重复结果。</li>
+<li><strong>精排</strong>：用 Cross-Encoder 或 LLM Reranker 对 Query-Document 对进行更细粒度判断。</li>
+<li><strong>上下文组装</strong>：去冗余、扩展相邻块、控制 token 预算，然后交给 LLM。</li>
+</ol>
+<h1>融合方法：面试重点</h1>
+<h3 id="RRF：Reciprocal-Rank-Fusion">RRF：Reciprocal Rank Fusion</h3>
+<p>RRF 不关心原始分数，只使用结果在各路列表中的排名：</p>
+<div class="mathjax-display">
+$$
+RRF(d)=\sum_{r\in R}\frac{1}{k+rank_r(d)}
+$$
+</div>
+<ul>
+<li>$rank_r(d)$：文档 $d$ 在检索器 $r$ 中的名次；未被该路召回时可视为没有贡献。</li>
+<li>$k$：平滑常数，工程中常见经验值为 60，但应结合数据验证，不能把它当作定律。</li>
+</ul>
+<p>例子：设 $k=60$，文档 A 在 BM25 中排第 1、在向量检索中排第 3：</p>
+<div class="mathjax-display">
+$$
+RRF(A)=\frac{1}{61}+\frac{1}{63}
+$$
+</div>
+<p>文档同时被两路排在前面时会得到更高分。</p>
+<p>RRF 的优势：</p>
+<ul>
+<li>不需要校准不同检索器的分数尺度；</li>
+<li>对极端分数不敏感；</li>
+<li>实现简单，通常是很强的生产基线。</li>
+</ul>
+<p>RRF 的限制：</p>
+<ul>
+<li>丢失了原始分数中的置信度信息；</li>
+<li>默认各路检索器同等重要；</li>
+<li>仍需调每路召回数量、$k$ 以及最终候选数量。</li>
+</ul>
+<p>如果需要为不同检索器设置重要性，也可以做加权 RRF：</p>
+<div class="mathjax-display">
+$$
+WRRF(d)=\sum_{r\in R}\frac{w_r}{k+rank_r(d)}
+$$
+</div>
+<h1>并行混合与级联混合</h1>
+<h2 id="并行召回">并行召回</h2>
+<p>BM25 与向量检索同时执行，然后融合。这是最典型的 Hybrid Search。</p>
+<ul>
+<li>优点：两路独立召回，互补性强，Recall 通常更高。</li>
+<li>缺点：索引、计算和工程成本更高。</li>
+</ul>
+<h2 id="级联召回">级联召回</h2>
+<p>先用一种便宜的检索器取较大候选集，再由另一种模型排序。例如 BM25 Top-1000 → Dense/Reranker Top-20。</p>
+<ul>
+<li>优点：低成本模型缩小范围，吞吐量更高。</li>
+<li>缺点：第一阶段没召回的文档，后面永远无法恢复；性能上限受第一阶段 Recall 限制。</li>
+</ul>
+<p>面试中若被问“Hybrid Search 与 Rerank 的区别”：</p>
+<blockquote>
+<p>Hybrid Search 主要解决候选集召回问题；Rerank 主要解决候选集内部的排序精度问题。前者追求不漏，后者追求排准，两者通常同时使用。</p>
+</blockquote>
+<h1>Reranker 为什么有效</h1>
+<p>Embedding 检索通常计算的是：</p>
+<p>sim(q,d)=cos(E(q),E(d)</p>
+<p>问题和文档是<strong>分别编码</strong>的，速度快，很适合从几万、几十万 chunk 中先找 Top-K，但它对细粒度相关性的判断没有那么准确。</p>
+<p>而 Cross-Encoder Reranker 通常会直接把：</p>
+<p><strong>[<strong>Query</strong>,<strong>Document</strong>]</strong><br>
+一起输入模型：</p>
+<p><strong>score</strong>=<strong>f</strong>(<strong>q</strong>,<strong>d</strong>)<br>
+模型可以同时观察问题和文档之间的词语对应、语义关系、上下文，因此相关性判断通常更细。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Bi-Encoder：Encode(Query) × Encode(Document) → 相似度，快，适合召回</span><br><span class="line">Cross-Encoder：Encode([Query; Document]) → 相关性分数，准，适合精排</span><br></pre></td></tr></table></figure>
+<p>因此常见配置是：</p>
+<ul>
+<li>BM25 Top-50～200；</li>
+<li>Dense Top-50～200；</li>
+<li>融合去重后保留 Top-50～100；</li>
+<li>Rerank 后取 Top-5～20 给 LLM。</li>
+</ul>
+<p>这些数字只是起始实验值，最终应由延迟预算和离线评测决定。</p>
+<p><strong>为什么不直接用reranker:</strong></p>
+<p>BGE-M3 稠密检索 的文档向量可以离线预计算，Reranker 的分数依赖具体的 Query，每次 Query 来了都必须重新计算。Reranker 的相关性判断能力确实更强，但它通常采用 Cross-Encoder 结构，需要把 query 和每个文档一起输入模型进行推理，因此无法像向量检索一样预先计算文档表示。如果直接对整个知识库进行 Rerank，计算成本和查询延迟都会非常高。所以系统一般采用两阶段检索：先用 BM25 和 BGE-M3 做高效粗召回，把候选范围缩小，再用 Reranker 做精排。</p>
+<p><strong>为什么使用BEG-M3:</strong></p>
+<p>我选择 BGE-M3 主要考虑了三个方面。第一，我们的知识库主要是 PostgreSQL 官方英文文档，但用户可能使用中文提问，所以模型需要有比较好的多语言和跨语言检索能力，BGE-M3 在这方面比较适合。第二，它本身是针对检索任务训练的语义表示模型，能够弥补 BM25 只依赖关键词匹配的问题，对技术文档中的语义相似内容有更好的召回能力。第三，它是开源模型，可以本地部署并提前离线计算文档向量，工程成本比较低。BGE-M3 本身还支持 Dense、Sparse 和 Multi-vector 等多种检索方式，不过我的系统当前主要使用它的 Dense Embedding 能力。</p>
+<h1>过滤条件应该放在哪里</h1>
+<p>元数据过滤（租户、权限、语言、时间、文档类型）应尽量在检索阶段下推，而不是召回后才过滤。</p>
+<p>原因：如果先取 Top-100 再过滤，可能只剩很少结果，即使索引中本来有大量满足条件的相关文档，也没有机会进入候选集。这会造成“后过滤截断”问题。</p>
+<p>生产注意点：</p>
+<ul>
+<li>权限过滤必须在所有召回路径都生效，不能只过滤其中一路；</li>
+<li>Dense 和 Sparse 索引中的 chunk_id、版本和元数据要一致；</li>
+<li>文档更新时要考虑双索引的一致性，常用版本号、幂等写入、双写监控和延迟删除；</li>
+<li>对过滤条件极强的查询，应单独评估 ANN 在过滤下的 Recall 与延迟。</li>
+</ul>
+<h1>Chunking 对混合检索的影响</h1>
+<p>检索算法再好，也无法完全弥补错误切块。</p>
+<ul>
+<li>Chunk 太小：上下文不完整，但关键词密度高；</li>
+<li>Chunk 太大：包含噪声，向量语义被稀释，BM25 也受长度归一化影响；</li>
+<li>固定长度切分可能截断表格、标题与正文、问答对；</li>
+<li>可以使用按标题/段落的语义切分，并保留适度 overlap；</li>
+<li>检索命中后可做 Parent-Child Retrieval：用子块定位，再返回更完整的父块；</li>
+<li>对相邻块扩展时要去重，并防止上下文被同一文档垄断。</li>
+</ul>
+<h1>如何调参</h1>
+<h2 id="1-先构建评测集">1. 先构建评测集</h2>
+<p>至少包含：</p>
+<ul>
+<li>自然语言改写和同义表达；</li>
+<li>专有名词、缩写、数字、错误码；</li>
+<li>否定式问题和容易混淆的实体；</li>
+<li>需要元数据过滤的问题；</li>
+<li>无答案问题；</li>
+<li>热门查询与长尾查询。</li>
+</ul>
+<p>每个 Query 标注一个或多个相关 Chunk/Document，最好区分相关性等级。</p>
+<h2 id="2-分阶段调优">2. 分阶段调优</h2>
+<ol>
+<li>分别测 BM25 与 Dense，找到各自合理的 Top-N。</li>
+<li>查看两路候选的重合率与独有相关文档，确认是否真的互补。</li>
+<li>比较 RRF、加权融合等策略。</li>
+<li>固定召回策略后再调 Reranker 的候选数和最终 Top-K。</li>
+<li>最后评估端到端答案，不要只看检索指标。</li>
+</ol>
+<h2 id="3-不要同时乱调所有参数">3. 不要同时乱调所有参数</h2>
+<p>关键参数包括：</p>
+<ul>
+<li>Chunk 大小与 overlap；</li>
+<li>BM25 分词器、字段权重、同义词；</li>
+<li>Embedding 模型及距离函数；</li>
+<li>ANN 搜索深度；</li>
+<li>每路 Top-N；</li>
+<li>融合权重或 RRF 的 $k$；</li>
+<li>Rerank 候选数；</li>
+<li>最终给 LLM 的 Top-K 和 token 预算。</li>
+</ul>
+<p>应通过消融实验逐项判断收益，否则无法知道改进来自哪里。</p>
+<h1>评估指标</h1>
+<h2 id="检索阶段">检索阶段</h2>
+<p>先设一个贯穿 Recall 和 Precision 的例子。对查询 $q$，语料库中共有 4 个相关文档：</p>
+<div class="mathjax-display">
+$$
+Relevant=\{D_1,D_3,D_5,D_7\}
+$$
+</div>
+<p>检索系统返回的前 5 个结果依次为：</p>
+<div class="mathjax-display">
+$$
+Retrieved@5=[D_2,D_3,D_4,D_1,D_6]
+$$
+</div>
+<p>其中命中的相关文档为 ${D_3,D_1}$，一共 2 个。</p>
+<h3 id="Recall-K">Recall@K</h3>
+<p>前 K 个结果覆盖了多少相关文档。RAG 首轮召回最应关注这个指标，因为未召回的证据无法被后续精排恢复。</p>
+<div class="mathjax-display">
+$$
+Recall@K=\frac{|Relevant\cap Retrieved@K|}{|Relevant|}
+$$
+</div>
+<p>在上面的例子中：</p>
+<div class="mathjax-display">
+$$
+Recall@5=\frac{2}{4}=0.5
+$$
+</div>
+<p>含义是：系统找回了全部相关文档中的 50%，还有 $D_5$ 和 $D_7$ 没有被召回。即使后面使用再强的 Reranker，也无法恢复这两个不在候选集中的文档。</p>
+<h3 id="Precision-K">Precision@K</h3>
+<p>前 K 个结果中有多少是相关的：</p>
+<div class="mathjax-display">
+$$
+Precision@K=\frac{|Relevant\cap Retrieved@K|}{K}
+$$
+</div>
+<p>在同一个例子中：</p>
+<div class="mathjax-display">
+$$
+Precision@5=\frac{2}{5}=0.4
+$$
+</div>
+<p>含义是：返回的 5 个结果中有 2 个相关，准确率为 40%。如果为了提高 Recall 把 K 调得很大，通常会召回更多相关文档，但也可能引入更多无关文档，使 Precision 降低。</p>
+<h3 id="MRR">MRR</h3>
+<p>关注第一个相关结果出现的位置，适合每个查询通常只有一个主要正确答案的场景：</p>
+<div class="mathjax-display">
+$$
+MRR=\frac{1}{|Q|}\sum_{q\in Q}\frac{1}{rank_q}
+$$
+</div>
+<p>例如有 3 个查询，它们的第一个相关结果分别出现在第 2、1、4 位，则：</p>
+<div class="mathjax-display">
+$$
+MRR=\frac{\frac{1}{2}+\frac{1}{1}+\frac{1}{4}}{3}
+=\frac{1.75}{3}\approx0.583
+$$
+</div>
+<p>MRR 只关心<strong>第一个</strong>相关结果：第一个相关结果从第 4 名升到第 1 名会显著提高 MRR，但第 1 名已经相关时，后面的相关文档如何排序不会改变该查询的 Reciprocal Rank。如果某个查询没有召回任何相关结果，通常令该查询的 Reciprocal Rank 为 0。</p>
+<h3 id="nDCG-K">nDCG@K</h3>
+<p>同时考虑相关性等级和排序位置，适合存在“高度相关、部分相关”等多级标注的场景。</p>
+<p>一种常见定义是：</p>
+<div class="mathjax-display">
+$$
+DCG@K=\sum_{i=1}^{K}\frac{2^{rel_i}-1}{\log_2(i+1)}
+$$
+</div>
+<div class="mathjax-display">
+$$
+nDCG@K=\frac{DCG@K}{IDCG@K}
+$$
+</div>
+<p>其中 $rel_i$ 是第 $i$ 个结果的相关性等级，$IDCG$ 是把相关文档按相关性从高到低进行理想排序后得到的 DCG。</p>
+<p>例如，系统前 4 个结果的相关性等级为：</p>
+<div class="mathjax-display">
+$$
+[3,0,2,1]
+$$
+</div>
+<p>等级 3 表示高度相关，0 表示不相关。该排序的 DCG 为：</p>
+<div class="mathjax-display">
+$$
+DCG@4=\frac{2^3-1}{\log_2 2}
++\frac{2^0-1}{\log_2 3}
++\frac{2^2-1}{\log_2 4}
++\frac{2^1-1}{\log_2 5}
+\approx 8.931
+$$
+</div>
+<p>理想排序为 $[3,2,1,0]$，因此：</p>
+<div class="mathjax-display">
+$$
+IDCG@4=\frac{7}{\log_2 2}
++\frac{3}{\log_2 3}
++\frac{1}{\log_2 4}
++\frac{0}{\log_2 5}
+\approx 9.393
+$$
+</div>
+<div class="mathjax-display">
+$$
+nDCG@4=\frac{8.931}{9.393}\approx0.951
+$$
+</div>
+<p>nDCG 越接近 1，说明排序越接近理想顺序。这个例子得分较高，是因为等级为 3 的最相关文档排在第 1 位；但不相关文档排在第 2 位，因此没有达到 1。</p>
+<blockquote>
+<p>面试提醒：DCG 也存在直接使用 $rel_i$ 而不是 $2^{rel_i}-1$ 的定义。回答时说明自己采用的公式即可，比较实验时必须保持定义一致。</p>
+</blockquote>
+<h2 id="生成阶段">生成阶段</h2>
+<p>除了检索指标，还应评估：</p>
+<ul>
+<li>Answer Correctness：答案是否正确；</li>
+<li>Faithfulness / Groundedness：答案是否有检索证据支持；</li>
+<li>Context Relevance：送给模型的上下文是否真正相关；</li>
+<li>Citation Accuracy：引用是否对应正确证据；</li>
+<li>无答案拒答率、延迟、吞吐量和单次成本。</li>
+</ul>
+<blockquote>
+<p>Recall@K 提升不保证最终答案一定提升。候选太多会增加噪声，出现“lost in the middle”，所以必须同时观察 Rerank 和端到端指标。</p>
+</blockquote>
+<h1>常见故障与排查</h1>
+<h2 id="1-Dense-结果都“看起来相关”，但没有答案">1. Dense 结果都“看起来相关”，但没有答案</h2>
+<p>可能原因：Embedding 只捕捉主题相似，未捕捉答案相关性。</p>
+<p>处理：加入 Reranker；补充 hard negatives 微调 Embedding；改善 Chunk；分析数字、否定和实体错误。</p>
+<h2 id="2-BM25-总被某些重复词主导">2. BM25 总被某些重复词主导</h2>
+<p>处理：检查分词与停用词；降低某些字段权重；处理模板化页眉页脚；去除重复 Chunk；评估同义词扩展。</p>
+<h2 id="3-混合后反而比单路差">3. 混合后反而比单路差</h2>
+<p>可能原因：</p>
+<ul>
+<li>直接相加了不同量纲的原始分数；</li>
+<li>融合权重不合适；</li>
+<li>某一路质量太差，把噪声引入候选集；</li>
+<li>每路 Top-N 太小或候选过多导致 Reranker 压力增大；</li>
+<li>两路 chunk_id 不一致，未正确去重；</li>
+<li>评测集只覆盖了某一种查询类型。</li>
+</ul>
+<p>排查时应分别记录每个候选的来源、原始排名、融合分数与 Rerank 分数，并按 Query 类型切片评估。</p>
+<h2 id="4-离线很好，线上效果不稳定">4. 离线很好，线上效果不稳定</h2>
+<p>检查：查询分布漂移、索引更新延迟、Embedding 版本不一致、权限过滤、缓存污染、点击日志偏差，以及 P95/P99 延迟下的超时降级。</p>
+<h1>生产系统设计要点</h1>
+<h2 id="延迟与降级">延迟与降级</h2>
+<ul>
+<li>两路并行，整体检索延迟接近较慢的一路，而不是简单相加；</li>
+<li>为 Sparse、Dense、Reranker 分别设置超时和监控；</li>
+<li>Dense 超时时可降级为 BM25，Reranker 超时时可返回融合结果；</li>
+<li>对热门 Query 缓存 Query Embedding 或最终检索结果，但要处理权限和索引版本；</li>
+<li>批量计算 Reranker，减少模型调用开销。</li>
+</ul>
+<h2 id="可观测性">可观测性</h2>
+<p>建议记录：</p>
+<ul>
+<li>每路耗时、命中数和超时率；</li>
+<li>候选来源及交集率；</li>
+<li>各阶段 Top-K 的变化；</li>
+<li>空结果率、Reranker 分数分布；</li>
+<li>按查询类型、租户、语言切片后的 Recall/nDCG；</li>
+<li>最终答案质量、引用命中率和用户反馈。</li>
+</ul>
+<h2 id="索引一致性">索引一致性</h2>
+<p>一份文档通常同时写入倒排索引和向量索引。更新失败可能导致两路检索看到不同版本。可以使用稳定的 document_id/chunk_id、版本字段、幂等更新、补偿任务和一致性巡检。</p>
+<h1>高频面试题与参考回答</h1>
+<h2 id="1-什么是混合检索？为什么比纯向量检索好？">1. 什么是混合检索？为什么比纯向量检索好？</h2>
+<p>混合检索将 BM25 等词法检索与向量语义检索结合。BM25 对实体、数字、错误码和精确关键词更敏感，向量检索可以跨越同义词和表达差异。两者先提高候选集 Recall，再通过融合和 Reranker 提高排序精度，因此通常比只使用一种检索方式更稳健，但效果仍要通过业务评测集验证。</p>
+<h2 id="2-为什么不能直接相加-BM25-分数和余弦相似度？">2. 为什么不能直接相加 BM25 分数和余弦相似度？</h2>
+<p>因为两者的含义、范围和分布不同。BM25 分数没有固定上界，并随 Query 和语料变化；余弦相似度通常位于有限范围内。直接相加会让某一路因为数值尺度更大而支配排序。可先归一化并调权重，或使用只依赖排名的 RRF。</p>
+<h2 id="3-RRF-为什么常用？">3. RRF 为什么常用？</h2>
+<p>RRF 不要求不同检索器分数可比，只根据各路排名累加倒数得分。它简单、稳定、无需标注数据，是很好的融合基线。缺点是忽略原始置信度，而且各路权重和候选深度仍需调优。</p>
+<h2 id="4-混合检索是否一定优于单路检索？">4. 混合检索是否一定优于单路检索？</h2>
+<p>不一定。如果某一路与领域不匹配、融合权重错误、切块质量差，混合检索可能引入更多噪声。判断标准不是架构更复杂，而是验证集上的 Recall@K、nDCG、端到端答案质量以及线上延迟和成本。</p>
+<h2 id="5-如何选择-BM25-与-Dense-的权重？">5. 如何选择 BM25 与 Dense 的权重？</h2>
+<p>先按查询类型建立验证集，用网格搜索或贝叶斯优化选择权重，并检查不同切片。例如代码、错误码、商品型号可提高 Sparse 权重；自然语言问答可提高 Dense 权重。还可以先做 Query 分类，再动态选择权重，但要评估分类错误带来的影响。</p>
+<h2 id="6-为什么召回后还要-Rerank？">6. 为什么召回后还要 Rerank？</h2>
+<p>首轮检索器为了低延迟，一般用词项统计或独立向量编码，无法充分建模 Query 与文档的细粒度交互。Cross-Encoder Reranker 联合读取 Query 和候选文档，通常更能识别答案相关性、否定关系和实体细节。代价是计算量大，所以只对几十个候选执行。</p>
+<h2 id="7-线上如何降低延迟？">7. 线上如何降低延迟？</h2>
+<p>两路并行执行；控制每路 Top-N；使用 ANN；缓存 Query Embedding；对 Reranker 做批处理、蒸馏或量化；设置分阶段超时；在向量检索或 Reranker 超时时降级到 BM25 或融合结果。同时监控 P95/P99，而不只看平均延迟。</p>
+<h2 id="8-如何证明混合检索真的有收益？">8. 如何证明混合检索真的有收益？</h2>
+<p>做消融实验，比较 BM25、Dense、BM25+Dense、Hybrid+Rerank 四组；在同一评测集上报告 Recall@K、MRR/nDCG、答案正确性、忠实度、延迟与成本；再按精确词、语义改写、数字实体、长尾查询等类型切片。这样可以明确收益来自融合还是 Reranker。</p>
+<h2 id="9-如果-Query-含有错误码和自然语言描述，怎么处理？">9. 如果 Query 含有错误码和自然语言描述，怎么处理？</h2>
+<p>保留错误码原文供 BM25 精确匹配，同时将完整 Query 编码供 Dense 检索；必要时抽取错误码作为字段过滤或字段 boost。两路并行召回后用 RRF 融合，再用 Reranker 判断文档是否真正解释该错误码和用户描述的场景。</p>
+<h2 id="10-如何处理无答案问题？">10. 如何处理无答案问题？</h2>
+<p>不能只靠“Top-1 总会返回一个结果”。需要相关性阈值、Reranker 置信度、证据一致性检查或单独的 answerability 分类器，并在评测集中加入无答案样本。阈值应基于验证集校准；低置信度时应拒答、澄清或转人工。</p>
+<h1>HNSW 和 IVF</h1>
+<p>HNSW 和 IVF 都是向量数据库中常见的 ANN（Approximate Nearest Neighbor，近似最近邻）索引。它们牺牲少量召回率，避免让查询向量与库中所有向量逐一计算距离，从而降低搜索延迟。</p>
+<p>在讨论索引之前，要区分两个概念：</p>
+<ul>
+<li><strong>精确检索（Flat/Brute Force）</strong>：遍历全部 $N$ 个向量，结果最准，但计算量约为 $O(Nd)$，其中 $d$ 为向量维度；</li>
+<li><strong>近似检索（ANN）</strong>：只访问一部分有希望的向量，速度更快，但可能漏掉真实的最近邻。</li>
+</ul>
+<p>因此，HNSW 和 IVF 的核心目标都是在 <strong>Recall、Latency、Memory、Build Time</strong> 之间做权衡。</p>
+<h2 id="HNSW">HNSW</h2>
+<p>HNSW 全称是 <strong>Hierarchical Navigable Small World</strong>，即分层可导航小世界图。它是一种基于图的 ANN 索引。</p>
+<h3 id="核心思想">核心思想</h3>
+<p>HNSW 把每个向量看作图中的一个节点，并为相近节点建立边。图分为多层：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">高层：节点少、连接跨度大，用于快速接近目标区域</span><br><span class="line">  L2        A ───────────── G</span><br><span class="line">             \              /</span><br><span class="line">  L1        A ── C ─────── G ── J</span><br><span class="line">              \  \         /   /</span><br><span class="line">  L0        A─B─C─D─E─F─G─H─I─J   节点最多，用于精细搜索</span><br></pre></td></tr></table></figure>
+<p>它类似于跳表：高层负责“远距离跳跃”，底层负责“局部精查”。大多数节点只存在于底层，少数节点会按随机机制出现在更高层。</p>
+<h3 id="查询过程">查询过程</h3>
+<ol>
+<li>从最高层的入口节点开始；</li>
+<li>在当前层不断移动到更接近 Query 的邻居；</li>
+<li>当前层无法继续改进时，下降一层；</li>
+<li>到达第 0 层后，不只做单路径贪心搜索，而是维护一个候选集合，在局部图中扩展；</li>
+<li>返回距离最近的 Top-K 节点。</li>
+</ol>
+<p>高层搜索用于快速定位，底层候选搜索决定最终 Recall。HNSW 在实践中通常有很低的查询延迟，但它不是严格意义上保证 $O(\log N)$ 的算法；性能取决于数据分布、图质量和参数配置。</p>
+<h3 id="建索引过程">建索引过程</h3>
+<p>插入一个新向量时：</p>
+<ol>
+<li>随机决定该节点能出现的最高层；</li>
+<li>从全局入口点开始，自顶向下寻找邻近区域；</li>
+<li>在节点所属的每一层选择若干近邻并连边；</li>
+<li>如果邻居数量超过限制，则使用启发式规则裁剪边，以兼顾局部邻近和图的可导航性。</li>
+</ol>
+<p>构建优质图需要较多距离计算，所以 HNSW 的建索引时间和内存开销通常高于简单的 IVF。</p>
+<h3 id="关键参数">关键参数</h3>
+<h4 id="M">M</h4>
+<p>每个节点最多保留多少条邻接边，控制图的连通性。</p>
+<ul>
+<li>$M$ 增大：图更密，Recall 通常提高；</li>
+<li>代价：索引体积、建索引时间和查询时的距离计算增加。</li>
+</ul>
+<h4 id="efConstruction">efConstruction</h4>
+<p>建索引时维护的候选邻居集合大小。</p>
+<ul>
+<li>越大越有机会构建高质量连接，Recall 通常更高；</li>
+<li>但建索引更慢；</li>
+<li>它主要影响索引质量，不是单次查询参数。</li>
+</ul>
+<h4 id="efSearch">efSearch</h4>
+<p>查询时在底层图中维护的候选集合大小，有些系统中简称为 <code>ef</code>。</p>
+<p>在高层：通常使用 <code>ef=1</code> 的贪心搜索。在第 0 层：使用 <code>efSearch</code> 进行多候选扩展搜索。高层不是只检查一个节点，而是从当前节点反复检查它的所有邻居，并不断移动到更近的节点，直到没有更近的邻居；最终只保留一个局部最近节点，作为下一层的入口。</p>
+<ul>
+<li>越大，探索节点越多，Recall 越高；</li>
+<li>但查询延迟增加；</li>
+<li>一般应满足 <code>efSearch &gt;= top_k</code>，然后在验证集上根据 Recall-Latency 曲线调节。</li>
+</ul>
+<h3 id="优缺点">优缺点</h3>
+<p>优点：</p>
+<ul>
+<li>查询延迟低，Recall 通常很高；</li>
+<li>不需要像 IVF 那样先训练聚类中心；</li>
+<li>支持增量插入，适合持续写入的场景；</li>
+<li>对中等到较大规模、低延迟在线查询非常常见。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>图中的边会带来较高内存开销；</li>
+<li>构建索引较慢；</li>
+<li>原生删除和更新比插入复杂，具体行为取决于实现，有些系统会先做逻辑删除再重建；</li>
+<li>强过滤条件会破坏图遍历的连通性或造成大量无效访问，需要专门的过滤策略。</li>
+</ul>
+<h2 id="IVF">IVF</h2>
+<p>IVF 全称是 <strong>Inverted File Index</strong>，即倒排文件索引。这里的“倒排”不是 BM25 的词项倒排表，而是 <strong>聚类中心到向量列表</strong> 的映射。</p>
+<h3 id="核心思想-2">核心思想</h3>
+<p>IVF 先用 K-Means 等算法把向量空间划分为多个聚类，每个聚类由一个中心向量表示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Centroid 1 → [v2, v8, v15, ...]</span><br><span class="line">Centroid 2 → [v1, v6, v20, ...]</span><br><span class="line">Centroid 3 → [v4, v9, v11, ...]</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>查询时先寻找与 Query 最近的几个聚类中心，只扫描这些聚类中的向量，而不是扫描整个数据库。</p>
+<h3 id="建索引过程-2">建索引过程</h3>
+<ol>
+<li>从语料向量中抽取有代表性的训练样本；</li>
+<li>训练 $nlist$ 个聚类中心；</li>
+<li>把每个文档向量分配给最近的中心；</li>
+<li>在中心对应的倒排列表中保存向量 ID，以及原始向量或压缩编码。</li>
+</ol>
+<p>IVF 存在训练阶段。训练样本不足、分布不均或线上数据发生漂移，都会导致聚类不平衡，进而影响 Recall 和延迟。</p>
+<h3 id="查询过程-2">查询过程</h3>
+<ol>
+<li>计算 Query 与所有聚类中心的距离；</li>
+<li>选择最近的 $nprobe$ 个聚类；</li>
+<li>扫描这些聚类中的候选向量；</li>
+<li>计算候选与 Query 的距离并返回 Top-K。</li>
+</ol>
+<p>例如有 100 万个向量，被比较均匀地分到 1000 个聚类中。如果 <code>nprobe=10</code>，理想情况下只需扫描约 1% 的向量。真实扫描量会受聚类是否均衡、过滤条件和实现方式影响。</p>
+<h3 id="关键参数-2">关键参数</h3>
+<h4 id="nlist">nlist</h4>
+<p>聚类中心，也就是倒排列表的数量。</p>
+<ul>
+<li>太小：每个列表很长，查询需要扫描很多向量；</li>
+<li>太大：中心搜索、训练和索引管理成本增加，每个列表的训练质量也可能下降；</li>
+<li>应结合数据量、维度和分布选择，而不是机械套用固定公式。</li>
+</ul>
+<h4 id="nprobe">nprobe</h4>
+<p>一次查询探测的聚类数量，是 IVF 最重要的查询参数。</p>
+<ul>
+<li>增大 <code>nprobe</code>：扫描范围变大，Recall 通常提高；</li>
+<li>代价：延迟与计算量增加；</li>
+<li>当 <code>nprobe=nlist</code> 时，搜索范围接近全部列表，IVF 的剪枝优势基本消失。</li>
+</ul>
+<p>Query</p>
+<p>│<br>
+├─ 与全部 nlist 个聚类中心比较<br>
+│<br>
+├─ 选出最近的 nprobe 个中心<br>
+│<br>
+└─ 只扫描这 nprobe 个倒排列表中的向量</p>
+<h3 id="IVF-Flat-与-IVF-PQ">IVF-Flat 与 IVF-PQ</h3>
+<h4 id="IVF-Flat">IVF-Flat</h4>
+<p>倒排列表中保存完整向量。查询时对选中列表中的向量做精确距离计算。</p>
+<ul>
+<li>选中列表内计算准确；</li>
+<li>内存占用仍然较高；</li>
+<li>IVF 的近似误差主要来自没有探测其他列表。</li>
+</ul>
+<h4 id="IVF-PQ">IVF-PQ</h4>
+<p>在 IVF 的基础上使用 PQ（Product Quantization，乘积量化）压缩向量。PQ 将向量切成多个子空间，每个子空间用较短的码表示。</p>
+<ul>
+<li>大幅降低内存占用，并可提高扫描吞吐量；</li>
+<li>压缩会引入额外距离误差，使 Recall 下降；</li>
+<li>常在超大规模、内存受限的场景使用，必要时再用原始向量对候选重算距离。</li>
+</ul>
+<h3 id="优缺点-2">优缺点</h3>
+<p>优点：</p>
+<ul>
+<li>可通过 <code>nprobe</code> 灵活控制 Recall 与延迟；</li>
+<li>索引结构规则，适合大规模批量检索以及 GPU、磁盘或压缩存储；</li>
+<li>与 PQ 组合后内存效率很高；</li>
+<li>相比图索引，每个向量不需要保存大量邻接边。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要训练聚类中心；</li>
+<li>数据分布变化后可能需要重新训练或重建索引；</li>
+<li>聚类边界附近的真实近邻可能落在未探测列表中；</li>
+<li>聚类不均衡会造成部分查询延迟过高；</li>
+<li>少量数据时，聚类训练和中心搜索的收益不一定明显。</li>
+</ul>
+<h2 id="HNSW-与-IVF-对比">HNSW 与 IVF 对比</h2>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>HNSW</th>
+<th>IVF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基本结构</td>
+<td>分层近邻图</td>
+<td>聚类中心 + 倒排列表</td>
+</tr>
+<tr>
+<td>是否需要训练</td>
+<td>不需要聚类训练</td>
+<td>需要训练聚类中心</td>
+</tr>
+<tr>
+<td>查询方式</td>
+<td>在图上导航和扩展候选</td>
+<td>先找中心，再扫描部分列表</td>
+</tr>
+<tr>
+<td>核心查询参数</td>
+<td><code>efSearch</code></td>
+<td><code>nprobe</code></td>
+</tr>
+<tr>
+<td>核心构建参数</td>
+<td><code>M</code>、<code>efConstruction</code></td>
+<td><code>nlist</code>，以及 PQ 参数</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td>在充足内存和合理参数下通常很高</td>
+<td>取决于聚类质量和<code>nprobe</code></td>
+</tr>
+<tr>
+<td>内存</td>
+<td>较高，需要保存图边</td>
+<td>IVF-Flat 中等，IVF-PQ 较低</td>
+</tr>
+<tr>
+<td>建索引</td>
+<td>通常较慢</td>
+<td>需要训练，但批量构建较规则</td>
+</tr>
+<tr>
+<td>增量写入</td>
+<td>通常较友好</td>
+<td>可插入，但数据漂移会影响聚类质量</td>
+</tr>
+<tr>
+<td>适合场景</td>
+<td>低延迟、高 Recall 的在线检索</td>
+<td>超大规模、内存受限、批量或 GPU 检索</td>
+</tr>
+</tbody>
+</table>
+<p>不能简单地说 HNSW 一定比 IVF 好。选型应基于相同硬件和数据集上的 Recall-Latency-Memory 基准测试。</p>
+<h2 id="如何调优和选型">如何调优和选型</h2>
+<h3 id="HNSW-调优顺序">HNSW 调优顺序</h3>
+<ol>
+<li>根据内存预算选择 $M$；</li>
+<li>用较高的 <code>efConstruction</code> 构建质量较好的索引；</li>
+<li>固定 Top-K，逐渐增大 <code>efSearch</code>；</li>
+<li>绘制 Recall@K 与 P95/P99 Latency 曲线，选择满足 SLA 的点。</li>
+</ol>
+<h3 id="IVF-调优顺序">IVF 调优顺序</h3>
+<ol>
+<li>使用有代表性的样本训练聚类中心；</li>
+<li>调整 <code>nlist</code>，观察列表大小是否均衡；</li>
+<li>固定 Top-K，逐渐增加 <code>nprobe</code>；</li>
+<li>内存不足时比较 IVF-Flat 与 IVF-PQ，并评估压缩损失；</li>
+<li>同样根据 Recall-Latency-Memory 曲线选择参数。</li>
+</ol>
+<h3 id="一个简单的选择思路">一个简单的选择思路</h3>
+<ul>
+<li>数据规模不大：先测试 Flat，可能已经足够快且 Recall 为 100%；</li>
+<li>追求高 Recall、低在线延迟，且内存充足：优先测试 HNSW；</li>
+<li>数据规模极大或内存紧张：优先测试 IVF-PQ；</li>
+<li>GPU 批量查询或规则的离线检索：IVF 往往更容易发挥吞吐优势；</li>
+<li>数据持续变化：HNSW 增量插入通常更直接，但仍要测试删除、过滤和维护成本。</li>
+</ul>
+<h2 id="在-RAG-混合检索中的位置">在 RAG 混合检索中的位置</h2>
+<p>HNSW 和 IVF 只负责 <strong>Dense Retrieval 的向量候选召回</strong>，不能替代 BM25、RRF 或 Reranker：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Query ─┬─ BM25 倒排索引 ───────────┐</span><br><span class="line">       │                           ├→ RRF/加权融合 → Reranker → LLM</span><br><span class="line">       └─ Embedding → HNSW 或 IVF ─┘</span><br></pre></td></tr></table></figure>
+<p>如果把 <code>efSearch</code> 或 <code>nprobe</code> 调得过小，向量召回会漏掉真实近邻；这些文档无法进入融合与精排阶段。因此，RAG 中通常先保证 Dense 路径有足够的 Recall，再在延迟预算内调低搜索深度。</p>
+<p>还要注意：ANN 的 Recall 是“找回精确向量近邻的比例”，而业务 Recall 是“找回人工标注相关文档的比例”。即使 ANN Recall 很高，Embedding 模型本身也可能没有把真正相关文档排在向量空间近处，所以两种 Recall 都应评估。</p>
+<h2 id="高频面试题">高频面试题</h2>
+<h3 id="1-HNSW-为什么要分层？">1. HNSW 为什么要分层？</h3>
+<p>高层节点少、边的跨度大，可以快速接近 Query 所在区域；底层节点完整，用于局部精细搜索。这样避免从入口点开始在完整图中进行大范围遍历，思想上类似跳表的多级跳跃。</p>
+<h3 id="2-efSearch-和-nprobe-有什么共同点？">2. <code>efSearch</code> 和 <code>nprobe</code> 有什么共同点？</h3>
+<p>它们都控制查询时的搜索深度。<code>efSearch</code> 控制 HNSW 候选集合的规模，<code>nprobe</code> 控制 IVF 要探测的聚类数量。增大它们通常会提高 Recall，同时增加延迟，但二者作用于完全不同的索引结构。</p>
+<h3 id="3-HNSW-的-M-越大越好吗？">3. HNSW 的 $M$ 越大越好吗？</h3>
+<p>不是。$M$ 越大通常能提高图的连通性和 Recall，但会增加内存、构建成本与查询距离计算。达到目标 Recall 后继续增大，边际收益可能很小，应结合内存和延迟预算选择。</p>
+<h3 id="4-IVF-为什么会漏掉最近邻？">4. IVF 为什么会漏掉最近邻？</h3>
+<p>Query 只探测部分聚类，而真实最近邻可能位于未探测的聚类中，尤其容易发生在聚类边界附近。增加 <code>nprobe</code> 能降低这种漏召回，但会扫描更多向量。</p>
+<h3 id="5-IVF-PQ-为什么比-IVF-Flat-更省内存但-Recall-更低？">5. IVF-PQ 为什么比 IVF-Flat 更省内存但 Recall 更低？</h3>
+<p>IVF-PQ 保存的是原始向量的量化编码，计算距离时使用近似向量，因此除了 IVF 未探测全部列表的误差，还增加了量化误差。它用精度换取了更小的索引和更高的扫描吞吐量。</p>
+<h3 id="6-HNSW-和-IVF-应该怎么选？">6. HNSW 和 IVF 应该怎么选？</h3>
+<p>没有脱离数据和硬件的固定答案。HNSW 通常适合内存充足、强调低延迟和高 Recall 的在线检索；IVF，特别是 IVF-PQ，适合超大规模或内存受限场景。最终应在同一数据集上比较 Recall@K、P95/P99 延迟、吞吐量、索引大小、构建时间和更新成本。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/">https://kjore.github.io/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/RAG/">RAG</a><a class="post-meta__tags" href="/tags/%E4%BF%A1%E6%81%AF%E6%A3%80%E7%B4%A2/">信息检索</a><a class="post-meta__tags" href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">大模型</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/" title="上下文工程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">上下文工程</div></div><div class="info-2"><div class="info-item-1"> 参考：《AI Agents in Depth》第 2 章：上下文工程  思维导图      mindmap   root((上下文工程))     核心问题       每个决策点让 Agent 看到什么       信息以什么结构出现       如何兼顾正确性、效率与安全     基础认知       Context 是单次推理看到的全部信息       Prompt 只是 Context 的一部分       模型参数提供通用能力       Context 提供任务条件与外部事实       窗口无限也仍需管理信息质量     API 上下文结构       四种消息角色         system：规则与约束         user：任务与追加信息         assistant：历史回复与工具调用         tool：外部工具结果       tools：工具定义与参数 schema       Chat Template 转换为 token       API 无状态       Agent 框架维护消息轨迹       ReAct 循环      ...</div></div></div></a><a class="pagination-related" href="/2026/08/09/milvus/" title="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</div></div><div class="info-2"><div class="info-item-1">一句话回答 Milvus 是一个面向大规模向量检索的开源、云原生数据库。它把向量、标量元数据和索引作为可持久化、可过滤、可扩缩容的数据来管理，适合为 RAG、语义搜索、推荐和多模态检索提供低延迟 ANN 召回。 面试时可以先给出下面这条主线：  文档切块 → Embedding → 写入 Milvus → 对 Query 做 Embedding → 向量 ANN + 元数据过滤/BM25 → 融合与 Rerank → 组装上下文 → LLM 生成。  需要先强调一个容易加分的结论：  RAG 不一定必须使用专用向量数据库。 小规模、静态、单机数据可以用 NumPy/Faiss；已有 PostgreSQL 可以先用 pgvector；已有 Elasticsearch 且强依赖全文检索时可以直接做混合搜索。只有当数据量、并发、过滤、实时更新、持久化、高可用或独立扩缩容需求上来后，专用向量数据库的价值才明显。  为什么需要“向量数据库” 这个问题最好从传统关系数据库擅长什么讲起。 MySQL、PostgreSQL 等关系数据库主要面向结构化数据和精确查询。一条典型 SQL 可能是： 1...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/09/milvus/" title="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-09</div><div class="info-item-2">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</div></div><div class="info-2"><div class="info-item-1">一句话回答 Milvus 是一个面向大规模向量检索的开源、云原生数据库。它把向量、标量元数据和索引作为可持久化、可过滤、可扩缩容的数据来管理，适合为 RAG、语义搜索、推荐和多模态检索提供低延迟 ANN 召回。 面试时可以先给出下面这条主线：  文档切块 → Embedding → 写入 Milvus → 对 Query 做 Embedding → 向量 ANN + 元数据过滤/BM25 → 融合与 Rerank → 组装上下文 → LLM 生成。  需要先强调一个容易加分的结论：  RAG 不一定必须使用专用向量数据库。 小规模、静态、单机数据可以用 NumPy/Faiss；已有 PostgreSQL 可以先用 pgvector；已有 Elasticsearch 且强依赖全文检索时可以直接做混合搜索。只有当数据量、并发、过滤、实时更新、持久化、高可用或独立扩缩容需求上来后，专用向量数据库的价值才明显。  为什么需要“向量数据库” 这个问题最好从传统关系数据库擅长什么讲起。 MySQL、PostgreSQL 等关系数据库主要面向结构化数据和精确查询。一条典型 SQL 可能是： 1...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">一句话回答</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">为什么需要混合检索</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">两类基础检索器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%80%E7%96%8F%E6%A3%80%E7%B4%A2%EF%BC%9ABM25"><span class="toc-number">3.1.</span> <span class="toc-text">稀疏检索：BM25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%A0%E5%AF%86%E6%A3%80%E7%B4%A2%EF%BC%9ADense-Retrieval"><span class="toc-number">3.2.</span> <span class="toc-text">稠密检索：Dense Retrieval</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">标准架构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">融合方法：面试重点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RRF%EF%BC%9AReciprocal-Rank-Fusion"><span class="toc-number">5.0.1.</span> <span class="toc-text">RRF：Reciprocal Rank Fusion</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">6.</span> <span class="toc-text">并行混合与级联混合</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E8%A1%8C%E5%8F%AC%E5%9B%9E"><span class="toc-number">6.1.</span> <span class="toc-text">并行召回</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%A7%E8%81%94%E5%8F%AC%E5%9B%9E"><span class="toc-number">6.2.</span> <span class="toc-text">级联召回</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">7.</span> <span class="toc-text">Reranker 为什么有效</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">8.</span> <span class="toc-text">过滤条件应该放在哪里</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">9.</span> <span class="toc-text">Chunking 对混合检索的影响</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">10.</span> <span class="toc-text">如何调参</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%85%88%E6%9E%84%E5%BB%BA%E8%AF%84%E6%B5%8B%E9%9B%86"><span class="toc-number">10.1.</span> <span class="toc-text">1. 先构建评测集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%88%86%E9%98%B6%E6%AE%B5%E8%B0%83%E4%BC%98"><span class="toc-number">10.2.</span> <span class="toc-text">2. 分阶段调优</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%B8%8D%E8%A6%81%E5%90%8C%E6%97%B6%E4%B9%B1%E8%B0%83%E6%89%80%E6%9C%89%E5%8F%82%E6%95%B0"><span class="toc-number">10.3.</span> <span class="toc-text">3. 不要同时乱调所有参数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">11.</span> <span class="toc-text">评估指标</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A3%80%E7%B4%A2%E9%98%B6%E6%AE%B5"><span class="toc-number">11.1.</span> <span class="toc-text">检索阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Recall-K"><span class="toc-number">11.1.1.</span> <span class="toc-text">Recall@K</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Precision-K"><span class="toc-number">11.1.2.</span> <span class="toc-text">Precision@K</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MRR"><span class="toc-number">11.1.3.</span> <span class="toc-text">MRR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nDCG-K"><span class="toc-number">11.1.4.</span> <span class="toc-text">nDCG@K</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E9%98%B6%E6%AE%B5"><span class="toc-number">11.2.</span> <span class="toc-text">生成阶段</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">12.</span> <span class="toc-text">常见故障与排查</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Dense-%E7%BB%93%E6%9E%9C%E9%83%BD%E2%80%9C%E7%9C%8B%E8%B5%B7%E6%9D%A5%E7%9B%B8%E5%85%B3%E2%80%9D%EF%BC%8C%E4%BD%86%E6%B2%A1%E6%9C%89%E7%AD%94%E6%A1%88"><span class="toc-number">12.1.</span> <span class="toc-text">1. Dense 结果都“看起来相关”，但没有答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-BM25-%E6%80%BB%E8%A2%AB%E6%9F%90%E4%BA%9B%E9%87%8D%E5%A4%8D%E8%AF%8D%E4%B8%BB%E5%AF%BC"><span class="toc-number">12.2.</span> <span class="toc-text">2. BM25 总被某些重复词主导</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B7%B7%E5%90%88%E5%90%8E%E5%8F%8D%E8%80%8C%E6%AF%94%E5%8D%95%E8%B7%AF%E5%B7%AE"><span class="toc-number">12.3.</span> <span class="toc-text">3. 混合后反而比单路差</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%A6%BB%E7%BA%BF%E5%BE%88%E5%A5%BD%EF%BC%8C%E7%BA%BF%E4%B8%8A%E6%95%88%E6%9E%9C%E4%B8%8D%E7%A8%B3%E5%AE%9A"><span class="toc-number">12.4.</span> <span class="toc-text">4. 离线很好，线上效果不稳定</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">13.</span> <span class="toc-text">生产系统设计要点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E8%BF%9F%E4%B8%8E%E9%99%8D%E7%BA%A7"><span class="toc-number">13.1.</span> <span class="toc-text">延迟与降级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7"><span class="toc-number">13.2.</span> <span class="toc-text">可观测性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">13.3.</span> <span class="toc-text">索引一致性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">14.</span> <span class="toc-text">高频面试题与参考回答</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AF%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%E6%AF%94%E7%BA%AF%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%A5%BD%EF%BC%9F"><span class="toc-number">14.1.</span> <span class="toc-text">1. 什么是混合检索？为什么比纯向量检索好？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E7%9B%B8%E5%8A%A0-BM25-%E5%88%86%E6%95%B0%E5%92%8C%E4%BD%99%E5%BC%A6%E7%9B%B8%E4%BC%BC%E5%BA%A6%EF%BC%9F"><span class="toc-number">14.2.</span> <span class="toc-text">2. 为什么不能直接相加 BM25 分数和余弦相似度？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-RRF-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%B8%B8%E7%94%A8%EF%BC%9F"><span class="toc-number">14.3.</span> <span class="toc-text">3. RRF 为什么常用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E6%98%AF%E5%90%A6%E4%B8%80%E5%AE%9A%E4%BC%98%E4%BA%8E%E5%8D%95%E8%B7%AF%E6%A3%80%E7%B4%A2%EF%BC%9F"><span class="toc-number">14.4.</span> <span class="toc-text">4. 混合检索是否一定优于单路检索？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9-BM25-%E4%B8%8E-Dense-%E7%9A%84%E6%9D%83%E9%87%8D%EF%BC%9F"><span class="toc-number">14.5.</span> <span class="toc-text">5. 如何选择 BM25 与 Dense 的权重？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AC%E5%9B%9E%E5%90%8E%E8%BF%98%E8%A6%81-Rerank%EF%BC%9F"><span class="toc-number">14.6.</span> <span class="toc-text">6. 为什么召回后还要 Rerank？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E7%BA%BF%E4%B8%8A%E5%A6%82%E4%BD%95%E9%99%8D%E4%BD%8E%E5%BB%B6%E8%BF%9F%EF%BC%9F"><span class="toc-number">14.7.</span> <span class="toc-text">7. 线上如何降低延迟？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%A6%82%E4%BD%95%E8%AF%81%E6%98%8E%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E7%9C%9F%E7%9A%84%E6%9C%89%E6%94%B6%E7%9B%8A%EF%BC%9F"><span class="toc-number">14.8.</span> <span class="toc-text">8. 如何证明混合检索真的有收益？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%A6%82%E6%9E%9C-Query-%E5%90%AB%E6%9C%89%E9%94%99%E8%AF%AF%E7%A0%81%E5%92%8C%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E6%8F%8F%E8%BF%B0%EF%BC%8C%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%EF%BC%9F"><span class="toc-number">14.9.</span> <span class="toc-text">9. 如果 Query 含有错误码和自然语言描述，怎么处理？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E6%97%A0%E7%AD%94%E6%A1%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">14.10.</span> <span class="toc-text">10. 如何处理无答案问题？</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">15.</span> <span class="toc-text">HNSW 和 IVF</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HNSW"><span class="toc-number">15.1.</span> <span class="toc-text">HNSW</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="toc-number">15.1.1.</span> <span class="toc-text">核心思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E8%BF%87%E7%A8%8B"><span class="toc-number">15.1.2.</span> <span class="toc-text">查询过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E7%B4%A2%E5%BC%95%E8%BF%87%E7%A8%8B"><span class="toc-number">15.1.3.</span> <span class="toc-text">建索引过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%8F%82%E6%95%B0"><span class="toc-number">15.1.4.</span> <span class="toc-text">关键参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#M"><span class="toc-number">15.1.4.1.</span> <span class="toc-text">M</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#efConstruction"><span class="toc-number">15.1.4.2.</span> <span class="toc-text">efConstruction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#efSearch"><span class="toc-number">15.1.4.3.</span> <span class="toc-text">efSearch</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">15.1.5.</span> <span class="toc-text">优缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IVF"><span class="toc-number">15.2.</span> <span class="toc-text">IVF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3-2"><span class="toc-number">15.2.1.</span> <span class="toc-text">核心思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E7%B4%A2%E5%BC%95%E8%BF%87%E7%A8%8B-2"><span class="toc-number">15.2.2.</span> <span class="toc-text">建索引过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E8%BF%87%E7%A8%8B-2"><span class="toc-number">15.2.3.</span> <span class="toc-text">查询过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%8F%82%E6%95%B0-2"><span class="toc-number">15.2.4.</span> <span class="toc-text">关键参数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#nlist"><span class="toc-number">15.2.4.1.</span> <span class="toc-text">nlist</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#nprobe"><span class="toc-number">15.2.4.2.</span> <span class="toc-text">nprobe</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IVF-Flat-%E4%B8%8E-IVF-PQ"><span class="toc-number">15.2.5.</span> <span class="toc-text">IVF-Flat 与 IVF-PQ</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IVF-Flat"><span class="toc-number">15.2.5.1.</span> <span class="toc-text">IVF-Flat</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IVF-PQ"><span class="toc-number">15.2.5.2.</span> <span class="toc-text">IVF-PQ</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-2"><span class="toc-number">15.2.6.</span> <span class="toc-text">优缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HNSW-%E4%B8%8E-IVF-%E5%AF%B9%E6%AF%94"><span class="toc-number">15.3.</span> <span class="toc-text">HNSW 与 IVF 对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%B0%83%E4%BC%98%E5%92%8C%E9%80%89%E5%9E%8B"><span class="toc-number">15.4.</span> <span class="toc-text">如何调优和选型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#HNSW-%E8%B0%83%E4%BC%98%E9%A1%BA%E5%BA%8F"><span class="toc-number">15.4.1.</span> <span class="toc-text">HNSW 调优顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IVF-%E8%B0%83%E4%BC%98%E9%A1%BA%E5%BA%8F"><span class="toc-number">15.4.2.</span> <span class="toc-text">IVF 调优顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E9%80%89%E6%8B%A9%E6%80%9D%E8%B7%AF"><span class="toc-number">15.4.3.</span> <span class="toc-text">一个简单的选择思路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8-RAG-%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="toc-number">15.5.</span> <span class="toc-text">在 RAG 混合检索中的位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">15.6.</span> <span class="toc-text">高频面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-HNSW-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%B1%82%EF%BC%9F"><span class="toc-number">15.6.1.</span> <span class="toc-text">1. HNSW 为什么要分层？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-efSearch-%E5%92%8C-nprobe-%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B1%E5%90%8C%E7%82%B9%EF%BC%9F"><span class="toc-number">15.6.2.</span> <span class="toc-text">2. efSearch 和 nprobe 有什么共同点？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-HNSW-%E7%9A%84-M-%E8%B6%8A%E5%A4%A7%E8%B6%8A%E5%A5%BD%E5%90%97%EF%BC%9F"><span class="toc-number">15.6.3.</span> <span class="toc-text">3. HNSW 的 $M$ 越大越好吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-IVF-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%BC%8F%E6%8E%89%E6%9C%80%E8%BF%91%E9%82%BB%EF%BC%9F"><span class="toc-number">15.6.4.</span> <span class="toc-text">4. IVF 为什么会漏掉最近邻？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-IVF-PQ-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%AF%94-IVF-Flat-%E6%9B%B4%E7%9C%81%E5%86%85%E5%AD%98%E4%BD%86-Recall-%E6%9B%B4%E4%BD%8E%EF%BC%9F"><span class="toc-number">15.6.5.</span> <span class="toc-text">5. IVF-PQ 为什么比 IVF-Flat 更省内存但 Recall 更低？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-HNSW-%E5%92%8C-IVF-%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E9%80%89%EF%BC%9F"><span class="toc-number">15.6.6.</span> <span class="toc-text">6. HNSW 和 IVF 应该怎么选？</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/" title="上下文工程">上下文工程</a><time datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/milvus/" title="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/" title="RAG 混合检索">RAG 混合检索</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T02:12:47.350Z" title="发表于 2026-08-02 10:12:47">2026-08-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T00:51:39.679Z" title="发表于 2026-08-02 08:51:39">2026-08-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

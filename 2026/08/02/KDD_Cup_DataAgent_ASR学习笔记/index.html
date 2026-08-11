@@ -1,0 +1,500 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>kjore's blog | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="KDD Cup 2026 DataAgent Top1 ASR 方案学习笔记 这份笔记主要记录我对 DataAgent 赛题中视频 briefing 转写方案的理解。原始方案看起来并不复杂：先把视频里的旁白转成文字，再交给后面的 Agent 去理解任务、操作页面。但真正影响效果的地方不只是“选一个更强的 ASR 模型”，而是语言判断、模型规模、领域上下文、文本归一化和评测口径这些细节如何配合。 一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kjore&#39;s blog">
+<meta property="og:url" content="https://kjore.github.io/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="KDD Cup 2026 DataAgent Top1 ASR 方案学习笔记 这份笔记主要记录我对 DataAgent 赛题中视频 briefing 转写方案的理解。原始方案看起来并不复杂：先把视频里的旁白转成文字，再交给后面的 Agent 去理解任务、操作页面。但真正影响效果的地方不只是“选一个更强的 ASR 模型”，而是语言判断、模型规模、领域上下文、文本归一化和评测口径这些细节如何配合。 一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-08-02T00:51:39.679Z">
+<meta property="article:modified_time" content="2026-08-02T02:37:00.927Z">
+<meta property="article:author" content="kjore">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "",
+  "url": "https://kjore.github.io/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-08-02T00:51:39.679Z",
+  "dateModified": "2026-08-02T02:37:00.927Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'kjore\'s blog',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">kjore's blog</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">无标题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-02T00:51:39.679Z" title="发表于 2026-08-02 08:51:39">2026-08-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-02T02:37:00.927Z" title="更新于 2026-08-02 10:37:00">2026-08-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>KDD Cup 2026 DataAgent Top1 ASR 方案学习笔记</h1>
+<p>这份笔记主要记录我对 DataAgent 赛题中视频 briefing 转写方案的理解。原始方案看起来并不复杂：先把视频里的旁白转成文字，再交给后面的 Agent 去理解任务、操作页面。但真正影响效果的地方不只是“选一个更强的 ASR 模型”，而是语言判断、模型规模、领域上下文、文本归一化和评测口径这些细节如何配合。</p>
+<h2 id="一、这个-ASR-模块解决什么问题">一、这个 ASR 模块解决什么问题</h2>
+<p>DataAgent 的部分任务会给一段 briefing 视频。视频旁白通常会告诉 Agent 当前页面状态、需要操作的表或字段、要关注哪些信息、哪些是干扰项，以及最终要完成什么操作。对 Agent 来说，这段旁白相当于任务说明书；如果转写错了，后面的理解和执行都会被带偏。</p>
+<p>整个链路可以简化成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">briefing 视频 -&gt; 抽取音频 -&gt; ASR 转写 -&gt; 文本后处理 -&gt; DataAgent 执行</span><br></pre></td></tr></table></figure>
+<p>这里的 ASR 指 Automatic Speech Recognition，也就是自动语音识别。它负责把语音变成文字。Whisper 则是 OpenAI 发布的一系列 ASR 模型，是实现 ASR 的具体工具。两者的关系可以理解为：ASR 是任务类型，Whisper 是完成这个任务的一类模型。</p>
+<p>这个场景对 ASR 的要求和普通字幕生成不太一样。字幕里错一个语气词，影响可能不大；但在 DataAgent 里，如果把“字段”识别成“自断”，或者把某个股票代码、页面名、按钮名识别错，Agent 可能就找不到正确的 UI 元素。更严重的是，如果模型在音频结束后编造出不存在的指令，下游 Agent 甚至可能执行错误操作。</p>
+<h2 id="二、Top1-方案的主流程">二、Top1 方案的主流程</h2>
+<p>这个方案的核心思路是：不要让一个大模型包办所有步骤，而是把任务拆开，每一步用合适的模型。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">briefing.mp4</span><br><span class="line">    -&gt; 抽取音轨</span><br><span class="line">    -&gt; Whisper tiny 检测语言</span><br><span class="line">    -&gt; Qwen 根据任务资料生成 initial_prompt</span><br><span class="line">    -&gt; Whisper medium 按指定语言正式转写</span><br><span class="line">    -&gt; 繁简转换、数字和标点归一化</span><br><span class="line">    -&gt; 把转写文本交给 DataAgent</span><br></pre></td></tr></table></figure>
+<p>几个组件的分工很清楚：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Whisper tiny</td>
+<td>快速判断音频是中文还是英文</td>
+</tr>
+<tr>
+<td>Qwen</td>
+<td>从任务资料中提取领域术语，生成<code>initial_prompt</code></td>
+</tr>
+<tr>
+<td>Whisper medium</td>
+<td>正式进行语音转写</td>
+</tr>
+<tr>
+<td>DataAgent</td>
+<td>根据转写文本理解任务并执行操作</td>
+</tr>
+</tbody>
+</table>
+<p>这套流程体现了一个很实用的工程判断：模型越大不一定越适合。语言检测是简单任务，用 tiny 足够；正式转写才需要更强一些的模型；而 Qwen 不负责听音频，只负责从结构化任务资料里提取上下文，帮助 Whisper 少选错词。</p>
+<h2 id="三、为什么语言检测用-tiny，转写用-medium">三、为什么语言检测用 tiny，转写用 medium</h2>
+<p>数据集中同时有中文和英文 briefing。如果直接把所有音频都强制设成中文，例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">language = <span class="string">&quot;zh&quot;</span></span><br></pre></td></tr></table></figure>
+<p>英文音频可能会被 Whisper 硬解释成中文，生成一堆不存在的中文内容。所以方案先做语言检测，再根据结果指定 <code>zh</code> 或 <code>en</code>。</p>
+<p>作者在 30 条 briefing 音频上测试了 tiny、base、small、medium 和 large-v3。样本里有 20 条中文、10 条英文，所有模型的语言检测准确率都是 100%。差别主要在耗时：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align:right">检测耗时/条</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tiny</td>
+<td style="text-align:right">0.14 s</td>
+</tr>
+<tr>
+<td>base</td>
+<td style="text-align:right">0.27 s</td>
+</tr>
+<tr>
+<td>small</td>
+<td style="text-align:right">0.93 s</td>
+</tr>
+<tr>
+<td>medium</td>
+<td style="text-align:right">3.10 s</td>
+</tr>
+<tr>
+<td>large-v3</td>
+<td style="text-align:right">5.71 s</td>
+</tr>
+</tbody>
+</table>
+<p>既然准确率一样，tiny 就是最合理的选择。这里没必要为了“看起来更强”去用 large-v3。</p>
+<p>正式转写时，选择 medium 而不是 large-v3，原因更值得注意。直觉上 large-v3 更大，应该更准；但实验里 large-v3 出现了严重的末尾幻觉：音频正文已经结束，模型仍然继续生成音频中不存在的内容，比如“请点赞、订阅、转发”等，甚至会编出上百字乱码。</p>
+<p>模型对比如下：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align:right">中文 CER</th>
+<th style="text-align:right">英文 WER</th>
+<th>末尾幻觉</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>base</td>
+<td style="text-align:right">10.4%</td>
+<td style="text-align:right">1.9%</td>
+<td>无</td>
+</tr>
+<tr>
+<td>small</td>
+<td style="text-align:right">6.8%</td>
+<td style="text-align:right">1.3%</td>
+<td>几乎无</td>
+</tr>
+<tr>
+<td>medium</td>
+<td style="text-align:right">3.2%</td>
+<td style="text-align:right">2.8%</td>
+<td>极少</td>
+</tr>
+<tr>
+<td>large-v3</td>
+<td style="text-align:right">7.2%</td>
+<td style="text-align:right">8.7%</td>
+<td>严重</td>
+</tr>
+</tbody>
+</table>
+<p>如果只截取正常正文，large-v3 可能并不差，甚至可能更好。但真实系统里不能假设总能准确知道应该从哪里截断。一旦末尾幻觉进入转写文本，下游 Agent 会把它当成真实指令。综合准确率、速度和稳定性，medium 是更稳的选择。</p>
+<h2 id="四、initial-prompt-解决的是上下文问题">四、<code>initial_prompt</code> 解决的是上下文问题</h2>
+<p>medium 剩下的一类典型错误是中文同音字或近音词。例如：</p>
+<table>
+<thead>
+<tr>
+<th>正确词</th>
+<th>错误识别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>字段</td>
+<td>自断</td>
+</tr>
+<tr>
+<td>送股</td>
+<td>颂谷</td>
+</tr>
+<tr>
+<td>任职绩效</td>
+<td>认值计效</td>
+</tr>
+<tr>
+<td>队列</td>
+<td>对列</td>
+</tr>
+</tbody>
+</table>
+<p>这类错误不一定是模型没听清发音，而是缺少业务上下文。就像输入法只知道拼音 <code>duilie</code> 时，可能给出很多候选；如果它知道当前在讲数据平台，就更应该选“队列”。</p>
+<p>Whisper 的 <code>initial_prompt</code> 可以在解码前提供一段上下文。例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">该音频涉及数据平台界面操作。</span><br><span class="line">常见术语包括：字段、批次、配置、加载、面板、看板、卡片、队列、筛选、核对、列、口径。</span><br></pre></td></tr></table></figure>
+<p>需要注意，<code>initial_prompt</code> 不是转写完成后的纠错，也不是让 LLM 改写结果；它是在 Whisper 解码前影响候选词概率，让模型在相似发音之间更偏向领域内的词。</p>
+<p>这里 Qwen 的作用就是自动生成这段上下文。不同任务会涉及不同的表名、字段名、公司名、股票代码、页面名、指标名和 UI 术语。人工为每条任务写 prompt 成本太高，所以方案让 Qwen 读取 <code>knowledge.md</code>、<code>task.json</code> 和任务描述，提取最可能相关的 8 到 15 个术语。</p>
+<p>比较合理的 prompt 生成原则是：</p>
+<ul>
+<li>以当前任务问题为核心，而不是把所有背景资料都塞进去；</li>
+<li>优先提取看板名、字段名、实体名、路径和关键指标；</li>
+<li><code>knowledge.md</code> 用来理解规范，不要直接全文灌入；</li>
+<li>术语要少而准，避免无关词变成噪声；</li>
+<li>可以把任务特定术语和通用 UI 术语组合起来。</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">任务特定术语：</span><br><span class="line">股票代码 600234、董事会秘书、公司档案</span><br><span class="line"></span><br><span class="line">通用 UI 术语：</span><br><span class="line">字段、批次、配置、加载、看板、卡片、队列、筛选、核对、列、口径</span><br></pre></td></tr></table></figure>
+<p>实验结果也说明 prompt 是有效的：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th style="text-align:right">中文 CER</th>
+<th style="text-align:right">英文 WER</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>medium，无 prompt</td>
+<td style="text-align:right">约 3.5%</td>
+<td style="text-align:right">约 4.0%</td>
+</tr>
+<tr>
+<td>加入 Qwen 自动生成 prompt</td>
+<td style="text-align:right">2.8%</td>
+<td style="text-align:right">0.75%</td>
+</tr>
+<tr>
+<td>再加入通用 UI 术语</td>
+<td style="text-align:right">1.9%</td>
+<td style="text-align:right">-</td>
+</tr>
+</tbody>
+</table>
+<p>可以理解为，领域 prompt 对中文术语、同音字，以及英文任务关键词都有明显帮助。</p>
+<h2 id="五、评测时不能只看-CER-WER">五、评测时不能只看 CER/WER</h2>
+<p>CER 是 Character Error Rate，字符错误率，常用于中文 ASR；WER 是 Word Error Rate，词错误率，常用于英文 ASR。两者公式类似：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ErrorRate = (S + D + I) / N</span><br></pre></td></tr></table></figure>
+<p>其中 <code>S</code> 是替换错误，<code>D</code> 是删除错误，<code>I</code> 是插入错误，<code>N</code> 是标准答案长度。区别在于 CER 按字符统计，WER 按单词统计。</p>
+<p>中文更常用 CER，是因为中文没有天然空格。如果用词来算，就会受到分词方式影响。比如“用户信息表”可以分成“用户 / 信息表”，也可以分成“用户信息 / 表”。按字符计算能减少这类评测口径带来的干扰。</p>
+<p>不过，真正做 ASR 评测时，不能把模型输出和标准答案直接逐字比较。很多格式差异并不代表语义错误：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">标准答案：字段配置</span><br><span class="line">模型输出：字段配置。</span><br></pre></td></tr></table></figure>
+<p>多一个句号不应该被当成实质错误。因此评测前需要做文本归一化，包括：</p>
+<ul>
+<li>繁体转简体；</li>
+<li>中文数字转阿拉伯数字；</li>
+<li>英文字母统一大小写；</li>
+<li>去掉不重要的标点；</li>
+<li>去除多余空格；</li>
+<li>只保留汉字、字母和数字。</li>
+</ul>
+<p>繁简转换尤其重要。faster-whisper 有时会输出繁体，而 gold 是简体。如果不统一，“標準答案”和“标准答案”会被算成字符差异。作者提到，某次结果中未归一化 CER 是 26%，繁简归一化后降到 9.5%。这说明评测口径本身会显著影响结论。</p>
+<p>这里的 gold 也要理解清楚。方案使用 Azure Fast Transcription 的转写文本作为 reference，再计算 Whisper 输出和 Azure 文本之间的差异。所以严格来说，这些 CER/WER 表示的是“相对 Azure 转写结果的错误率”，不是相对人工标注真值的绝对错误率。Azure 本身也可能错，更严谨的评测应该有人工作为最终标准。</p>
+<p>另外，CER/WER 只是平均指标，不足以完全评价 DataAgent 场景下的 ASR。漏掉一个“的”和把“字段”识别成“自断”，可能在指标上都是小错误，但对下游任务的影响完全不同。这个场景还应该关注：</p>
+<ul>
+<li>领域术语错误率；</li>
+<li>数字、股票代码、实体名称识别错误率；</li>
+<li>幻觉率，尤其是末尾幻觉；</li>
+<li>转写错误对下游任务成功率的影响。</li>
+</ul>
+<h2 id="六、几个工程细节">六、几个工程细节</h2>
+<p>第一，中文输出必须做繁简转换。如果 gold 是简体，模型输出是繁体，直接比较会虚高 CER。可以用 OpenCC 做处理：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> opencc <span class="keyword">import</span> OpenCC</span><br><span class="line"></span><br><span class="line">cc = OpenCC(<span class="string">&quot;t2s&quot;</span>)</span><br><span class="line">text = cc.convert(text)</span><br></pre></td></tr></table></figure>
+<p>第二，不要跳过语言检测。数据集里既有中文也有英文，强行指定一种语言会放大错误，尤其容易让英文音频变成中文幻觉文本。更稳的流程是先用 tiny 判断语言，再让 medium 按对应语言转写。</p>
+<p>第三，VAD 不能根治末尾幻觉。VAD 是 Voice Activity Detection，用来检测语音活动、切掉静音片段。它能减少一部分无效音频，但末尾幻觉可能发生在呼吸声、尾音、背景低噪声这类并非完全静音的片段上。因此 <code>vad_filter=True</code> 有帮助，但不能把它当作解决幻觉的根本办法。</p>
+<p>我对这套方案的理解是：它的亮点不在某个单点模型，而在分工和约束。tiny 负责快速语言检测，medium 负责稳定转写，Qwen 负责提取任务上下文，归一化负责让评测更公平。这样做比简单堆大模型更可靠，也更符合 Agent 系统里“上游文本会直接影响下游行动”的特点。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">https://kjore.github.io/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2"></div></div><div class="info-2"><div class="info-item-1">H.264 与“闭眼抽帧”学习笔记 在 PPT、网页操作、数据看板这类屏幕录制视频里，不一定要先把每一帧都解码成图像再判断页面变化，而是可以先观察 H.264 压缩码流里的数据包大小变化。编码器本来就已经分析过相邻画面的差异；如果画面很容易预测，压缩数据通常很小，如果画面突然大面积变化，压缩数据往往会明显变大。 所以所谓“闭眼抽帧”，不是完全不处理视频，而是在候选检测阶段不看像素画面，只看压缩数据的时间变化；等找到可能的换页位置后，再解码少量代表帧。 一、为什么这个问题可以从编码数据里找线索 DataAgent 的视频理解任务里，视频内容通常是界面操作、PPT 或类似页面讲解。这类视频有一个很明显的特点：大部分时间画面是静止的，只有在换页、弹窗、表格加载、动画出现时才发生大面积变化。 如果按固定间隔抽帧，会遇到两个问题：一是同一个静止页面会被抽出很多重复帧；二是停留时间很短但重要的页面可能被错过。传统做法是解码所有帧，然后用像素差、直方图、SSIM、感知哈希或视觉模型比较前后画面。这样当然可行，但成本比较高。 H.264 给了另一条线索。它的压缩依赖预测：能从当前画面内部或前后参...</div></div></div></a><a class="pagination-related" href="/2026/07/28/%E8%AE%B0%E5%BF%86%E7%B3%BB%E7%BB%9F/" title="记忆系统"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">记忆系统</div></div><div class="info-2"><div class="info-item-1">该笔记是对于开源项目 ai-agent-book中第三章的内容的个人思考与总结笔记。 本章主线任务是回答Agent 应该记住什么、怎样存、怎样更新、怎样检索，以及如何判断记忆系统真的有用 与第二章的上下文管理不同，本章的记忆系统是一个长期的、跨会话的记忆系统，主要用于存储和检索 Agent 的长期记忆。如何让 Agent 在对话结束后仍然记住用户、记住知识。 学习完本章后应该要能回答：  用户记忆和知识库有什么区别？ 为什么不能直接保存全部历史对话？ 轨迹、工作记忆、长期记忆有什么区别？ 什么信息值得进入长期记忆？ 如何判断一个记忆系统是好的？ 新信息和旧记忆冲突时怎么办？ 四种记忆格式分别适合什么场景？ 情景记忆、语义记忆和程序记忆如何转化？ 为什么纯文本记忆不擅长聚合、冲突检查和规则执行？ 为什么知识库一定要分块？ 稠密检索和稀疏检索分别会在哪些问题上失败？ 混合检索的三个阶段为什么不能互相替代？ HNSW 和 ANNOY 的差异对系统设计有什么影响？ recall@k、MRR、nDCG 分别在测什么？  持久化记忆体系 作者认为，持久化记忆体系可以分成两个部分： 一个是用户...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">KDD Cup 2026 DataAgent Top1 ASR 方案学习笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E8%BF%99%E4%B8%AA-ASR-%E6%A8%A1%E5%9D%97%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.</span> <span class="toc-text">一、这个 ASR 模块解决什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Top1-%E6%96%B9%E6%A1%88%E7%9A%84%E4%B8%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">二、Top1 方案的主流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AF%AD%E8%A8%80%E6%A3%80%E6%B5%8B%E7%94%A8-tiny%EF%BC%8C%E8%BD%AC%E5%86%99%E7%94%A8-medium"><span class="toc-number">1.3.</span> <span class="toc-text">三、为什么语言检测用 tiny，转写用 medium</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81initial-prompt-%E8%A7%A3%E5%86%B3%E7%9A%84%E6%98%AF%E4%B8%8A%E4%B8%8B%E6%96%87%E9%97%AE%E9%A2%98"><span class="toc-number">1.4.</span> <span class="toc-text">四、initial_prompt 解决的是上下文问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E8%AF%84%E6%B5%8B%E6%97%B6%E4%B8%8D%E8%83%BD%E5%8F%AA%E7%9C%8B-CER-WER"><span class="toc-number">1.5.</span> <span class="toc-text">五、评测时不能只看 CER&#x2F;WER</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%87%A0%E4%B8%AA%E5%B7%A5%E7%A8%8B%E7%BB%86%E8%8A%82"><span class="toc-number">1.6.</span> <span class="toc-text">六、几个工程细节</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/" title="上下文工程">上下文工程</a><time datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/milvus/" title="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/" title="RAG 混合检索">RAG 混合检索</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T02:12:47.350Z" title="发表于 2026-08-02 10:12:47">2026-08-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T00:51:39.679Z" title="发表于 2026-08-02 08:51:39">2026-08-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

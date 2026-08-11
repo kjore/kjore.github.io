@@ -1,0 +1,724 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>上下文工程 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="参考：《AI Agents in Depth》第 2 章：上下文工程  思维导图      mindmap   root((上下文工程))     核心问题       每个决策点让 Agent 看到什么       信息以什么结构出现       如何兼顾正确性、效率与安全     基础认知       Context 是单次推理看到的全部信息       Prompt 只是 Context">
+<meta property="og:type" content="article">
+<meta property="og:title" content="上下文工程">
+<meta property="og:url" content="https://kjore.github.io/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="参考：《AI Agents in Depth》第 2 章：上下文工程  思维导图      mindmap   root((上下文工程))     核心问题       每个决策点让 Agent 看到什么       信息以什么结构出现       如何兼顾正确性、效率与安全     基础认知       Context 是单次推理看到的全部信息       Prompt 只是 Context">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-08-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-11T01:40:06.518Z">
+<meta property="article:author" content="kjore">
+<meta property="article:tag" content="LLM基础">
+<meta property="article:tag" content="agent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "上下文工程",
+  "url": "https://kjore.github.io/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-08-09T16:00:00.000Z",
+  "dateModified": "2026-08-11T01:40:06.518Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '上下文工程',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">上下文工程</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">上下文工程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-11T01:40:06.518Z" title="更新于 2026-08-11 09:40:06">2026-08-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/agent/">agent</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://bojieli.github.io/ai-agent-book/book/chapter2/">《AI Agents in Depth》第 2 章：上下文工程</a></p>
+</blockquote>
+<h2 id="思维导图">思维导图</h2>
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+    mindmap
+  root((上下文工程))
+    核心问题
+      每个决策点让 Agent 看到什么
+      信息以什么结构出现
+      如何兼顾正确性、效率与安全
+    基础认知
+      Context 是单次推理看到的全部信息
+      Prompt 只是 Context 的一部分
+      模型参数提供通用能力
+      Context 提供任务条件与外部事实
+      窗口无限也仍需管理信息质量
+    API 上下文结构
+      四种消息角色
+        system：规则与约束
+        user：任务与追加信息
+        assistant：历史回复与工具调用
+        tool：外部工具结果
+      tools：工具定义与参数 schema
+      Chat Template 转换为 token
+      API 无状态
+      Agent 框架维护消息轨迹
+      ReAct 循环
+        模型决策
+        框架执行工具
+        结果写回 Context
+    KV Cache 友好设计
+      KV Cache：单次推理复用 K&#x2F;V
+      Prompt Cache：跨请求复用前缀
+      稳定前缀
+        System Prompt 尽量不变
+        核心工具定义尽量不变
+      动态信息追加到末尾
+      使用标准消息格式
+      正确性优先于缓存命中率
+      前沿方向
+        Cache Editing
+        Cache Composition
+    系统提示词与工具
+      语气与风格
+      Markdown 或 XML 结构化
+      流程驱动而非规则堆砌
+      业务规则细化到可执行
+      Few-shot 覆盖关键边界
+      工具定义说明调用时机与边界
+      提示注入防御
+        指令与数据分离
+        标记外部内容来源
+        权限控制与高风险确认
+    Agent Skills
+      渐进式披露
+        元数据目录常驻
+        SKILL.md 按需加载
+        细则、脚本和模板选择性读取
+      description 是路由条件
+      Skill 提供流程与知识
+      Tool 提供可执行动作
+    Agent 状态栏
+      将隐式状态提炼为显式信息
+      状态内容
+        任务规划与 TODO
+        事件侧信道信息
+        环境当前状态
+        工具计数、错误与验证结果
+      放在 Context 尾部
+      三条经验
+        用确定性代码维护
+        默认保留原始证据
+        将准确率作为生产指标
+      更新策略
+        每轮替换
+        持久追加
+    上下文压缩
+      两个目的
+        控制长度、成本与延迟
+        提高信息密度与思考质量
+      上下文腐化
+        装得下但找不到
+      检索而非主动归纳
+      接近阈值后批量压缩
+      分层策略
+        工具结果预算控制
+        删除低价值噪声
+        归档式摘要
+        全量压缩兜底
+      重点保留
+        决策与约束
+        修改与验证
+        失败路径与未完成事项
+        来源引用
+      隔离优于压缩
+        子 Agent 处理大量中间信息
+        主 Agent 只接收结论与证据
+  </pre></div>
+<h2 id="1-什么是上下文工程">1. 什么是上下文工程</h2>
+<p>上下文（Context）是模型在<strong>某一次推理时实际看到的全部信息</strong>，包括系统提示词、工具定义、用户消息、模型之前的回复、工具执行结果、按需加载的 Skill、当前状态摘要等。</p>
+<p>提示词（Prompt）只是上下文的一部分。Prompt Engineering 主要解决“指令怎么写”，Context Engineering 则解决一个更完整的问题：</p>
+<blockquote>
+<p>在每一个决策点，应该让 Agent 看到什么信息、以什么结构看到、哪些信息应当保留或删除，以及如何兼顾正确性、成本、延迟与安全。</p>
+</blockquote>
+<p>从形式上看，模型每一步的输出可以理解为：</p>
+<div class="mathjax-display">
+$$
+y_t = f_{\theta}(c_t)
+$$
+</div>
+<p>其中 $\theta$ 是模型参数，决定模型具备的通用知识与推理能力；$c_t$ 是第 $t$ 步的上下文，决定模型此刻能依据哪些信息做决策。模型参数与上下文不是二选一：模型参数提供能力，Context 为能力提供任务条件和外部事实。</p>
+<p>“Context 决定 Agent 的能力上限”更准确的理解是：<strong>在模型能力固定时，Agent 的有效能力上限受它能够观察到的信息限制</strong>。上下文无法凭空赋予模型完全不具备的能力，但缺少业务规则、环境状态或工具结果时，再强的模型也只能猜测。</p>
+<h3 id="1-1-哪些信息应进入-Context">1.1 哪些信息应进入 Context</h3>
+<ul>
+<li>当前任务目标、成功标准和不可违反的约束。</li>
+<li>与当前决策直接相关的业务规则和领域知识。</li>
+<li>环境观察，例如工作目录、代码结构、时间、错误信息。</li>
+<li>可用工具及其使用边界。</li>
+<li>必要的历史轨迹：用户请求、关键决策、工具调用及结果。</li>
+<li>当前任务状态：已完成事项、未解决问题、失败次数、下一步计划。</li>
+</ul>
+<p>不应长期放入 Context 的内容包括：与当前任务无关的完整手册、已经失效的状态、重复的原始工具输出、可以随时重新获取的低价值噪声，以及来源不可信却被包装成高优先级指令的外部内容。</p>
+<h3 id="1-2-为什么不只讲-Prompt-Engineering">1.2 为什么不只讲 Prompt Engineering</h3>
+<p>生产级 Agent 面对的已经不是“一次写好一句提示词”，而是持续构造和维护上下文：</p>
+<ul>
+<li>静态指令与动态状态需要分层。</li>
+<li>对话历史和工具结果会不断增长。</li>
+<li>专业知识需要按需加载。</li>
+<li>长上下文需要压缩、归档或隔离。</li>
+<li>外部内容可能携带提示注入。</li>
+<li>上下文布局会直接影响缓存命中、延迟和费用。</li>
+</ul>
+<p>因此，Prompt Engineering 是 Context Engineering 的一个子集。</p>
+<p>即使未来上下文窗口无限大，Context Engineering 仍然必要。窗口“装得下”不代表模型“找得到、分得清、用得对”；无关信息会造成上下文腐化，恶意内容会扩大攻击面，重复内容仍会增加推理成本和延迟。</p>
+<h2 id="2-从-API-看-Agent-的上下文">2. 从 API 看 Agent 的上下文</h2>
+<h3 id="2-1-四种消息角色与工具定义">2.1 四种消息角色与工具定义</h3>
+<p>主流模型使用结构化 Chat API，而不是直接接收一整段任意字符串。典型请求由四种消息角色和独立的工具定义构成：</p>
+<table>
+<thead>
+<tr>
+<th>组成</th>
+<th>含义</th>
+<th>解决的问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>system</code></td>
+<td>开发者提供的身份、规则、约束与流程</td>
+<td>确立高优先级行为边界</td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td>用户请求；部分 Harness 也借此角色注入运行时状态</td>
+<td>表达当前任务或追加信息</td>
+</tr>
+<tr>
+<td><code>assistant</code></td>
+<td>模型之前的回复或工具调用请求</td>
+<td>让模型看到自己此前的判断与行动</td>
+</tr>
+<tr>
+<td><code>tool</code></td>
+<td>工具执行结果，通过 <code>tool_call_id</code> 对应调用</td>
+<td>将外部世界的观察送回模型</td>
+</tr>
+<tr>
+<td><code>tools</code></td>
+<td>请求顶层的工具名称、描述和参数 schema</td>
+<td>告诉模型有哪些动作以及如何调用</td>
+</tr>
+</tbody>
+</table>
+<p>结构化消息最终会经由 Chat Template 转成模型实际处理的 token 序列。角色不是单纯的显示标签，而是模型在训练中学会识别的语义边界。</p>
+<h3 id="2-2-模型并不记得历史">2.2 模型并不记得历史</h3>
+<p>模型 API 本身是无状态的。所谓“记得之前的对话”，实际上是 Agent 框架在每次请求时重新发送必要的历史消息。</p>
+<p>一次带工具调用的核心循环是：</p>
+<ol>
+<li>框架发送 <code>system + user + tools</code>。</li>
+<li>模型返回带有 <code>tool_calls</code> 的 <code>assistant</code> 消息。</li>
+<li>框架执行工具，将结果作为 <code>tool</code> 消息追加。</li>
+<li>框架把更新后的消息列表再次发送给模型。</li>
+<li>模型继续调用工具，或在信息充分时返回最终文本。</li>
+</ol>
+<p>因此，Agent 框架的一项核心职责就是管理不断增长的 <code>messages</code> 列表。</p>
+<h3 id="2-3-上下文的基本布局">2.3 上下文的基本布局</h3>
+<p>一个实用的抽象是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">稳定前缀：System Prompt + 核心 Tool Definitions</span><br><span class="line">    ↓</span><br><span class="line">任务轨迹：User / Assistant / Tool / 按需加载的 Skill</span><br><span class="line">    ↓</span><br><span class="line">动态尾部：最新用户输入 + 当前 Agent Status</span><br></pre></td></tr></table></figure>
+<p>稳定前缀尽量不变，轨迹只追加；旧轨迹在必要时批量压缩，当前状态放在靠近输出的位置，使模型不必每轮从长历史中重新推导。</p>
+<h2 id="3-KV-Cache-友好的上下文设计">3. KV Cache 友好的上下文设计</h2>
+<h3 id="3-1-KV-Cache-与-Prompt-Cache">3.1 KV Cache 与 Prompt Cache</h3>
+<ul>
+<li><strong>KV Cache</strong> 是单次推理过程中的模型内部缓存。模型保存已有 token 的 Key 和 Value，新 token 只需计算新增部分。</li>
+<li><strong>Prompt Cache</strong> 是推理服务跨 API 请求复用相同前缀计算结果的机制，本质上复用了已有的 KV 状态。</li>
+</ul>
+<p>两者作用层级不同，但都依赖同一个条件：<strong>要复用的 token 前缀必须保持一致</strong>。如果序列从某个 token 开始变化，该位置及其后的缓存就需要重新计算；修改位置越靠前，代价通常越大。</p>
+<h3 id="3-2-特别需要注意的三条原则">3.2 特别需要注意的三条原则</h3>
+<blockquote>
+<ol>
+<li><strong>系统提示词和核心工具定义一旦确定，尽量不要修改。</strong> 哪怕只增加一个空格，也可能改变 token 序列，使首个差异 token 之后的缓存无法复用。</li>
+<li><strong>动态信息尽量追加到上下文末尾。</strong> 时间戳、用户状态、当前任务进度等不应每轮写回系统提示词。</li>
+<li><strong>使用标准 API 消息格式，不要自行拼接角色字符串。</strong> 自己拼成 <code>USER: ... ASSISTANT: ...</code> 不一定破坏缓存——缓存只认 token 前缀——但它偏离模型训练时使用的 Chat Template，容易造成角色边界、工具调用和多轮行为异常。</li>
+</ol>
+</blockquote>
+<p>例如，把 <code>Current time: &#123;&#123;now&#125;&#125;</code> 放进 system prompt，会使每次请求都从时间戳位置开始产生不同 token，导致后面的大段前缀重新计算。正确做法是把时间作为新的尾部消息或事件元数据追加。</p>
+<h3 id="3-3-推理质量与缓存命中的取舍">3.3 推理质量与缓存命中的取舍</h3>
+<p>上下文设计同时追求两个目标：</p>
+<ol>
+<li><strong>推理效果</strong>：把最重要的信息放到模型容易识别和利用的位置。</li>
+<li><strong>推理效率</strong>：保持前缀稳定，尽可能复用缓存。</li>
+</ol>
+<p>当二者冲突时，应遵循：</p>
+<blockquote>
+<p><strong>正确性与 Agent 决策质量 &gt; KV Cache 命中率。</strong></p>
+</blockquote>
+<p>例如状态栏每轮都会变化。为了缓存而把状态藏在不明显的位置，可能导致 Agent 忘记当前阶段；合理做法是将结构化状态放在上下文尾部。即使更新状态会让一小段尾部缓存失效，也比模型基于错误状态行动更可接受。</p>
+<h3 id="3-4-工具渐进式披露的缓存边界">3.4 工具渐进式披露的缓存边界</h3>
+<p>传统做法是让 System Prompt 与完整工具定义共同组成稳定前缀。这种方式简单、稳定，但工具数量很多时会浪费 token 并稀释注意力。</p>
+<p>渐进式披露只先暴露工具名和简述，在确定需要时再加载完整 schema。不过需要注意：</p>
+<ul>
+<li>如果 Harness 将新增 schema 作为末尾消息或工具结果追加，已有前缀仍然可以复用。</li>
+<li>如果 Harness 修改顶层 <code>tools</code> 字段，并由 Chat Template 把整个工具块序列化到上下文前部，那么工具集合变化仍可能破坏对应位置后的缓存。</li>
+</ul>
+<p>所以“动态加载工具不破坏缓存”不是无条件成立的，必须结合具体 Harness、模型接口和 Chat Template 判断。</p>
+<h3 id="3-5-前沿方向：可编辑、可组合的-KV-Cache">3.5 前沿方向：可编辑、可组合的 KV Cache</h3>
+<p>传统 KV Cache 是严格的顺序缓存，不能随意修改。前沿研究开始把它看作模型阅读上下文后形成的内部“笔记”，尝试实现：</p>
+<ul>
+<li><strong>Editing</strong>：局部事实变化时，只更新相关内部表示。</li>
+<li><strong>Composition</strong>：复用并拼接不同上下文块的缓存。</li>
+</ul>
+<p>这可能把部分长上下文重算变成缓存块组合，但目前仍属于研究阶段。生产系统仍应默认遵守“稳定前缀、动态追加”的原则。</p>
+<h2 id="4-系统提示词与工具定义">4. 系统提示词与工具定义</h2>
+<h3 id="4-1-系统提示词的设计">4.1 系统提示词的设计</h3>
+<p>可以把系统提示词理解为给聪明新员工的工作手册：新员工读完后，应知道目标是什么、按什么流程执行、遇到异常怎么办、哪些边界不能越过。</p>
+<p>设计时重点考虑：</p>
+<ul>
+<li><strong>语气与风格</strong>：明确回答长度、表达方式和交互语气；强调词只留给真正关键的约束。</li>
+<li><strong>结构化提示</strong>：使用清晰的 Markdown 层级或语义明确的 XML 标签区分规则、环境与外部数据。</li>
+<li><strong>流程驱动</strong>：优先写成带顺序、分支和终止条件的 SOP，而不是堆砌大量平级规则。</li>
+<li><strong>业务规则细化</strong>：将分类标准、阈值、计算方式和例外情况写到可执行、可验证的程度。</li>
+<li><strong>减少自由裁量</strong>：让模型把能力用于真正需要判断的部分，而不是自行发明业务规则。</li>
+</ul>
+<h3 id="4-2-Few-shot-示例">4.2 Few-shot 示例</h3>
+<p>当输出风格、格式或边界很难仅靠抽象规则说清时，可以提供少量高质量示例。模型已经擅长且规则容易描述的任务，则不必浪费 token。</p>
+<p>示例有两种常见位置：</p>
+<ul>
+<li>放入系统提示词，作为所有请求共享的静态前缀。</li>
+<li>作为首轮伪造的 <code>user/assistant</code> 消息，适合不同会话类型使用不同的固定示例集。</li>
+</ul>
+<p>无论放在哪里，示例通常位于上下文前部。确定后应尽量保持字节级稳定。按每个请求动态检索不同示例虽然可能提高相关性，却会改变前缀，需要在任务质量与缓存成本之间实测取舍。</p>
+<h3 id="4-3-工具定义也是-Context-Engineering">4.3 工具定义也是 Context Engineering</h3>
+<p>工具 schema 不只是参数说明，它还在教模型：</p>
+<ul>
+<li>什么时候应该调用。</li>
+<li>什么时候不应调用。</li>
+<li>参数应采用什么格式。</li>
+<li>常见错误与使用边界是什么。</li>
+<li>与其他工具如何配合，哪些调用可以并行。</li>
+</ul>
+<p>工具描述的质量会直接影响调用准确率。一个好的定义应包含明确边界、代表性示例、必要的性能提示和工具间协作关系。</p>
+<h2 id="5-提示注入：上下文安全">5. 提示注入：上下文安全</h2>
+<table>
+<thead>
+<tr>
+<th>注入方式</th>
+<th>攻击入口</th>
+<th>核心风险</th>
+<th>主要防御</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直接注入</td>
+<td>用户输入</td>
+<td>用户试图覆盖系统约束或套取敏感指令</td>
+<td>明确指令优先级；权限控制；高风险操作确认</td>
+</tr>
+<tr>
+<td>间接注入</td>
+<td>网页、PDF、邮件、RAG、Tool Result</td>
+<td>Agent 把外部数据中的文本误当成可执行指令</td>
+<td>指令与数据分离；来源标记；保留结构化角色；限制工具权限</td>
+</tr>
+<tr>
+<td>记忆注入</td>
+<td>长期 Memory、状态、Skill 等持久化信息</td>
+<td>一次攻击变成跨轮次、跨会话污染</td>
+<td>写入审核；来源追踪；可删除、可更新；外部数据不得自动晋升为高信任状态</td>
+</tr>
+<tr>
+<td>状态或 Skill 污染</td>
+<td>状态栏、Skill 文件、Agent 配置</td>
+<td>恶意信息进入高信任上下文并持续影响决策</td>
+<td>加载与更新权限校验；审查第三方 Skill；状态由可信代码维护</td>
+</tr>
+</tbody>
+</table>
+<p>需要特别注意：仅在系统提示词中写“不要被注入”并不可靠。上下文层只能作为第一道防线，真正的高风险动作还需要执行层的权限控制、沙箱、独立校验和用户确认。</p>
+<p>外部内容进入上下文时，最好显式标记来源，例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">external_content</span> <span class="attr">source</span>=<span class="string">&quot;webpage&quot;</span> <span class="attr">trust</span>=<span class="string">&quot;untrusted&quot;</span>&gt;</span></span><br><span class="line">  ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">external_content</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>把工具结果直接混入普通 user 文本，会抹掉模型区分“用户指令”和“外部数据”的依据。</p>
+<h2 id="6-动态提示词与-Agent-Skills">6. 动态提示词与 Agent Skills</h2>
+<p>如果把所有任务规范、业务流程和专业知识都写进 system prompt，会产生两个问题：</p>
+<ul>
+<li><strong>浪费 token</strong>：大多数规则与当前任务无关。</li>
+<li><strong>稀释注意力</strong>：无关信息越多，关键规则越难被检索到。</li>
+</ul>
+<p>Skills 将领域能力拆成可组合、可按需加载的知识包，采用渐进式披露：</p>
+<ol>
+<li><strong>元数据层</strong>：常驻 Skill 名称和简短描述，让 Agent 判断是否需要加载。</li>
+<li><strong>核心流程层</strong>：触发后加载完整 <code>SKILL.md</code>。</li>
+<li><strong>细则层</strong>：根据具体任务继续读取引用文档、脚本或模板。</li>
+</ol>
+<p>其中 <code>description</code> 本质上是路由条件，应说明“何时使用、何时不使用”，而不仅是泛泛介绍功能。描述过宽会导致误触发，描述过窄则会漏掉适用任务。</p>
+<p>Skills 与工具的关系可以概括为：</p>
+<ul>
+<li>工具提供可执行动作，即“能做什么”。</li>
+<li>Skill 提供任务知识与操作流程，即“何时做、按什么顺序做、如何验收”。</li>
+</ul>
+<p>渐进式披露对缓存友好，但不是零成本：目录首次进入、Skill 正文首次加载时仍需计算；收益来自无需一开始加载所有正文，也无需回头重写已有轨迹。</p>
+<h2 id="7-Agent-状态栏">7. Agent 状态栏</h2>
+<h3 id="7-1-为什么需要状态栏">7.1 为什么需要状态栏</h3>
+<p>模型擅长从上下文中检索已有结论，却不擅长在每一轮都主动遍历长轨迹、统计次数并重新归纳当前状态。复杂任务中，这容易造成：</p>
+<ul>
+<li>无限循环或重复调用同一工具。</li>
+<li>忘记任务进度和原始目标。</li>
+<li>忽略已经达到的次数、费用或权限上限。</li>
+<li>因局部子任务而偏离整体计划。</li>
+</ul>
+<p>状态栏把原本隐藏在历史中的状态预先计算成结构化信息，让模型可以直接检索。</p>
+<h3 id="7-2-状态栏应包含什么">7.2 状态栏应包含什么</h3>
+<ul>
+<li>任务目标、当前阶段、TODO 及完成情况。</li>
+<li>时间、位置、事件间隔等侧信道信息。</li>
+<li>当前工作目录、运行环境等环境观察。</li>
+<li>工具调用计数、成本或重试上限。</li>
+<li>详细错误类别、关键参数与可行的修复方向。</li>
+<li>当前阻塞项、验证结果和下一步计划。</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">agent_status</span>&gt;</span></span><br><span class="line">  current_task: 修复支付 Bug</span><br><span class="line">  phase: 测试</span><br><span class="line">  unresolved: 数据库事务问题</span><br><span class="line">  tests: 18 passed, 1 failed</span><br><span class="line">  retry_count: 2/3</span><br><span class="line"><span class="tag">&lt;/<span class="name">agent_status</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="7-3-放置位置与维护原则">7.3 放置位置与维护原则</h3>
+<p>状态栏通常作为一条由 Agent 框架生成的消息放在上下文末尾，而不是修改开头的 system prompt。教程示例借用 <code>user</code> 角色承载状态，但这属于具体 Harness 的协议选择，不表示状态真的来自终端用户。</p>
+<blockquote>
+<p><strong>状态栏最好由确定性代码维护，不要让 LLM 一次性扫描完整历史后自行统计。</strong></p>
+</blockquote>
+<p>能用代码计算的次数、TODO 状态、工作目录和测试结果，应由代码维护；确实需要模型抽取时，也应逐条抽取后再由代码汇总。</p>
+<p>状态栏是有损投影，默认不应因为有了状态栏就立刻删除全部原始证据。模型往往高度信任状态栏，因此状态栏准确率应作为生产指标监控，并防止外部内容污染状态。</p>
+<h3 id="7-4-两种更新方式">7.4 两种更新方式</h3>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>优点</th>
+<th>代价</th>
+<th>适用情况</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>每轮替换旧状态</td>
+<td>上下文中只有一份最新状态，不会积累陈旧信息</td>
+<td>旧状态之后的短后缀缓存失效</td>
+<td>状态较大、更新频繁、轨迹较长</td>
+</tr>
+<tr>
+<td>持久追加新状态</td>
+<td>只追加不修改，最利于缓存复用</td>
+<td>旧状态占用 token，可能造成歧义</td>
+<td>状态较小、会话受控、两次更新之间新增内容较多</td>
+</tr>
+</tbody>
+</table>
+<p>这里没有绝对最优方案，应根据状态大小、更新频率、后缀长度、上下文预算和服务商缓存计费实测选择。</p>
+<h2 id="8-上下文压缩">8. 上下文压缩</h2>
+<h3 id="8-1-为什么需要压缩">8.1 为什么需要压缩</h3>
+<p>压缩有两个目的：</p>
+<ol>
+<li><strong>控制长度、成本和延迟</strong>：避免消息历史与大体积工具结果撑满窗口。</li>
+<li><strong>提高思考质量</strong>：把分散的原始记录变成结构化、高密度、易检索的结论。</li>
+</ol>
+<p>上下文窗口没有溢出，也可能发生<strong>上下文腐化（Context Rot）</strong>：信息虽然装得下，但无关内容太多，模型越来越难找到关键事实，甚至反复纠结已经解决的问题。</p>
+<p>状态栏与压缩实际上是一体两面：状态栏把推导出的结论加入上下文；压缩则用结论替换臃肿的原始记录。二者都在把“每轮重新归纳”变成“直接检索已提炼知识”。</p>
+<h3 id="8-2-压缩与-KV-Cache-的关系">8.2 压缩与 KV Cache 的关系</h3>
+<p>压缩会修改历史消息，因此替换点之后的缓存会失效。但这并不意味着不能压缩：</p>
+<ul>
+<li>System Prompt 和核心工具定义保持不动。</li>
+<li>优先压缩体积大的旧工具结果和低价值轨迹。</li>
+<li>接近预算阈值时批量压缩，不要每轮修改历史。</li>
+<li>用一次可控的缓存重建，换取更短、更高质量的后续上下文。</li>
+</ul>
+<p>正确性、任务可继续执行和信息密度，都比维持百分之百的缓存命中更重要。</p>
+<h3 id="8-3-分层压缩策略">8.3 分层压缩策略</h3>
+<p>生产系统可以按信息价值逐层处理：</p>
+<ol>
+<li><strong>工具结果预算控制</strong>：大体积原文存到文件或外部存储，Context 只保留摘要与引用。</li>
+<li><strong>直接删除噪声</strong>：导航栏、重复日志、无关搜索结果不值得专门摘要。</li>
+<li><strong>批量压缩旧工具结果</strong>：在接近阈值时统一处理，并标记已压缩内容以避免重复压缩。</li>
+<li><strong>归档式摘要</strong>：保留逐轮逻辑脉络、关键决策和失败路径。</li>
+<li><strong>全量压缩</strong>：作为最后手段，并为连续失败设置熔断机制。</li>
+</ol>
+<p>压缩时应优先保留：</p>
+<ol>
+<li>架构决策、关键约束及其理由。</li>
+<li>已修改文件与关键变更。</li>
+<li>验证结果和失败结论。</li>
+<li>未解决 TODO、回滚方案和已尝试但失败的路径。</li>
+<li>事实来源、引用或可以回溯原文的索引。</li>
+</ol>
+<p>工具输出原文通常可以删除，只保留与当前任务相关的证据和结论。</p>
+<h3 id="8-4-隔离优于压缩">8.4 隔离优于压缩</h3>
+<p>压缩是在信息进入主 Context 后做减法；更好的办法常常是让大量中间信息一开始就不要进入主 Context。</p>
+<p>例如，让子 Agent 在独立上下文中搜索十几个文件，再只把“目标函数位置、调用点、关键证据”返回给主 Agent。这样既减少主上下文噪声，也降低后续压缩成本。</p>
+<h2 id="9-一套可落地的多轮-Agent-组织原则">9. 一套可落地的多轮 Agent 组织原则</h2>
+<p>综合效果、效率与安全，可以采用以下默认策略：</p>
+<ol>
+<li>固定 System Prompt、核心工具定义和模型配置，形成稳定前缀。</li>
+<li>使用标准 Chat API 与角色结构，保留 <code>assistant → tool</code> 的调用对应关系。</li>
+<li>只把当前任务需要的 Skill、知识和工具细则按需加载。</li>
+<li>用户输入、工具结果、动态环境信息只追加，不改写已有前缀。</li>
+<li>在尾部放置结构化状态栏，显式呈现目标、进度、约束和异常。</li>
+<li>状态由代码维护；外部数据不能未经审核直接写入状态或长期记忆。</li>
+<li>监控 token 使用率和上下文腐化，在阈值附近批量压缩旧轨迹。</li>
+<li>压缩时保留决策、约束、验证、失败路径和来源索引。</li>
+<li>对会产生大量中间信息的探索任务，优先使用子 Agent 隔离。</li>
+<li>当缓存收益与任务正确性冲突时，优先保证正确性。</li>
+</ol>
+<h2 id="10-核心结论">10. 核心结论</h2>
+<ul>
+<li>模型参数决定通用能力，Context 决定能力在当前任务中能否发挥。</li>
+<li>Agent 并不天然拥有记忆；框架通过重建消息列表制造连续性。</li>
+<li>Context 的基本结构是“稳定前缀 + 动态轨迹 + 最新状态”。</li>
+<li>缓存要求前缀稳定，因此静态内容靠前、动态内容靠后。</li>
+<li>上下文不是越长越好，关键是信息相关、结构清晰、来源可信、状态准确。</li>
+<li>Prompt、工具定义、Skills、状态栏、压缩和安全防御，都是 Context Engineering 的组成部分。</li>
+<li>Context Engineering 的最终目标不是把更多内容塞给模型，而是在每个决策点提供<strong>足够、准确、可用且成本可控的信息</strong>。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/">https://kjore.github.io/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/LLM%E5%9F%BA%E7%A1%80/">LLM基础</a><a class="post-meta__tags" href="/tags/agent/">agent</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/" title="RAG 混合检索"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">RAG 混合检索</div></div><div class="info-2"><div class="info-item-1">一句话回答 混合检索（Hybrid Search）通常是把关键词/稀疏检索与语义/稠密检索并行执行，再通过分数融合或排序融合合并候选集，最后用 Reranker 精排。  稀疏检索擅长精确匹配：专有名词、型号、错误码、人名、数字。 稠密检索擅长语义匹配：同义表达、口语化问题、没有共享关键词的相关文本。 混合检索的目标不是简单地“多查一次”，而是利用两类检索器的互补性，提高 Recall@K，并在精排后提高最终答案质量。  面试时可以先给出下面这条主线：  Query 预处理 → 稀疏检索与稠密检索并行召回 → 候选去重与融合 → Reranker 精排 → 上下文组装 → LLM 生成。  为什么需要混合检索 只用一种检索器会有明显盲区。    查询 BM25/关键词检索 向量检索     ORA-01555、iPhone 15 Pro Max 通常很好，能精确命中关键词 可能因罕见 token 或向量平滑而漏召回   “合同到期后还能续多久”与“协议期满可延长三个月” 词面重合少，可能漏召回 能利用语义相近性命中   带数字、版本号、缩写的查询 更稳定 容易忽略数字或细粒度差异...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/07/09/%E6%A8%A1%E5%9E%8B%E9%87%87%E6%A0%B7%E5%8F%82%E6%95%B0/" title="大模型采样参数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-09</div><div class="info-item-2">大模型采样参数</div></div><div class="info-2"><div class="info-item-1">temperature和top-p采样 在生成文本时，调整采样策略可以显著影响输出的多样性。两种常用的方法是temperature采样和top-p采样。 temperature和Top-p都是 高-&gt;随机，有创造力。 低-&gt;确定，偏向保守。 原理 大模型核心任务是预测下一个最可能出现的词，该过程分为生成分数、转换概率、加权采样三个关键步骤。  生成分数 大模型会为其词汇表中所有词（数量通常为几万到几十万）打分，该分数在 AI 领域称为 logit。以用户问题 “可以给我推荐一个讲 ai 的技术频道吗？” 为例，模型会对相关词进行打分，实际应用中通常展示分数最高的前几个词。 转换概率 通过 softmax 函数将分数转换为概率，公式为  $$ \sigma(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}} $$  其中$z_i$为第 i 个词的分数，K 为词的总量。转换后得到每个词的输出概率，使模型能按概率预测下一个词。  加权采样 根据概率生成预测值的过程称为加权采样。将每个词的概率对应分配到 0-100 的数轴区间，生成随机...</div></div></div></a><a class="pagination-related" href="/2026/07/09/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BC%94%E5%8C%96/" title="语言模型的演化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-09</div><div class="info-item-2">语言模型的演化</div></div><div class="info-2"><div class="info-item-1">语言模型最核心的问题其实很简单：给定前面的词，预测下一个词。  $$ P(w_1,w_2,\dots,w_T)=\prod_{t=1}^{T}P(w_t\mid w_1,\dots,w_{t-1}) $$  但难点在于：上下文可能很长，词表可能很大，语言里还存在大量没有见过的新组合。因此语言模型的发展，基本就是一条不断扩大上下文、改进表示方式、增强长期依赖建模能力的路线。  N-gram模型 N-gram 是最早期、也最直观的统计语言模型。它的核心假设是：预测当前词时，不需要看完整历史，只需要看前面固定长度的 $N-1$ 个词。 例如三元模型（trigram）会把句子概率近似为：  $$ P(w_t\mid w_1,\dots,w_{t-1})\approx P(w_t\mid w_{t-2},w_{t-1}) $$  也就是说，如果我们要预测“学习”，模型只看前面的两个词：  N-gram 的训练方式非常朴素：在语料库里数频次。  $$ P(w_t\mid w_{t-2},w_{t-1})= \frac{count(w_{t-2},w_{t-1},w_t)} {count(w_...</div></div></div></a><a class="pagination-related" href="/2026/07/08/transformer%E6%9E%B6%E6%9E%84/" title="Transformer架构详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-08</div><div class="info-item-2">Transformer架构详解</div></div><div class="info-2"><div class="info-item-1">为什么现在主流大模型用的都是transformer架构？ 2017年提出的原始transformer架构 他与我们接下来所要学习的现代大模型架构是有一定出入的。 首先，原始transformer使用编码器-解码器架构，而现代大语言模型使用解码器结构。这是因为编码器负责理解，解码器负责生成 天然适合生成： GPT 不使用编码器，主要是因为它的核心任务是自回归生成，也就是根据前面的 token 预测下一个 token。这个任务天然适合 Decoder-only 架构。 训练目标统一： Decoder-only 目标简单，预测下一个token，不像Encoder-Decoder那样要分阶段、分任务，目标越统一，训练越稳定。 易扩展： Decoder-only模型只要在prompt里面多写几句例子，就能快速适应迁移任务。 然后，每个transformer块的结构也不同，原始transformer中是post-norm,而现代大模型是pre-norm 原始 Transformer 用 Post-Norm，是因为当时模型比较浅，只有 6 层 Encoder、6 层 Decoder，Post-...</div></div></div></a><a class="pagination-related" href="/2026/07/10/%E5%BC%80%E6%BA%90%E6%A8%A1%E5%9E%8B%E8%B0%83%E7%94%A8/" title="开源模型调用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-10</div><div class="info-item-2">开源模型调用</div></div><div class="info-2"><div class="info-item-1">开源模型调用 使用 Hugging Face 的 transformers 库可以比较方便地调用开源大语言模型。为了先把调用链路跑通，这里尽量选择一个小模型：  Qwen/Qwen2.5-0.5B-Instruct  这个模型只有 0.5B 参数，适合本地学习和调试。它的能力不能和 7B、14B 甚至更大的模型相比，但胜在下载快、显存占用低、启动成本小。 为什么先选小模型 刚开始学习开源模型调用时，不建议一上来就跑很大的模型，原因是：  大模型对显存要求更高，环境问题会掩盖调用逻辑本身。 小模型启动快，适合反复调试 prompt、tokenizer 和采样参数。 如果只是学习 tokenizer -&gt; model.generate -&gt; decode 这条链路，0.5B 或 1.5B 已经足够。 小模型可以在很多普通 GPU 甚至 CPU 上跑通，虽然 CPU 会慢一些。  模型权重大致显存可以这样估算：  $$ \text{显存} \approx \text{参数量} \times \text{每个参数占用字节数} $$  以 0.5B 参数为例：    精度 每个...</div></div></div></a><a class="pagination-related" href="/2026/07/10/%E6%96%87%E6%9C%AC%E7%BC%96%E7%A0%81%E4%B8%8Etokenizer/" title="文本编码与tokenizer"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-10</div><div class="info-item-2">文本编码与tokenizer</div></div><div class="info-2"><div class="info-item-1">文本编码 ASCII编码 标准 ASCII 使用 7 个二进制位，共能表示 128 个字符。 因为 7 位二进制的组合数量是：  $$ 2^7 = 128 $$  编号范围是：  $$ 0 \sim 127 $$  注意，0 到 127 一共有 128 个数，不是 127 个。 例如：  A 的 ASCII 码是 65 a 的 ASCII 码是 97 0 的 ASCII 码是 48 ASCII 码 127 是删除控制符 DEL  之所以常说 ASCII 占一个字节，是因为计算机通常以 8 位为一个字节： 10xxxxxxx 标准 ASCII 实际只使用低 7 位，最高位通常为 0。 因此：    编码 位数 编码范围 可表示数量     标准 ASCII 7 位 0～127 128 个   一个字节 8 位 0～255 256 种状态    后来有些编码使用了第 8 位，把范围扩展到 0～255，通常被称为“扩展 ASCII”。但扩展部分并没有完全统一，不同编码页对应的字符可能不同。 一句话记忆：  最大编号是 127，但字符数量是 128，因为还包括编号 0。  无法表示中文等...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE"><span class="toc-number">1.</span> <span class="toc-text">思维导图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">1. 什么是上下文工程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%93%AA%E4%BA%9B%E4%BF%A1%E6%81%AF%E5%BA%94%E8%BF%9B%E5%85%A5-Context"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 哪些信息应进入 Context</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%8F%AA%E8%AE%B2-Prompt-Engineering"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 为什么不只讲 Prompt Engineering</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%8E-API-%E7%9C%8B-Agent-%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">3.</span> <span class="toc-text">2. 从 API 看 Agent 的上下文</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%9B%9B%E7%A7%8D%E6%B6%88%E6%81%AF%E8%A7%92%E8%89%B2%E4%B8%8E%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 四种消息角色与工具定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%A8%A1%E5%9E%8B%E5%B9%B6%E4%B8%8D%E8%AE%B0%E5%BE%97%E5%8E%86%E5%8F%B2"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 模型并不记得历史</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%B8%83%E5%B1%80"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 上下文的基本布局</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-KV-Cache-%E5%8F%8B%E5%A5%BD%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87%E8%AE%BE%E8%AE%A1"><span class="toc-number">4.</span> <span class="toc-text">3. KV Cache 友好的上下文设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-KV-Cache-%E4%B8%8E-Prompt-Cache"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 KV Cache 与 Prompt Cache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%89%B9%E5%88%AB%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%89%E6%9D%A1%E5%8E%9F%E5%88%99"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 特别需要注意的三条原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%8E%A8%E7%90%86%E8%B4%A8%E9%87%8F%E4%B8%8E%E7%BC%93%E5%AD%98%E5%91%BD%E4%B8%AD%E7%9A%84%E5%8F%96%E8%88%8D"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 推理质量与缓存命中的取舍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%B7%A5%E5%85%B7%E6%B8%90%E8%BF%9B%E5%BC%8F%E6%8A%AB%E9%9C%B2%E7%9A%84%E7%BC%93%E5%AD%98%E8%BE%B9%E7%95%8C"><span class="toc-number">4.4.</span> <span class="toc-text">3.4 工具渐进式披露的缓存边界</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E5%89%8D%E6%B2%BF%E6%96%B9%E5%90%91%EF%BC%9A%E5%8F%AF%E7%BC%96%E8%BE%91%E3%80%81%E5%8F%AF%E7%BB%84%E5%90%88%E7%9A%84-KV-Cache"><span class="toc-number">4.5.</span> <span class="toc-text">3.5 前沿方向：可编辑、可组合的 KV Cache</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E4%B8%8E%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89"><span class="toc-number">5.</span> <span class="toc-text">4. 系统提示词与工具定义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 系统提示词的设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-Few-shot-%E7%A4%BA%E4%BE%8B"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 Few-shot 示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89%E4%B9%9F%E6%98%AF-Context-Engineering"><span class="toc-number">5.3.</span> <span class="toc-text">4.3 工具定义也是 Context Engineering</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%8F%90%E7%A4%BA%E6%B3%A8%E5%85%A5%EF%BC%9A%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AE%89%E5%85%A8"><span class="toc-number">6.</span> <span class="toc-text">5. 提示注入：上下文安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%8A%A8%E6%80%81%E6%8F%90%E7%A4%BA%E8%AF%8D%E4%B8%8E-Agent-Skills"><span class="toc-number">7.</span> <span class="toc-text">6. 动态提示词与 Agent Skills</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Agent-%E7%8A%B6%E6%80%81%E6%A0%8F"><span class="toc-number">8.</span> <span class="toc-text">7. Agent 状态栏</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%8A%B6%E6%80%81%E6%A0%8F"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 为什么需要状态栏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E7%8A%B6%E6%80%81%E6%A0%8F%E5%BA%94%E5%8C%85%E5%90%AB%E4%BB%80%E4%B9%88"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 状态栏应包含什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%94%BE%E7%BD%AE%E4%BD%8D%E7%BD%AE%E4%B8%8E%E7%BB%B4%E6%8A%A4%E5%8E%9F%E5%88%99"><span class="toc-number">8.3.</span> <span class="toc-text">7.3 放置位置与维护原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E4%B8%A4%E7%A7%8D%E6%9B%B4%E6%96%B0%E6%96%B9%E5%BC%8F"><span class="toc-number">8.4.</span> <span class="toc-text">7.4 两种更新方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8E%8B%E7%BC%A9"><span class="toc-number">9.</span> <span class="toc-text">8. 上下文压缩</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%8E%8B%E7%BC%A9"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 为什么需要压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E5%8E%8B%E7%BC%A9%E4%B8%8E-KV-Cache-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">9.2.</span> <span class="toc-text">8.2 压缩与 KV Cache 的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%88%86%E5%B1%82%E5%8E%8B%E7%BC%A9%E7%AD%96%E7%95%A5"><span class="toc-number">9.3.</span> <span class="toc-text">8.3 分层压缩策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E9%9A%94%E7%A6%BB%E4%BC%98%E4%BA%8E%E5%8E%8B%E7%BC%A9"><span class="toc-number">9.4.</span> <span class="toc-text">8.4 隔离优于压缩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E4%B8%80%E5%A5%97%E5%8F%AF%E8%90%BD%E5%9C%B0%E7%9A%84%E5%A4%9A%E8%BD%AE-Agent-%E7%BB%84%E7%BB%87%E5%8E%9F%E5%88%99"><span class="toc-number">10.</span> <span class="toc-text">9. 一套可落地的多轮 Agent 组织原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%A0%B8%E5%BF%83%E7%BB%93%E8%AE%BA"><span class="toc-number">11.</span> <span class="toc-text">10. 核心结论</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/" title="上下文工程">上下文工程</a><time datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/milvus/" title="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/" title="RAG 混合检索">RAG 混合检索</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T02:12:47.350Z" title="发表于 2026-08-02 10:12:47">2026-08-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T00:51:39.679Z" title="发表于 2026-08-02 08:51:39">2026-08-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

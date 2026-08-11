@@ -1,0 +1,1285 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="一句话回答 Milvus 是一个面向大规模向量检索的开源、云原生数据库。它把向量、标量元数据和索引作为可持久化、可过滤、可扩缩容的数据来管理，适合为 RAG、语义搜索、推荐和多模态检索提供低延迟 ANN 召回。 面试时可以先给出下面这条主线：  文档切块 → Embedding → 写入 Milvus → 对 Query 做 Embedding → 向量 ANN + 元数据过滤&#x2F;BM25 → 融合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型">
+<meta property="og:url" content="https://kjore.github.io/2026/08/09/milvus/index.html">
+<meta property="og:site_name" content="kjore&#39;s blog">
+<meta property="og:description" content="一句话回答 Milvus 是一个面向大规模向量检索的开源、云原生数据库。它把向量、标量元数据和索引作为可持久化、可过滤、可扩缩容的数据来管理，适合为 RAG、语义搜索、推荐和多模态检索提供低延迟 ANN 召回。 面试时可以先给出下面这条主线：  文档切块 → Embedding → 写入 Milvus → 对 Query 做 Embedding → 向量 ANN + 元数据过滤&#x2F;BM25 → 融合">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjore.github.io/img/head.png">
+<meta property="article:published_time" content="2026-08-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-09T09:32:51.308Z">
+<meta property="article:author" content="kjore">
+<meta property="article:tag" content="Milvus">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="信息检索">
+<meta property="article:tag" content="向量数据库">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjore.github.io/img/head.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型",
+  "url": "https://kjore.github.io/2026/08/09/milvus/",
+  "image": "https://kjore.github.io/img/head.png",
+  "datePublished": "2026-08-08T16:00:00.000Z",
+  "dateModified": "2026-08-09T09:32:51.308Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "kjore",
+      "url": "https://kjore.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kjore.github.io/2026/08/09/milvus/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-09T09:32:51.308Z" title="更新于 2026-08-09 17:32:51">2026-08-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/RAG/">RAG</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1>一句话回答</h1>
+<p><strong>Milvus 是一个面向大规模向量检索的开源、云原生数据库。它把向量、标量元数据和索引作为可持久化、可过滤、可扩缩容的数据来管理，适合为 RAG、语义搜索、推荐和多模态检索提供低延迟 ANN 召回。</strong></p>
+<p>面试时可以先给出下面这条主线：</p>
+<blockquote>
+<p>文档切块 → Embedding → 写入 Milvus → 对 Query 做 Embedding → 向量 ANN + 元数据过滤/BM25 → 融合与 Rerank → 组装上下文 → LLM 生成。</p>
+</blockquote>
+<p>需要先强调一个容易加分的结论：</p>
+<blockquote>
+<p><strong>RAG 不一定必须使用专用向量数据库。</strong> 小规模、静态、单机数据可以用 NumPy/Faiss；已有 PostgreSQL 可以先用 pgvector；已有 Elasticsearch 且强依赖全文检索时可以直接做混合搜索。只有当数据量、并发、过滤、实时更新、持久化、高可用或独立扩缩容需求上来后，专用向量数据库的价值才明显。</p>
+</blockquote>
+<h2 id="为什么需要“向量数据库”">为什么需要“向量数据库”</h2>
+<p>这个问题最好从传统关系数据库擅长什么讲起。</p>
+<p>MySQL、PostgreSQL 等关系数据库主要面向<strong>结构化数据和精确查询</strong>。一条典型 SQL 可能是：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> documents</span><br><span class="line"><span class="keyword">WHERE</span> tenant_id <span class="operator">=</span> <span class="number">1001</span></span><br><span class="line">  <span class="keyword">AND</span> status <span class="operator">=</span> <span class="string">&#x27;active&#x27;</span></span><br><span class="line">  <span class="keyword">AND</span> created_at <span class="operator">&gt;=</span> <span class="string">&#x27;2026-01-01&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p>这类查询的条件是明确的：字段等于什么、是否在某个范围、两张表如何关联。关系数据库可以通过 B+ Tree、Hash、Bitmap 等索引快速定位记录，并提供事务、约束、Join 和聚合能力。</p>
+<p>但 RAG 面对的问题通常是：</p>
+<blockquote>
+<p>给定“员工离职后邮箱还能用多久？”，从几十万或上百万个文本块中找出<strong>语义最接近</strong>的若干段内容。</p>
+</blockquote>
+<p>数据库中可能存的是“劳动关系终止后，企业账户保留七日”。这两段文本没有足够的精确字段关系，<code>=</code>、范围查询和普通 B+ Tree 都无法表达“语义上是否相似”。<code>LIKE '%离职%'</code> 或全文检索能够匹配词面，却不一定能处理同义改写、口语化问题和跨语言表达。</p>
+<p>因此，两类数据库解决问题的出发点不同：</p>
+<table>
+<thead>
+<tr>
+<th>对比维度</th>
+<th>传统关系数据库</th>
+<th>向量数据库</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主要数据</td>
+<td>数字、字符串、日期等结构化字段</td>
+<td>Embedding 向量及其标量元数据</td>
+</tr>
+<tr>
+<td>查询目标</td>
+<td>找到满足确定条件的记录</td>
+<td>找到距离最近、语义最相似的 Top-K</td>
+</tr>
+<tr>
+<td>匹配方式</td>
+<td>等值、范围、Join、聚合</td>
+<td>COSINE、IP、L2 等距离计算</td>
+</tr>
+<tr>
+<td>常用索引</td>
+<td>B+ Tree、Hash、Bitmap</td>
+<td>HNSW、IVF、PQ、DiskANN</td>
+</tr>
+<tr>
+<td>返回语义</td>
+<td>满足条件或不满足条件</td>
+<td>按相似度排序的近似结果</td>
+</tr>
+<tr>
+<td>典型优势</td>
+<td>ACID 事务、复杂 SQL、数据完整性</td>
+<td>高维向量 ANN、Recall-Latency 权衡、大规模并行召回</td>
+</tr>
+<tr>
+<td>RAG 中的角色</td>
+<td>保存用户、权限、订单、文档状态等业务事实</td>
+<td>保存 Chunk Embedding 并完成语义召回</td>
+</tr>
+</tbody>
+</table>
+<h3 id="为什么普通索引不适合向量检索">为什么普通索引不适合向量检索</h3>
+<p>B+ Tree 依赖一维有序关系。例如数字 <code>10 &lt; 20 &lt; 30</code>，可以通过树结构快速排除大量不相关数据。但一个 768 维向量不存在这样简单的全局顺序，而且还可能需要分别按照 COSINE、IP 或 L2 判断距离。</p>
+<p>假设知识库有 $N$ 个 Chunk，每个向量维度为 $d$。如果只把向量作为数组或 BLOB 存进关系数据库，而没有专用向量索引，那么每次检索都需要：</p>
+<ol>
+<li>读取大量甚至全部向量；</li>
+<li>对 Query 与每个向量计算距离；</li>
+<li>对结果排序并取 Top-K。</li>
+</ol>
+<p>暴力检索的计算复杂度约为：</p>
+<div class="mathjax-display">
+$$
+O(Nd)
+$$
+</div>
+<p>当 $N$ 很小时这完全可接受；当数据达到百万、亿级且并发升高时，每次全量扫描代价过高。向量数据库使用 ANN 索引，只访问更可能包含近邻的桶、图节点或磁盘区域，以可控的少量 Recall 损失换取显著更低的延迟。</p>
+<p>所以，向量数据库主要解决的不只是“存一个浮点数组”，而是以下问题：</p>
+<ol>
+<li><strong>高效 ANN 检索</strong>：通过 HNSW、IVF、DiskANN 等索引减少候选范围；</li>
+<li><strong>持久化和增量更新</strong>：支持 Insert、Upsert、Delete、Compaction，而不是每次重建一个内存索引；</li>
+<li><strong>标量过滤</strong>：在 <code>tenant_id</code>、权限、时间、语言、文档类型等条件下做向量搜索；</li>
+<li><strong>分布式扩展</strong>：数据分片、查询并行、负载均衡、故障恢复；</li>
+<li><strong>一致性选择</strong>：控制“刚写入的数据多久能被搜索到”；</li>
+<li><strong>多租户与安全</strong>：数据库、Collection、Partition、RBAC、TLS；</li>
+<li><strong>运维能力</strong>：监控、备份、限流、资源隔离、滚动升级；</li>
+<li><strong>混合检索</strong>：在同一系统中管理 Dense、Sparse/BM25 和多向量字段。</li>
+</ol>
+<h3 id="关系数据库真的不能做向量检索吗">关系数据库真的不能做向量检索吗</h3>
+<p>不能绝对地说关系数据库不能做。PostgreSQL 安装 pgvector 后，也能定义向量类型并使用 HNSW、IVFFlat 等索引：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> chunk_id, content</span><br><span class="line"><span class="keyword">FROM</span> chunks</span><br><span class="line"><span class="keyword">WHERE</span> tenant_id <span class="operator">=</span> <span class="number">1001</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> embedding <span class="operator">&lt;=&gt;</span> :query_vector</span><br><span class="line">LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+<p>这时 PostgreSQL 已经通过扩展获得了专门的向量存储、距离运算和 ANN 索引能力。对于数据量不大、QPS 不高、团队已有 PostgreSQL，并且需要事务和 Join 的项目，pgvector 往往比新增 Milvus 更简单。</p>
+<p>专用向量数据库的价值主要在于<strong>向量成为核心工作负载以后</strong>：</p>
+<ul>
+<li>查询、写入、索引构建和 Compaction 可以独立扩缩容；</li>
+<li>提供更多向量索引、压缩、磁盘和 GPU 路径；</li>
+<li>面向大量向量做分片、并行检索和全局 Top-K 归并；</li>
+<li>原生支持多向量、Dense + Sparse/BM25、过滤和 Recall-Latency 调优；</li>
+<li>避免大规模向量查询与关系数据库中的 OLTP 事务争抢 CPU、内存和 I/O。</li>
+</ul>
+<p>因此，选择向量数据库并不是因为关系数据库“不能存向量”，而是因为两者的主要优化目标不同。</p>
+<p>面试回答可以概括为：</p>
+<blockquote>
+<p>传统关系数据库擅长结构化数据上的精确匹配、事务和 Join，但 RAG 需要在高维向量中按照 COSINE、IP 或 L2 找语义最相似的 Top-K。普通 B+ Tree 无法有效支持这种高维近邻查询，只把向量存成数组会退化为全量距离计算。向量数据库通过 HNSW、IVF、DiskANN 等 ANN 索引，以及分片、并行查询、标量过滤和增量更新，把语义检索做成可扩展的在线数据库能力。不过，如果数据量较小且已有 PostgreSQL，使用 pgvector 可能更经济；只有当向量成为主要工作负载时，Milvus 这类专用系统的优势才明显。</p>
+</blockquote>
+<h1>2. 向量检索基础</h1>
+<h2 id="2-1-Embedding-是什么">2.1 Embedding 是什么</h2>
+<p>Embedding 是把文本、图片、音频等对象编码为稠密向量：</p>
+<div class="mathjax-display">
+$$
+E(x) \in \mathbb{R}^d
+$$
+</div>
+<p>训练良好的 Embedding 模型会让语义相似对象的向量更接近。数据库不理解自然语言语义，它只负责存储模型生成的向量，并根据指定的距离函数检索。</p>
+<p>三个工程约束必须记住：</p>
+<ul>
+<li>写入文档和查询时必须使用<strong>兼容的 Embedding 模型</strong>；</li>
+<li>向量维度必须与 Collection Schema 一致；</li>
+<li>切换 Embedding 模型通常意味着重新生成全量向量并重建索引。</li>
+</ul>
+<p>因此生产系统应保存 <code>embedding_model</code>、<code>embedding_version</code>、<code>chunk_version</code>，不能只保存向量。</p>
+<h2 id="2-2-常见距离度量">2.2 常见距离度量</h2>
+<h3 id="余弦相似度-COSINE">余弦相似度 COSINE</h3>
+<div class="mathjax-display">
+$$
+\cos(q,x)=\frac{q\cdot x}{\|q\|\|x\|}
+$$
+</div>
+<p>只关注方向，通常适合文本语义向量。值越大越相似。</p>
+<h3 id="内积-IP">内积 IP</h3>
+<div class="mathjax-display">
+$$
+IP(q,x)=q\cdot x
+$$
+</div>
+<p>同时受方向和模长影响，值越大越相似。如果向量已经做单位归一化，则 IP 与 COSINE 的排序等价。</p>
+<h3 id="欧氏距离-L2">欧氏距离 L2</h3>
+<div class="mathjax-display">
+$$
+L2(q,x)=\sqrt{\sum_{i=1}^{d}(q_i-x_i)^2}
+$$
+</div>
+<p>值越小越相似。常见于图像、几何或模型明确要求使用 L2 的场景。</p>
+<table>
+<thead>
+<tr>
+<th>度量</th>
+<th>越大/越小越相似</th>
+<th>常见场景</th>
+<th>注意点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>COSINE</td>
+<td>越大</td>
+<td>文本语义检索</td>
+<td>忽略模长</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>越大</td>
+<td>已归一化向量、推荐</td>
+<td>未归一化时模长会影响结果</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>越小</td>
+<td>图像、几何距离</td>
+<td>与模型训练目标保持一致</td>
+</tr>
+</tbody>
+</table>
+<p>最重要的工程规则不是“文本一律用 COSINE”，而是：</p>
+<blockquote>
+<p><strong>优先遵循 Embedding 模型的 Model Card；建索引和搜索时使用相同 metric。</strong></p>
+</blockquote>
+<h2 id="2-3-KNN、ANN、Recall">2.3 KNN、ANN、Recall</h2>
+<ul>
+<li><strong>KNN/Exact Search</strong>：遍历所有向量，结果准确，计算量大；</li>
+<li><strong>ANN/Approximate Nearest Neighbor</strong>：通过索引只检查部分候选，速度快，但可能漏掉真正近邻；</li>
+<li><strong>Top-K</strong>：返回最相似的 K 个结果；</li>
+<li><strong>Recall@K</strong>：真实相关结果中有多少出现在前 K 个结果中。</li>
+</ul>
+<p>若真实 Top-10 中有 8 个被 ANN 找到，则：</p>
+<div class="mathjax-display">
+$$
+Recall@10=\frac{8}{10}=0.8
+$$
+</div>
+<p>ANN 的核心权衡是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">更深地搜索索引 → Recall 更高 → 延迟和 CPU 开销更大</span><br><span class="line">更激进地压缩向量 → 内存更低 → 精度可能下降</span><br></pre></td></tr></table></figure>
+<p>向量数据库调优不能只看 QPS，也不能只看 Recall，通常要同时看：</p>
+<ul>
+<li>Recall@K / NDCG@K / MRR；</li>
+<li>P50、P95、P99 延迟；</li>
+<li>QPS；</li>
+<li>索引构建时间；</li>
+<li>内存、磁盘和网络开销；</li>
+<li>数据写入到可检索的延迟。</li>
+</ul>
+<h1>3. Milvus 的数据模型</h1>
+<h2 id="3-1-核心概念">3.1 核心概念</h2>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Milvus Instance</span><br><span class="line">└── Database</span><br><span class="line">    └── Collection</span><br><span class="line">        ├── Schema / Fields</span><br><span class="line">        ├── Partition</span><br><span class="line">        │   └── Segment</span><br><span class="line">        │       └── Entity</span><br><span class="line">        └── Indexes</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>类比关系数据库</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Database</td>
+<td>Database</td>
+<td>逻辑隔离多个业务</td>
+</tr>
+<tr>
+<td>Collection</td>
+<td>Table</td>
+<td>一组 Schema 相同的 Entity</td>
+</tr>
+<tr>
+<td>Entity</td>
+<td>Row</td>
+<td>一条记录，例如一个 Chunk</td>
+</tr>
+<tr>
+<td>Field</td>
+<td>Column</td>
+<td>主键、向量、VARCHAR、JSON、时间等</td>
+</tr>
+<tr>
+<td>Partition</td>
+<td>Partition</td>
+<td>按业务或租户缩小检索范围</td>
+</tr>
+<tr>
+<td>Segment</td>
+<td>存储/执行单元</td>
+<td>Milvus 内部组织、索引和查询数据的基本单元</td>
+</tr>
+<tr>
+<td>Index</td>
+<td>Index</td>
+<td>向量 ANN 索引或标量索引</td>
+</tr>
+</tbody>
+</table>
+<p>一个 Collection 必须有主键，可以包含多个向量字段和多个标量字段。RAG 中一般是一条 Entity 对应一个 Chunk，而不是一整篇 Document。</p>
+<h2 id="3-2-Growing-Segment-与-Sealed-Segment">3.2 Growing Segment 与 Sealed Segment</h2>
+<p>Milvus 写入的数据先进入增长中的 Segment：</p>
+<ul>
+<li><strong>Growing Segment</strong>：仍在接收实时写入，通常以较接近暴力扫描的方式参与查询；</li>
+<li><strong>Sealed Segment</strong>：不再写入，可构建完整索引并由 Query Node 加载查询；</li>
+<li><strong>Compaction</strong>：合并小 Segment、清理删除数据和降低碎片。</li>
+</ul>
+<p>这解释了两个常见现象：</p>
+<ol>
+<li>刚写入的数据虽然能被搜索，但性能特征可能与已建索引的历史数据不同；</li>
+<li>高频小批量写入和删除会产生碎片，Compaction、批量写入策略与 Segment 状态会影响 P99 延迟。</li>
+</ol>
+<h2 id="3-3-RAG-推荐-Schema">3.3 RAG 推荐 Schema</h2>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">chunk_id             VARCHAR / primary key</span><br><span class="line">document_id          VARCHAR</span><br><span class="line">tenant_id            VARCHAR / partition key 候选</span><br><span class="line">content              VARCHAR 或 TEXT</span><br><span class="line">title                VARCHAR</span><br><span class="line">source_uri           VARCHAR</span><br><span class="line">page_no              INT32</span><br><span class="line">chunk_no             INT32</span><br><span class="line">language             VARCHAR</span><br><span class="line">acl_group            ARRAY&lt;VARCHAR&gt; 或可索引标量</span><br><span class="line">updated_at           TIMESTAMPTZ/INT64</span><br><span class="line">is_active            BOOL</span><br><span class="line">embedding_model      VARCHAR</span><br><span class="line">embedding_version    VARCHAR</span><br><span class="line">content_hash         VARCHAR</span><br><span class="line">dense_vector         FLOAT_VECTOR</span><br><span class="line">sparse_vector        SPARSE_FLOAT_VECTOR（可选）</span><br></pre></td></tr></table></figure>
+<p>设计原则：</p>
+<ul>
+<li>主键要稳定、可重建，常用 <code>hash(document_id + chunk_no + version)</code>；</li>
+<li>高频过滤字段显式定义并建立标量索引；</li>
+<li>灵活但低频的元数据可以放 JSON 或动态字段 <code>$meta</code>；</li>
+<li><code>tenant_id</code>、权限和 <code>is_active</code> 必须在召回时过滤，不能只在返回后过滤；</li>
+<li>原文、页码、标题、URL 等引用信息要与向量放在同一 Entity 或可通过主键稳定回表；</li>
+<li>大对象不要直接塞入一条记录，可只存 Chunk 和对象存储 URI。</li>
+</ul>
+<h1>4. Milvus 2.6.x 架构</h1>
+<h2 id="4-1-总体设计">4.1 总体设计</h2>
+<p>Milvus Distributed 的核心思想是：<strong>存储与计算分离、控制面与数据面分离、查询/写入/离线任务可独立扩缩容。</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">                         ┌──────────────┐</span><br><span class="line">Client / SDK ───────────→│ Proxy        │  无状态接入、校验、路由、结果归并</span><br><span class="line">                         └──────┬───────┘</span><br><span class="line">                                │</span><br><span class="line">                         ┌──────▼───────┐</span><br><span class="line">                         │ Coordinator  │  元数据、拓扑、调度、时间戳</span><br><span class="line">                         └──────┬───────┘</span><br><span class="line">                  ┌─────────────┼─────────────┐</span><br><span class="line">          ┌───────▼──────┐ ┌────▼─────┐ ┌─────▼─────┐</span><br><span class="line">          │Streaming Node│ │Query Node│ │ Data Node │</span><br><span class="line">          │WAL/实时数据   │ │历史查询  │ │索引/压缩  │</span><br><span class="line">          └───────┬──────┘ └────┬─────┘ └─────┬─────┘</span><br><span class="line">                  └──────────────┼─────────────┘</span><br><span class="line">                                 │</span><br><span class="line">              ┌──────────────────▼──────────────────┐</span><br><span class="line">              │ Metadata / WAL / Object Storage    │</span><br><span class="line">              │ etcd / Woodpecker / S3、MinIO 等   │</span><br><span class="line">              └─────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+<h3 id="Access-Layer：Proxy">Access Layer：Proxy</h3>
+<ul>
+<li>对外提供统一访问入口；</li>
+<li>校验请求并做路由；</li>
+<li>将查询分发到多个节点；</li>
+<li>对各分片 Top-K 结果做多级归并；</li>
+<li>本身无状态，可通过负载均衡横向扩展。</li>
+</ul>
+<h3 id="Coordinator">Coordinator</h3>
+<ul>
+<li>管理 Collection、Partition、Index 等元数据操作；</li>
+<li>管理时间戳和一致性；</li>
+<li>调度 Query Node、Data Node、Streaming Node；</li>
+<li>负责拓扑、负载均衡、Segment 和任务管理。</li>
+</ul>
+<h3 id="Streaming-Node">Streaming Node</h3>
+<ul>
+<li>处理实时写入路径；</li>
+<li>将操作记录到 WAL；</li>
+<li>查询尚未转为历史数据的 Growing Segment；</li>
+<li>推进数据由 growing 到 sealed 的状态转换。</li>
+</ul>
+<h3 id="Query-Node">Query Node</h3>
+<ul>
+<li>从对象存储加载历史 Segment 和索引；</li>
+<li>执行 Sealed Segment 上的向量检索与标量过滤；</li>
+<li>并行计算局部 Top-K。</li>
+</ul>
+<h3 id="Data-Node">Data Node</h3>
+<ul>
+<li>执行历史数据的离线处理；</li>
+<li>构建索引；</li>
+<li>执行 Compaction；</li>
+<li>将处理结果写入对象存储。</li>
+</ul>
+<h3 id="Storage">Storage</h3>
+<ul>
+<li><strong>元数据存储</strong>：保存 Schema、拓扑、检查点等，需要强一致和高可用；</li>
+<li><strong>WAL</strong>：保证实时写入的持久性和故障恢复；</li>
+<li><strong>对象存储</strong>：保存 Binlog、索引和历史数据，常用 S3/MinIO。</li>
+</ul>
+<p>面试不要只背组件名，要说明为什么拆分：</p>
+<blockquote>
+<p>RAG 的查询、写入和索引构建资源模型不同。查询偏 CPU/内存，索引构建是离线计算，写入依赖日志和实时可见性。拆分后可以针对瓶颈独立扩容，也能让计算节点更接近无状态，方便故障恢复。</p>
+</blockquote>
+<h2 id="4-2-写入链路">4.2 写入链路</h2>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Client Insert/Upsert</span><br><span class="line">  → Proxy 校验与路由</span><br><span class="line">  → Streaming Node 写 WAL</span><br><span class="line">  → Growing Segment 可参与实时查询</span><br><span class="line">  → Segment Seal</span><br><span class="line">  → Data Node 持久化、Compaction、建索引</span><br><span class="line">  → 对象存储</span><br><span class="line">  → Query Node 加载新索引</span><br></pre></td></tr></table></figure>
+<p><code>insert</code> 不应被理解成“每一行同步写入最终索引”。Milvus 是面向批量、分段和异步索引构建的系统。生产中应尽量批量写入，避免每条数据单独请求。</p>
+<h2 id="4-3-查询链路">4.3 查询链路</h2>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Query → Embedding</span><br><span class="line">  → Proxy 路由到相关 Shard/Segment</span><br><span class="line">  → Streaming Node 搜 Growing 数据</span><br><span class="line">  → Query Node 并行搜 Sealed Segment 索引</span><br><span class="line">  → Segment 局部 Top-K</span><br><span class="line">  → 节点级归并</span><br><span class="line">  → Proxy 全局归并/重排</span><br><span class="line">  → Top-K 结果</span><br></pre></td></tr></table></figure>
+<p>分布式 Top-K 不能简单让每个分片只返回 1 条。一般需要每个相关分片返回局部 Top-K，再进行全局归并，否则可能漏掉全局最优结果。</p>
+<h1>5. Milvus 索引：面试重点</h1>
+<h2 id="5-1-FLAT">5.1 FLAT</h2>
+<p>原理：遍历全部向量并计算真实距离。</p>
+<ul>
+<li>优点：Recall 为 100%，无 ANN 误差，几乎不需要训练索引；</li>
+<li>缺点：复杂度接近 $O(Nd)$，数据大或并发高时慢；</li>
+<li>适用：小数据集、离线评测 Ground Truth、强过滤后候选极少、极高 Recall 场景。</li>
+</ul>
+<h2 id="5-2-IVF-FLAT">5.2 IVF_FLAT</h2>
+<p>IVF（Inverted File）先通过聚类把向量划分到 <code>nlist</code> 个桶，查询时只搜索离 Query 最近的 <code>nprobe</code> 个桶。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">全部向量</span><br><span class="line">  ├── centroid 1 → posting list 1</span><br><span class="line">  ├── centroid 2 → posting list 2</span><br><span class="line">  └── centroid n → posting list n</span><br></pre></td></tr></table></figure>
+<p>关键参数：</p>
+<ul>
+<li><code>nlist</code>：桶的数量；太少则每个桶太大，太多则训练与管理成本增加；</li>
+<li><code>nprobe</code>：查询时探测多少个桶；越大 Recall 越高、延迟越大。</li>
+</ul>
+<p>IVF_FLAT 桶内仍保存原始向量，精度通常好，但内存占用不低。</p>
+<h2 id="5-3-IVF-SQ8-与-IVF-PQ">5.3 IVF_SQ8 与 IVF_PQ</h2>
+<p>量化通过牺牲部分精度减少内存：</p>
+<ul>
+<li><strong>SQ8</strong>：把每个浮点维度量化为 8 bit；</li>
+<li><strong>PQ</strong>：把向量拆成多个子向量，分别用码本编码，压缩更强。</li>
+</ul>
+<p>特点：</p>
+<ul>
+<li>IVF_PQ 内存小，适合大规模和资源受限场景；</li>
+<li>压缩会引入距离估计误差；</li>
+<li>可以扩大候选后用原始向量 Refinement，换取更高精度。</li>
+</ul>
+<h2 id="5-4-HNSW">5.4 HNSW</h2>
+<p>HNSW（Hierarchical Navigable Small World）构建多层近邻图：</p>
+<ul>
+<li>上层节点少，用于快速跳转到目标区域；</li>
+<li>下层节点多，用于局部精细搜索；</li>
+<li>查询像“从高速公路进入城市道路”。</li>
+</ul>
+<p>关键参数：</p>
+<ul>
+<li><code>M</code>：每个节点的连接度；越大通常 Recall 越高、内存和构建成本越大；</li>
+<li><code>efConstruction</code>：建图时的候选宽度；越大索引质量越高、构建越慢；</li>
+<li><code>ef</code>：查询时的候选宽度；越大 Recall 越高、查询越慢，且应不小于 Top-K。</li>
+</ul>
+<p>优点：高 Recall、低延迟、非常适合较小 Top-K。缺点：图结构内存开销大、构建相对慢。</p>
+<h2 id="5-5-DiskANN">5.5 DiskANN</h2>
+<p>DiskANN 使用适合 SSD 的图索引思路，使大部分索引/原始数据不必全部常驻内存。</p>
+<ul>
+<li>优点：数据超出内存时仍能保持较好的延迟和 Recall；</li>
+<li>缺点：依赖高性能 NVMe SSD，对磁盘随机读和缓存命中更敏感；</li>
+<li>适用：亿级、十亿级数据，内存成本成为主要瓶颈的场景。</li>
+</ul>
+<h2 id="5-6-Sparse-Index-与-BM25">5.6 Sparse Index 与 BM25</h2>
+<p>Milvus 支持 <code>SPARSE_FLOAT_VECTOR</code> 和倒排索引，可用于：</p>
+<ul>
+<li>Milvus 内置 BM25 Function；</li>
+<li>SPLADE、BGE-M3 等模型生成的 Learned Sparse Embedding；</li>
+<li>Dense + Sparse Hybrid Search。</li>
+</ul>
+<p>BM25 更关注词频、逆文档频率和文档长度归一化：</p>
+<div class="mathjax-display">
+$$
+score(D,Q)=\sum_{q_i\in Q}IDF(q_i)\cdot
+\frac{f(q_i,D)(k_1+1)}
+{f(q_i,D)+k_1(1-b+b\cdot\frac{|D|}{avgdl})}
+$$
+</div>
+<p>对错误码、专有名词、数字和型号，Sparse/BM25 往往能补足 Dense 检索的盲区。</p>
+<h2 id="5-7-如何选索引">5.7 如何选索引</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>优先尝试</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>小数据或需要 Ground Truth</td>
+<td>FLAT</td>
+<td>准确、简单</td>
+</tr>
+<tr>
+<td>数据在内存、低 Top-K、高 Recall</td>
+<td>HNSW</td>
+<td>查询速度和召回率通常较好</td>
+</tr>
+<tr>
+<td>内存较紧、可接受轻微精度损失</td>
+<td>IVF_SQ8 / IVF_PQ</td>
+<td>压缩明显</td>
+</tr>
+<tr>
+<td>大 Top-K 或适合聚类裁剪</td>
+<td>IVF 系列</td>
+<td>可通过<code>nprobe</code> 控制扫描范围</td>
+</tr>
+<tr>
+<td>数据超过内存且有 NVMe</td>
+<td>DiskANN</td>
+<td>降低内存压力</td>
+</tr>
+<tr>
+<td>关键词/BM25</td>
+<td>SPARSE_INVERTED_INDEX</td>
+<td>稀疏倒排检索</td>
+</tr>
+<tr>
+<td>不想先决定具体索引</td>
+<td>AUTOINDEX</td>
+<td>先建立基线，再根据评测显式调优</td>
+</tr>
+</tbody>
+</table>
+<p>正确的选型方式是用自己的数据做 Recall-Latency 曲线，不是背一个“百万数据就一定用 HNSW”的固定答案。数据分布、维度、Top-K、过滤比例、并发和硬件都会改变结果。</p>
+<h1>6. 标量过滤、分区和多租户</h1>
+<h2 id="6-1-为什么过滤必须在召回阶段执行">6.1 为什么过滤必须在召回阶段执行</h2>
+<p>错误做法：先向量召回 Top-10，再在应用层删除无权限数据。</p>
+<p>假设 Top-10 中 9 条属于其他租户，过滤后只剩 1 条；但索引中可能还有大量属于当前租户的相关文档，只是它们没有机会进入原始 Top-10。这叫<strong>后过滤截断</strong>。</p>
+<p>正确做法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">filter</span>=<span class="string">&#x27;tenant_id == &quot;acme&quot; and is_active == true and language == &quot;zh&quot;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>权限过滤必须进入所有召回路径，包括 Dense、Sparse/BM25 和任何缓存层。</p>
+<h2 id="6-2-标量索引">6.2 标量索引</h2>
+<p>Milvus 除了向量索引，也支持标量字段索引，例如：</p>
+<ul>
+<li>VARCHAR/数字字段：INVERTED；</li>
+<li>BOOL、低基数或数组：BITMAP；</li>
+<li>JSON：对常用 JSON Path 建索引；</li>
+<li>动态字段 <code>$meta</code>：可保存未显式声明的字段，但高频过滤字段更适合固定 Schema。</li>
+</ul>
+<p>没有标量索引不代表不能过滤，但可能退化为更昂贵的扫描。</p>
+<h2 id="6-3-Partition-与-Partition-Key">6.3 Partition 与 Partition Key</h2>
+<ul>
+<li><strong>手动 Partition</strong>：显式把数据分到不同 Partition，可独立 Load/Release；</li>
+<li><strong>Partition Key</strong>：按某个字段的值自动路由到物理 Partition；</li>
+<li>带 Partition Key 等值条件的查询可以减少无关数据扫描。</li>
+</ul>
+<p>不要为每个小用户无限创建手动 Partition。租户很多时，Partition Key 通常比“一租户一 Partition”更可扩展。</p>
+<h2 id="6-4-多租户四种粒度">6.4 多租户四种粒度</h2>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>隔离性</th>
+<th>Schema 灵活度</th>
+<th>规模</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Database per tenant</td>
+<td>强</td>
+<td>高</td>
+<td>租户较少</td>
+<td>强合规、独立权限</td>
+</tr>
+<tr>
+<td>Collection per tenant</td>
+<td>强</td>
+<td>中高</td>
+<td>中等</td>
+<td>各租户 Schema/索引不同</td>
+</tr>
+<tr>
+<td>Partition per tenant</td>
+<td>较强</td>
+<td>共享 Schema</td>
+<td>中等</td>
+<td>需要独立 Load/Release</td>
+</tr>
+<tr>
+<td>Partition Key</td>
+<td>逻辑隔离为主</td>
+<td>共享 Schema</td>
+<td>最大</td>
+<td>大量小租户</td>
+</tr>
+</tbody>
+</table>
+<p>多租户选择不只看数量，还要看：RBAC、跨租户查询、冷热数据、Schema 差异和资源隔离。高安全场景不能仅依赖应用层 <code>tenant_id</code> 过滤。</p>
+<h1>7. 一致性：为什么刚写入的数据可能搜不到</h1>
+<p>Milvus 是分布式、存算分离系统。写入先进入 WAL 和实时链路，查询节点维护自己的可服务时间。搜索时需要在“更新鲜的数据”和“更低的延迟”之间权衡。</p>
+<p>Milvus 提供四种一致性级别：</p>
+<table>
+<thead>
+<tr>
+<th>一致性</th>
+<th>含义</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Strong</td>
+<td>搜索等待到最新写入可见</td>
+<td>写后立即读、更新后必须马上查到</td>
+</tr>
+<tr>
+<td>Session</td>
+<td>同一客户端会话看到自己的写入</td>
+<td>交互式应用</td>
+</tr>
+<tr>
+<td>Bounded Staleness</td>
+<td>允许有界陈旧，默认级别</td>
+<td>大多数 RAG 在线检索</td>
+</tr>
+<tr>
+<td>Eventually</td>
+<td>不等待最新数据传播</td>
+<td>最看重延迟、允许短暂旧数据</td>
+</tr>
+</tbody>
+</table>
+<p>面试回答：</p>
+<blockquote>
+<p>Strong 不等于检索更“相关”，它只保证数据可见性更新鲜；代价可能是 Query Node 等待进度追上，导致更高延迟。离线批量构建知识库可用 Bounded/Eventual，用户上传后立刻问答则可考虑 Session 或 Strong。</p>
+</blockquote>
+<p>一致性、索引 Recall 和业务正确性是三件不同的事：</p>
+<ul>
+<li>一致性解决“最新写入是否可见”；</li>
+<li>ANN Recall 解决“近邻是否被索引找到”；</li>
+<li>RAG 正确性还取决于切块、Embedding、Rerank 和 LLM。</li>
+</ul>
+<h1>8. 用 Milvus 构建完整 RAG</h1>
+<h2 id="8-1-离线写入流程">8.1 离线写入流程</h2>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">数据源</span><br><span class="line">  → 解析 PDF/HTML/Word</span><br><span class="line">  → 清洗页眉页脚、乱码、重复内容</span><br><span class="line">  → 按标题/段落/语义切块</span><br><span class="line">  → 添加 document_id、page_no、ACL 等元数据</span><br><span class="line">  → 生成 content_hash</span><br><span class="line">  → Embedding 批处理</span><br><span class="line">  → 批量 Insert/Upsert Milvus</span><br><span class="line">  → 建索引/加载 Collection</span><br><span class="line">  → 离线检索评测</span><br></pre></td></tr></table></figure>
+<h3 id="Chunking-原则">Chunking 原则</h3>
+<ul>
+<li>Chunk 太小：语义不完整，答案可能跨块；</li>
+<li>Chunk 太大：噪声变多，Embedding 语义被稀释，Prompt 成本上升；</li>
+<li>固定字符切分可能截断标题、表格和代码；</li>
+<li>可以按标题和段落切分，必要时保留适度 overlap；</li>
+<li>用子块检索、返回父块是一种常见 Parent-Child Retrieval；</li>
+<li>同一文档召回多个相邻块时，要去重并控制上下文垄断。</li>
+</ul>
+<h2 id="8-2-在线查询流程">8.2 在线查询流程</h2>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">用户 Query</span><br><span class="line">  → 身份、租户、权限解析</span><br><span class="line">  → Query 规范化/改写/拆分</span><br><span class="line">  → 生成 Query Embedding</span><br><span class="line">  → Dense Top-N + BM25/Sparse Top-N</span><br><span class="line">  → RRF/加权融合</span><br><span class="line">  → Cross-Encoder Rerank</span><br><span class="line">  → 去重、相邻块扩展、Token 预算</span><br><span class="line">  → Prompt + 引用</span><br><span class="line">  → LLM 生成</span><br></pre></td></tr></table></figure>
+<h3 id="为什么需要-Reranker">为什么需要 Reranker</h3>
+<p>Dense 检索通常是 Bi-Encoder：Query 和 Document 分别编码，可预计算文档向量，因此很快；但它只能通过单个向量粗略表达相关性。</p>
+<p>Cross-Encoder Reranker 把 Query 和候选 Document 一起输入模型：</p>
+<div class="mathjax-display">
+$$
+score=f(q,d)
+$$
+</div>
+<p>它能做更细粒度的词语对齐和上下文判断，但不能对整个知识库逐条推理，所以应先用 Milvus 把候选从百万级缩到几十或几百条，再精排。</p>
+<h2 id="8-3-RRF-融合">8.3 RRF 融合</h2>
+<p>不同检索器的分数尺度不同，BM25 可能是几十，COSINE 通常在一个较小区间，不能直接相加。RRF 只使用排名：</p>
+<div class="mathjax-display">
+$$
+RRF(d)=\sum_{r\in R}\frac{1}{k+rank_r(d)}
+$$
+</div>
+<p>优点是无需校准原始分数，适合作为强基线。限制是丢弃了原始置信度，并默认各路召回同等重要。</p>
+<h1>9. 从零运行一个 Milvus Lite Demo</h1>
+<p>Milvus 有三种主要部署方式：</p>
+<ul>
+<li><strong>Milvus Lite</strong>：嵌入 Python 进程，适合本地学习和小规模原型；</li>
+<li><strong>Milvus Standalone</strong>：Docker 单机服务，适合开发测试和中小规模生产；</li>
+<li><strong>Milvus Distributed</strong>：Kubernetes 分布式集群，适合大规模、高可用和独立扩缩容。</li>
+</ul>
+<p>下面用 Milvus Lite 跑通“文本 → 向量 → 入库 → 过滤检索”。</p>
+<h2 id="9-1-安装">9.1 安装</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -U <span class="string">&quot;pymilvus[milvus-lite]&quot;</span> sentence-transformers</span><br></pre></td></tr></table></figure>
+<p>Milvus Lite 官方支持的本地平台主要是 Ubuntu 和 macOS；Windows 用户可在 WSL2 中运行本例，或改用 Docker 部署 Milvus Standalone。</p>
+<h2 id="9-2-完整代码">9.2 完整代码</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> hashlib <span class="keyword">import</span> sha256</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pymilvus <span class="keyword">import</span> DataType, MilvusClient</span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"></span><br><span class="line">DB_FILE = <span class="string">&quot;./milvus_demo.db&quot;</span></span><br><span class="line">COLLECTION = <span class="string">&quot;rag_chunks&quot;</span></span><br><span class="line">DIM = <span class="number">384</span></span><br><span class="line"></span><br><span class="line">client = MilvusClient(DB_FILE)</span><br><span class="line">model = SentenceTransformer(<span class="string">&quot;sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> client.has_collection(COLLECTION):</span><br><span class="line">    client.drop_collection(COLLECTION)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 定义 Schema</span></span><br><span class="line">schema = MilvusClient.create_schema(</span><br><span class="line">    auto_id=<span class="literal">False</span>,</span><br><span class="line">    enable_dynamic_field=<span class="literal">False</span>,</span><br><span class="line">)</span><br><span class="line">schema.add_field(<span class="string">&quot;chunk_id&quot;</span>, DataType.VARCHAR, is_primary=<span class="literal">True</span>, max_length=<span class="number">64</span>)</span><br><span class="line">schema.add_field(<span class="string">&quot;document_id&quot;</span>, DataType.VARCHAR, max_length=<span class="number">128</span>)</span><br><span class="line">schema.add_field(<span class="string">&quot;tenant_id&quot;</span>, DataType.VARCHAR, max_length=<span class="number">64</span>)</span><br><span class="line">schema.add_field(<span class="string">&quot;title&quot;</span>, DataType.VARCHAR, max_length=<span class="number">256</span>)</span><br><span class="line">schema.add_field(<span class="string">&quot;content&quot;</span>, DataType.VARCHAR, max_length=<span class="number">4096</span>)</span><br><span class="line">schema.add_field(<span class="string">&quot;page_no&quot;</span>, DataType.INT32)</span><br><span class="line">schema.add_field(<span class="string">&quot;is_active&quot;</span>, DataType.BOOL)</span><br><span class="line">schema.add_field(<span class="string">&quot;embedding&quot;</span>, DataType.FLOAT_VECTOR, dim=DIM)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 定义索引。Lite 会使用 FLAT；Standalone/Distributed 再按评测选 HNSW/IVF/DiskANN</span></span><br><span class="line">index_params = client.prepare_index_params()</span><br><span class="line">index_params.add_index(</span><br><span class="line">    field_name=<span class="string">&quot;embedding&quot;</span>,</span><br><span class="line">    index_name=<span class="string">&quot;embedding_idx&quot;</span>,</span><br><span class="line">    index_type=<span class="string">&quot;AUTOINDEX&quot;</span>,</span><br><span class="line">    metric_type=<span class="string">&quot;COSINE&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">client.create_collection(</span><br><span class="line">    collection_name=COLLECTION,</span><br><span class="line">    schema=schema,</span><br><span class="line">    index_params=index_params,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 准备文档</span></span><br><span class="line">docs = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;document_id&quot;</span>: <span class="string">&quot;leave_policy&quot;</span>,</span><br><span class="line">        <span class="string">&quot;tenant_id&quot;</span>: <span class="string">&quot;demo&quot;</span>,</span><br><span class="line">        <span class="string">&quot;title&quot;</span>: <span class="string">&quot;请假制度&quot;</span>,</span><br><span class="line">        <span class="string">&quot;content&quot;</span>: <span class="string">&quot;员工申请年假需要至少提前三个工作日在系统中提交。&quot;</span>,</span><br><span class="line">        <span class="string">&quot;page_no&quot;</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="string">&quot;is_active&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;document_id&quot;</span>: <span class="string">&quot;email_policy&quot;</span>,</span><br><span class="line">        <span class="string">&quot;tenant_id&quot;</span>: <span class="string">&quot;demo&quot;</span>,</span><br><span class="line">        <span class="string">&quot;title&quot;</span>: <span class="string">&quot;账号管理制度&quot;</span>,</span><br><span class="line">        <span class="string">&quot;content&quot;</span>: <span class="string">&quot;劳动关系终止后，企业邮箱账号保留七日，随后自动停用。&quot;</span>,</span><br><span class="line">        <span class="string">&quot;page_no&quot;</span>: <span class="number">3</span>,</span><br><span class="line">        <span class="string">&quot;is_active&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;document_id&quot;</span>: <span class="string">&quot;travel_policy&quot;</span>,</span><br><span class="line">        <span class="string">&quot;tenant_id&quot;</span>: <span class="string">&quot;other_company&quot;</span>,</span><br><span class="line">        <span class="string">&quot;title&quot;</span>: <span class="string">&quot;差旅制度&quot;</span>,</span><br><span class="line">        <span class="string">&quot;content&quot;</span>: <span class="string">&quot;高铁出行应优先购买二等座。&quot;</span>,</span><br><span class="line">        <span class="string">&quot;page_no&quot;</span>: <span class="number">2</span>,</span><br><span class="line">        <span class="string">&quot;is_active&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">texts = [doc[<span class="string">&quot;content&quot;</span>] <span class="keyword">for</span> doc <span class="keyword">in</span> docs]</span><br><span class="line">vectors = model.encode(</span><br><span class="line">    texts,</span><br><span class="line">    normalize_embeddings=<span class="literal">True</span>,</span><br><span class="line">    show_progress_bar=<span class="literal">False</span>,</span><br><span class="line">).tolist()</span><br><span class="line"></span><br><span class="line">rows = []</span><br><span class="line"><span class="keyword">for</span> doc, vector <span class="keyword">in</span> <span class="built_in">zip</span>(docs, vectors):</span><br><span class="line">    chunk_key = <span class="string">f&#x27;<span class="subst">&#123;doc[<span class="string">&quot;document_id&quot;</span>]&#125;</span>:<span class="subst">&#123;doc[<span class="string">&quot;page_no&quot;</span>]&#125;</span>:<span class="subst">&#123;doc[<span class="string">&quot;content&quot;</span>]&#125;</span>&#x27;</span></span><br><span class="line">    rows.append(&#123;</span><br><span class="line">        <span class="string">&quot;chunk_id&quot;</span>: sha256(chunk_key.encode(<span class="string">&quot;utf-8&quot;</span>)).hexdigest(),</span><br><span class="line">        **doc,</span><br><span class="line">        <span class="string">&quot;embedding&quot;</span>: vector,</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 批量写入</span></span><br><span class="line">insert_result = client.insert(collection_name=COLLECTION, data=rows)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;insert:&quot;</span>, insert_result)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 查询向量和权限过滤</span></span><br><span class="line">query = <span class="string">&quot;离职以后公司邮箱还能使用多长时间？&quot;</span></span><br><span class="line">query_vector = model.encode(</span><br><span class="line">    [query],</span><br><span class="line">    normalize_embeddings=<span class="literal">True</span>,</span><br><span class="line">    show_progress_bar=<span class="literal">False</span>,</span><br><span class="line">).tolist()</span><br><span class="line"></span><br><span class="line">result = client.search(</span><br><span class="line">    collection_name=COLLECTION,</span><br><span class="line">    data=query_vector,</span><br><span class="line">    anns_field=<span class="string">&quot;embedding&quot;</span>,</span><br><span class="line">    search_params=&#123;<span class="string">&quot;metric_type&quot;</span>: <span class="string">&quot;COSINE&quot;</span>, <span class="string">&quot;params&quot;</span>: &#123;&#125;&#125;,</span><br><span class="line">    <span class="built_in">filter</span>=<span class="string">&#x27;tenant_id == &quot;demo&quot; and is_active == true&#x27;</span>,</span><br><span class="line">    limit=<span class="number">3</span>,</span><br><span class="line">    output_fields=[<span class="string">&quot;document_id&quot;</span>, <span class="string">&quot;title&quot;</span>, <span class="string">&quot;content&quot;</span>, <span class="string">&quot;page_no&quot;</span>],</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> hit <span class="keyword">in</span> result[<span class="number">0</span>]:</span><br><span class="line">    <span class="built_in">print</span>(hit[<span class="string">&quot;distance&quot;</span>], hit[<span class="string">&quot;entity&quot;</span>])</span><br></pre></td></tr></table></figure>
+<p>如果切换到 Standalone/Distributed，核心业务代码不需要重写，只需替换连接方式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">client = MilvusClient(</span><br><span class="line">    uri=<span class="string">&quot;http://localhost:19530&quot;</span>,</span><br><span class="line">    token=<span class="string">&quot;root:Milvus&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>注意：Milvus Lite 用于学习和小规模原型，不代表 Distributed 的性能、组件和容灾能力。Lite 当前仅使用 FLAT 向量索引、只提供 Strong Consistency，也不支持 Partition 和 RBAC；过滤表达式可以运行，但不能用它验证分布式标量索引性能。</p>
+<h1>10. Dense + BM25 混合检索示例</h1>
+<p>以下代码展示核心结构，Embedding 生成部分省略。BM25 Function 会把 <code>content</code> 自动转换为 Sparse Vector。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pymilvus <span class="keyword">import</span> (</span><br><span class="line">    AnnSearchRequest,</span><br><span class="line">    DataType,</span><br><span class="line">    Function,</span><br><span class="line">    FunctionType,</span><br><span class="line">    MilvusClient,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">client = MilvusClient(uri=<span class="string">&quot;http://localhost:19530&quot;</span>, token=<span class="string">&quot;root:Milvus&quot;</span>)</span><br><span class="line"></span><br><span class="line">schema = client.create_schema(auto_id=<span class="literal">False</span>, enable_dynamic_field=<span class="literal">False</span>)</span><br><span class="line">schema.add_field(<span class="string">&quot;chunk_id&quot;</span>, DataType.VARCHAR, is_primary=<span class="literal">True</span>, max_length=<span class="number">64</span>)</span><br><span class="line">schema.add_field(</span><br><span class="line">    <span class="string">&quot;content&quot;</span>,</span><br><span class="line">    DataType.VARCHAR,</span><br><span class="line">    max_length=<span class="number">8192</span>,</span><br><span class="line">    enable_analyzer=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line">schema.add_field(<span class="string">&quot;tenant_id&quot;</span>, DataType.VARCHAR, max_length=<span class="number">64</span>)</span><br><span class="line">schema.add_field(<span class="string">&quot;dense&quot;</span>, DataType.FLOAT_VECTOR, dim=<span class="number">1024</span>)</span><br><span class="line">schema.add_field(<span class="string">&quot;sparse&quot;</span>, DataType.SPARSE_FLOAT_VECTOR)</span><br><span class="line"></span><br><span class="line">bm25 = Function(</span><br><span class="line">    name=<span class="string">&quot;content_bm25&quot;</span>,</span><br><span class="line">    input_field_names=[<span class="string">&quot;content&quot;</span>],</span><br><span class="line">    output_field_names=[<span class="string">&quot;sparse&quot;</span>],</span><br><span class="line">    function_type=FunctionType.BM25,</span><br><span class="line">)</span><br><span class="line">schema.add_function(bm25)</span><br><span class="line"></span><br><span class="line">indexes = client.prepare_index_params()</span><br><span class="line">indexes.add_index(</span><br><span class="line">    field_name=<span class="string">&quot;dense&quot;</span>,</span><br><span class="line">    index_name=<span class="string">&quot;dense_idx&quot;</span>,</span><br><span class="line">    index_type=<span class="string">&quot;AUTOINDEX&quot;</span>,</span><br><span class="line">    metric_type=<span class="string">&quot;COSINE&quot;</span>,</span><br><span class="line">)</span><br><span class="line">indexes.add_index(</span><br><span class="line">    field_name=<span class="string">&quot;sparse&quot;</span>,</span><br><span class="line">    index_name=<span class="string">&quot;sparse_idx&quot;</span>,</span><br><span class="line">    index_type=<span class="string">&quot;SPARSE_INVERTED_INDEX&quot;</span>,</span><br><span class="line">    metric_type=<span class="string">&quot;BM25&quot;</span>,</span><br><span class="line">    params=&#123;<span class="string">&quot;inverted_index_algo&quot;</span>: <span class="string">&quot;DAAT_MAXSCORE&quot;</span>&#125;,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">client.create_collection(</span><br><span class="line">    collection_name=<span class="string">&quot;hybrid_chunks&quot;</span>,</span><br><span class="line">    schema=schema,</span><br><span class="line">    index_params=indexes,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写入时提供 chunk_id、content、tenant_id、dense；sparse 由 BM25 Function 生成</span></span><br><span class="line"><span class="comment"># client.insert(collection_name=&quot;hybrid_chunks&quot;, data=rows)</span></span><br><span class="line"></span><br><span class="line">query_text = <span class="string">&quot;ORA-01555 是什么原因？&quot;</span></span><br><span class="line">query_dense = [...]  <span class="comment"># 使用与文档 dense 相同的 Embedding 模型生成 1024 维向量</span></span><br><span class="line">expr = <span class="string">&#x27;tenant_id == &quot;demo&quot;&#x27;</span></span><br><span class="line"></span><br><span class="line">dense_req = AnnSearchRequest(</span><br><span class="line">    data=[query_dense],</span><br><span class="line">    anns_field=<span class="string">&quot;dense&quot;</span>,</span><br><span class="line">    param=&#123;&#125;,</span><br><span class="line">    limit=<span class="number">50</span>,</span><br><span class="line">    expr=expr,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">sparse_req = AnnSearchRequest(</span><br><span class="line">    data=[query_text],</span><br><span class="line">    anns_field=<span class="string">&quot;sparse&quot;</span>,</span><br><span class="line">    limit=<span class="number">50</span>,</span><br><span class="line">    expr=expr,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">rrf = Function(</span><br><span class="line">    name=<span class="string">&quot;rrf&quot;</span>,</span><br><span class="line">    input_field_names=[],</span><br><span class="line">    function_type=FunctionType.RERANK,</span><br><span class="line">    params=&#123;<span class="string">&quot;reranker&quot;</span>: <span class="string">&quot;rrf&quot;</span>, <span class="string">&quot;k&quot;</span>: <span class="number">60</span>&#125;,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">results = client.hybrid_search(</span><br><span class="line">    collection_name=<span class="string">&quot;hybrid_chunks&quot;</span>,</span><br><span class="line">    reqs=[dense_req, sparse_req],</span><br><span class="line">    ranker=rrf,</span><br><span class="line">    limit=<span class="number">20</span>,</span><br><span class="line">    output_fields=[<span class="string">&quot;chunk_id&quot;</span>, <span class="string">&quot;content&quot;</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>这里的 <code>RERANK</code> 是 Milvus 内部对多路检索结果做 RRF/加权融合，不等同于 Cross-Encoder 模型精排。常见完整流程仍然是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Milvus Dense + BM25 → RRF Top-50 → 外部 Cross-Encoder → Top-5 → LLM</span><br></pre></td></tr></table></figure>
+<h1>11. Insert、Upsert、Delete、Flush、Load</h1>
+<h2 id="11-1-Insert-与-Upsert">11.1 Insert 与 Upsert</h2>
+<ul>
+<li><code>insert</code> 用于新增；不要假设它会为你检查主键重复；</li>
+<li><code>upsert</code> 根据主键插入或替换，适合文档更新和幂等写入；</li>
+<li>更新 Embedding 时应同步更新 <code>content_hash</code>、模型版本和时间；</li>
+<li>文档级更新要避免旧 Chunk 残留，可以先写新版本、切换 <code>is_active</code>，再延迟删除旧版本。</li>
+</ul>
+<p>一个稳妥的版本切换模式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">写入 document_version = v2</span><br><span class="line">  → 验证 v2 完整且可检索</span><br><span class="line">  → 将路由/过滤切到 v2</span><br><span class="line">  → 标记 v1 inactive</span><br><span class="line">  → 异步删除 v1</span><br></pre></td></tr></table></figure>
+<p>这比“先删旧数据再写新数据”更容易避免知识库空窗。</p>
+<h2 id="11-2-Flush">11.2 Flush</h2>
+<p><code>flush()</code> 强制推进数据持久化，但不应在每次小批量 Insert 后调用。频繁 Flush 会制造过多小 Segment，增加索引和 Compaction 压力。</p>
+<h2 id="11-3-Load-与-Release">11.3 Load 与 Release</h2>
+<ul>
+<li>Collection/Partition 需要加载后才能高效参与查询；</li>
+<li>Load 把所需历史数据和索引加载到查询资源；</li>
+<li>Release 释放查询资源，不等于删除持久化数据；</li>
+<li>热数据保持加载，冷数据可按业务和 Partition 管理。</li>
+</ul>
+<h1>12. 为什么选择 Milvus，而不是别的向量数据库</h1>
+<p>先给结论：<strong>没有对所有场景都最好的向量数据库，只有与现有技术栈、数据规模和团队能力最匹配的选择。</strong></p>
+<h2 id="12-1-对比表">12.1 对比表</h2>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>更适合什么</th>
+<th>相对 Milvus 的优势</th>
+<th>相对 Milvus 的不足/取舍</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Faiss</td>
+<td>单机算法实验、离线索引、GPU 检索</td>
+<td>底层算法丰富、轻量、控制力强</td>
+<td>是检索库而非完整数据库；持久化、增量更新、过滤、分布式、高可用要自己做</td>
+</tr>
+<tr>
+<td>pgvector</td>
+<td>已有 PostgreSQL，中小规模，强事务/Join</td>
+<td>数据和业务表共库、SQL/事务/生态成熟、运维简单</td>
+<td>专用向量工作负载与独立扩缩容能力较弱；大规模向量可能与 OLTP 争资源</td>
+</tr>
+<tr>
+<td>Elasticsearch</td>
+<td>已有 ES，全文搜索、日志/搜索平台</td>
+<td>BM25、文本分析器、聚合和搜索生态强，混合搜索自然</td>
+<td>纯向量大规模成本与专用调优可能不是最优；ES 集群本身也复杂</td>
+</tr>
+<tr>
+<td>Qdrant</td>
+<td>想要较轻量服务、强 payload filtering</td>
+<td>API 简洁、过滤体验好、部署相对直接、支持分布式和混合查询</td>
+<td>在超大规模存算分离、索引/硬件选择广度上需结合实测比较</td>
+</tr>
+<tr>
+<td>Weaviate</td>
+<td>快速 AI 应用、模块化向量化、多租户</td>
+<td>开箱即用的 BM25 Hybrid、模块和对象模型友好</td>
+<td>自托管集群仍有运维成本；架构、资源模型与 Milvus 不同，需要用真实负载验证</td>
+</tr>
+<tr>
+<td>Pinecone</td>
+<td>不想自建、全托管 Serverless</td>
+<td>运维负担小、快速上线、按服务使用</td>
+<td>闭源托管、供应商绑定、成本和数据合规需评估，底层控制较少</td>
+</tr>
+<tr>
+<td>Chroma</td>
+<td>本地原型、教学、开发者体验</td>
+<td>上手非常快，可嵌入本地；也有 Cloud/Distributed 路线</td>
+<td>本地模式不等同于大型生产集群；生产能力要按具体部署模式评估</td>
+</tr>
+<tr>
+<td>Milvus</td>
+<td>大规模专用向量检索、独立扩缩容、多索引/多向量</td>
+<td>云原生存算分离、索引类型丰富、Dense/Sparse/BM25、GPU/磁盘索引、开源</td>
+<td>分布式自托管组件多、资源和运维门槛高；小项目可能过重</td>
+</tr>
+</tbody>
+</table>
+<h2 id="12-2-为什么不用-Faiss">12.2 为什么不用 Faiss</h2>
+<p>Faiss 是高性能向量检索库，Milvus 的很多向量索引能力也建立在成熟 ANN 库之上。但 Faiss 不直接解决：</p>
+<ul>
+<li>分布式分片和副本；</li>
+<li>WAL、故障恢复和在线增量更新；</li>
+<li>标量元数据过滤；</li>
+<li>多租户、RBAC、TLS；</li>
+<li>在线服务、限流、监控、备份；</li>
+<li>多节点 Top-K 归并。</li>
+</ul>
+<p>因此：离线实验或单机百万级静态索引用 Faiss 很合理；要把它做成生产数据库，需要自行补齐大量工程能力。</p>
+<h2 id="12-3-为什么不用-pgvector">12.3 为什么不用 pgvector</h2>
+<p>如果公司已经有 PostgreSQL，而且只有几十万到几百万向量、QPS 不高，还需要复杂事务和 Join，pgvector 往往是最务实的第一选择：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, content</span><br><span class="line"><span class="keyword">FROM</span> chunks</span><br><span class="line"><span class="keyword">WHERE</span> tenant_id <span class="operator">=</span> <span class="number">42</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> embedding <span class="operator">&lt;=&gt;</span> :query_vector</span><br><span class="line">LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+<p>选择 Milvus 的理由通常不是“PostgreSQL 不能搜向量”，而是：</p>
+<ul>
+<li>希望向量检索和 OLTP 解耦，独立扩缩容；</li>
+<li>数据达到更大规模，索引和内存成为主要成本；</li>
+<li>需要 DiskANN、GPU、多向量、Sparse/BM25 等更专用能力；</li>
+<li>查询、写入、索引构建需要独立资源池；</li>
+<li>可接受额外系统和数据同步成本。</li>
+</ul>
+<p>pgvector 的 ANN + 过滤要特别测试 Recall。其 HNSW/IVFFlat 在过滤时可能需要 Iterative Scan、Partial Index 或分区才能返回足够候选。</p>
+<h2 id="12-4-为什么不用-Elasticsearch">12.4 为什么不用 Elasticsearch</h2>
+<p>如果核心需求是站内搜索、复杂分词、短语匹配、字段加权、聚合和关键词检索，Elasticsearch 很强，而且已支持向量 KNN 和 Hybrid Search。</p>
+<p>选择 Milvus 的典型理由：</p>
+<ul>
+<li>向量是主工作负载而不是附加字段；</li>
+<li>数据和 QPS 需要专用向量集群扩展；</li>
+<li>更看重 ANN 索引多样性、磁盘/GPU 路径和多向量检索；</li>
+<li>团队愿意让 ES 负责文本搜索、Milvus 负责向量召回，再在应用层融合。</li>
+</ul>
+<p>但如果团队已经稳定运行 ES，新增 Milvus 会引入双写、双索引一致性和额外运维，未必值得。</p>
+<h2 id="12-5-为什么不用-Qdrant-或-Weaviate">12.5 为什么不用 Qdrant 或 Weaviate</h2>
+<p>这两者都不是“不能用于生产”的轻量玩具，也支持过滤、分布式和混合检索。合理比较应落在真实需求：</p>
+<ul>
+<li>数据规模和增长速度；</li>
+<li>单租户大 Collection 还是大量小租户；</li>
+<li>Dense、Sparse、BM25、多模态、多向量需求；</li>
+<li>过滤表达式和过滤比例；</li>
+<li>内存、SSD、GPU 预算；</li>
+<li>自托管复杂度和团队熟悉度；</li>
+<li>P95/P99、Recall、写入吞吐和恢复时间。</li>
+</ul>
+<p>选择 Milvus 可以强调其云原生存算分离、丰富索引和大规模扩展路线；选择 Qdrant/Weaviate 则可能更看重 API 体验、特定过滤/多租户模型或更简单的起步。最终必须用同一批数据和同一 Embedding 做基准测试。</p>
+<h2 id="12-6-为什么不用-Pinecone">12.6 为什么不用 Pinecone</h2>
+<p>Pinecone 是全托管方案，优势是无需管理底层集群，适合快速上线。选择自建 Milvus 的原因可能是：</p>
+<ul>
+<li>私有化、离线或数据主权要求；</li>
+<li>希望掌控索引、资源、硬件和版本；</li>
+<li>大规模稳定负载下，自建成本模型更合适；</li>
+<li>避免供应商绑定。</li>
+</ul>
+<p>反过来，如果团队没有向量数据库运维能力，Pinecone 或托管 Milvus/Zilliz Cloud 可能比自建更可靠。</p>
+<h2 id="12-7-什么时候不该选-Milvus">12.7 什么时候不该选 Milvus</h2>
+<ul>
+<li>只有几万条静态向量；</li>
+<li>现有 PostgreSQL/Elasticsearch 已满足延迟和 Recall；</li>
+<li>强依赖跨表事务、复杂 Join；</li>
+<li>团队没有 Kubernetes、对象存储和分布式系统运维能力；</li>
+<li>无法承担业务数据与向量库之间的同步复杂度；</li>
+<li>使用全托管服务更符合成本和合规要求。</li>
+</ul>
+<p>面试中的高质量结论：</p>
+<blockquote>
+<p>我选择 Milvus 不是因为它在所有维度都最好，而是因为项目的主要矛盾是大规模向量召回、独立扩缩容、过滤和混合检索；如果项目规模小且数据本来就在 PostgreSQL，我会先用 pgvector，避免过度设计。</p>
+</blockquote>
+<h1>13. 生产调优</h1>
+<h2 id="13-1-先建立评测集">13.1 先建立评测集</h2>
+<p>至少包含：</p>
+<ul>
+<li>同义改写和自然语言问题；</li>
+<li>错误码、型号、数字、人名；</li>
+<li>否定、比较、时间范围；</li>
+<li>权限和租户过滤；</li>
+<li>热门 Query 与长尾 Query；</li>
+<li>有答案、无答案、多答案；</li>
+<li>文档刚更新和刚删除的场景。</li>
+</ul>
+<p>每个 Query 标注相关 Chunk 和相关性等级，再分别评估 Dense、BM25、Hybrid、Rerank，而不是只看最终 Demo 是否“感觉不错”。</p>
+<h2 id="13-2-分阶段调参">13.2 分阶段调参</h2>
+<ol>
+<li>固定 Chunking 和 Embedding，测 FLAT 得到 Ground Truth；</li>
+<li>比较 HNSW、IVF、DiskANN 的 Recall-Latency 曲线；</li>
+<li>调 <code>ef</code>、<code>nprobe</code> 等搜索深度；</li>
+<li>加入真实过滤条件重新评测；</li>
+<li>调每路 Top-N、RRF/权重与 Rerank 候选数；</li>
+<li>最后做端到端答案评测和压测。</li>
+</ol>
+<p>不要同时修改 Chunk 大小、Embedding 模型、索引和 Reranker，否则无法判断收益来自哪里。</p>
+<h2 id="13-3-内存估算">13.3 内存估算</h2>
+<p>仅原始 FP32 向量的大小约为：</p>
+<div class="mathjax-display">
+$$
+Memory=N\times d\times 4\ bytes
+$$
+</div>
+<p>例如 1 亿条、1024 维 FP32：</p>
+<div class="mathjax-display">
+$$
+10^8\times1024\times4\approx409.6\ GB
+$$
+</div>
+<p>这还没有包括：</p>
+<ul>
+<li>HNSW 图边；</li>
+<li>主键和标量字段；</li>
+<li>Segment、缓存和执行临时内存；</li>
+<li>副本；</li>
+<li>操作系统和进程开销。</li>
+</ul>
+<p>副本数为 2 时，查询侧数据占用不能简单仍按一份估算。生产容量规划应保留余量，并考虑热点 Collection 同时加载。</p>
+<h2 id="13-4-常见性能问题">13.4 常见性能问题</h2>
+<h3 id="Recall-低">Recall 低</h3>
+<ul>
+<li>Embedding 模型不适合领域或中英文不匹配；</li>
+<li>文档和 Query 使用了不同模型/版本；</li>
+<li>距离度量不匹配；</li>
+<li>Chunking 错误；</li>
+<li><code>ef</code>/<code>nprobe</code> 太小；</li>
+<li>PQ 压缩过强；</li>
+<li>过滤条件导致候选不足；</li>
+<li>Top-K 太小；</li>
+<li>Dense 本来就不擅长精确词，应加入 BM25。</li>
+</ul>
+<h3 id="延迟高">延迟高</h3>
+<ul>
+<li>查询节点内存不足、频繁从磁盘加载；</li>
+<li>HNSW <code>ef</code> 或 IVF <code>nprobe</code> 过大；</li>
+<li>过滤字段无索引；</li>
+<li>返回过多大字段；</li>
+<li>Segment 过碎、Compaction 压力大；</li>
+<li>热点租户或 Collection 资源竞争；</li>
+<li>多分片结果归并和网络开销大；</li>
+<li>Query Embedding/Reranker 本身慢，误以为是 Milvus 慢。</li>
+</ul>
+<h3 id="写入慢或数据迟迟不可查">写入慢或数据迟迟不可查</h3>
+<ul>
+<li>每条数据单独 Insert，批量太小；</li>
+<li>频繁 Flush；</li>
+<li>索引构建/Compaction 资源不足；</li>
+<li>一致性级别与实时可见性预期不一致；</li>
+<li>写入速率超过 Streaming/Data 节点处理能力。</li>
+</ul>
+<h1>14. 高可用、安全和运维</h1>
+<h2 id="14-1-高可用不是“有副本就结束”">14.1 高可用不是“有副本就结束”</h2>
+<p>需要分别考虑：</p>
+<ul>
+<li>Proxy 多副本和负载均衡；</li>
+<li>Coordinator 故障转移；</li>
+<li>Query Node 副本与重新加载时间；</li>
+<li>WAL 和对象存储可靠性；</li>
+<li>etcd 高可用与备份；</li>
+<li>节点宕机后 Segment 重分配；</li>
+<li>跨可用区网络和对象存储延迟；</li>
+<li>恢复时是否还能满足 P99。</li>
+</ul>
+<h2 id="14-2-安全">14.2 安全</h2>
+<ul>
+<li>启用认证，不使用默认弱口令；</li>
+<li>配置 TLS；</li>
+<li>使用 RBAC 和最小权限；</li>
+<li>租户隔离不能只靠客户端传入过滤条件；</li>
+<li>敏感原文考虑加密、脱敏和审计；</li>
+<li>备份与对象存储也要有访问控制；</li>
+<li>删除数据时同时考虑主库、Milvus、缓存、备份和离线文件。</li>
+</ul>
+<h2 id="14-3-监控指标">14.3 监控指标</h2>
+<p>至少关注：</p>
+<ul>
+<li>搜索 QPS、P50/P95/P99、错误率和超时；</li>
+<li>Insert/Upsert 吞吐；</li>
+<li>写入到可见的延迟；</li>
+<li>Segment 数量、Growing/Sealed 状态；</li>
+<li>Index Build、Load、Compaction 队列；</li>
+<li>Query/Data/Streaming 节点 CPU、内存、磁盘和网络；</li>
+<li>对象存储错误和延迟；</li>
+<li>Recall 离线趋势与线上零结果率；</li>
+<li>各租户资源使用和热点分布。</li>
+</ul>
+<p>只有系统指标没有检索质量指标是不够的：数据库可以 10 ms 返回完全不相关的结果。</p>
+<h1>15. 常见面试题与参考答案</h1>
+<h2 id="15-1-为什么-RAG-需要向量数据库">15.1 为什么 RAG 需要向量数据库</h2>
+<blockquote>
+<p>RAG 要从大量非结构化文档中找到语义相关证据。Embedding 把文本映射为向量，向量数据库通过 ANN 索引降低全量距离计算成本，并提供持久化、增量更新、元数据过滤、多租户、高可用和扩缩容。小规模 RAG 不一定需要专用向量数据库，数据量和工程需求上来后才体现价值。</p>
+</blockquote>
+<h2 id="15-2-Milvus-与-Faiss-有什么区别">15.2 Milvus 与 Faiss 有什么区别</h2>
+<blockquote>
+<p>Faiss 是向量相似度检索算法库；Milvus 是数据库。Faiss 提供索引和搜索，但分布式、持久化、实时写入、标量过滤、权限、高可用和运维通常要自己实现。Milvus 把这些能力组合成在线服务。</p>
+</blockquote>
+<h2 id="15-3-为什么-Milvus-要存算分离">15.3 为什么 Milvus 要存算分离</h2>
+<blockquote>
+<p>向量查询、写入、索引构建和 Compaction 的资源模型不同。存算分离后，持久数据放对象存储，Query/Data/Streaming 节点可以针对不同瓶颈独立扩缩容；计算节点故障后也能从共享存储恢复状态。代价是网络、对象存储依赖和更复杂的调度。</p>
+</blockquote>
+<h2 id="15-4-HNSW-和-IVF-怎么选">15.4 HNSW 和 IVF 怎么选</h2>
+<blockquote>
+<p>HNSW 用图遍历，通常适合低 Top-K、高 Recall、内存充足的在线查询；IVF 先聚类，只搜索部分桶，内存和大 Top-K 场景更灵活。HNSW 重点调 M、efConstruction、ef；IVF 重点调 nlist、nprobe。最终用真实数据比较 Recall-P99 和成本。</p>
+</blockquote>
+<h2 id="15-5-为什么-ANN-会丢-Recall">15.5 为什么 ANN 会丢 Recall</h2>
+<blockquote>
+<p>ANN 为了避免遍历全部向量，只搜索图的一部分、若干聚类桶或压缩后的距离，因此可能错过真正近邻。扩大 ef/nprobe、减弱量化、增加候选后精排可以提高 Recall，但会增加延迟和资源消耗。</p>
+</blockquote>
+<h2 id="15-6-COSINE、IP、L2-的区别">15.6 COSINE、IP、L2 的区别</h2>
+<blockquote>
+<p>COSINE 看方向，IP 同时受方向和模长影响，L2 看欧氏距离。单位归一化后，COSINE 与 IP 排序等价，L2 也与它们存在单调关系。工程上应遵循 Embedding 模型训练时使用的度量，并保证建索引和查询一致。</p>
+</blockquote>
+<h2 id="15-7-Milvus-中为什么有-Growing-和-Sealed-Segment">15.7 Milvus 中为什么有 Growing 和 Sealed Segment</h2>
+<blockquote>
+<p>Growing Segment 负责接收实时写入并保证新数据可查询；Sealed Segment 不再写入，可以构建更高效的 ANN 索引。这样同时兼顾实时性和历史数据查询性能，之后通过 Compaction 管理碎片。</p>
+</blockquote>
+<h2 id="15-8-Flush-越频繁数据越安全吗">15.8 Flush 越频繁数据越安全吗</h2>
+<blockquote>
+<p>不是。写入先进入 WAL，Flush 是推进持久化，不应每条调用。过度 Flush 会产生大量小 Segment，增加索引构建、加载和 Compaction 开销。应根据批量写入、恢复目标和官方机制设计，而不是把 Flush 当成事务 Commit。</p>
+</blockquote>
+<h2 id="15-9-Strong-Consistency-是否一定最好">15.9 Strong Consistency 是否一定最好</h2>
+<blockquote>
+<p>不是。Strong 让搜索等待最新写入可见，适合写后立即读，但可能增加延迟。大多数知识库允许秒级更新延迟，可以使用 Bounded Staleness；同一用户上传后立即问答可考虑 Session 或 Strong。</p>
+</blockquote>
+<h2 id="15-10-为什么不能召回后再做权限过滤">15.10 为什么不能召回后再做权限过滤</h2>
+<blockquote>
+<p>后过滤会截断候选。如果无权限数据占据 Top-K，过滤后结果数量不足，而本来相关且有权限的文档没有机会进入候选。权限条件应进入 Dense、Sparse 和缓存等所有召回路径。</p>
+</blockquote>
+<h2 id="15-11-为什么还要-BM25">15.11 为什么还要 BM25</h2>
+<blockquote>
+<p>Dense 擅长同义表达，但可能模糊错误码、数字、型号和罕见实体；BM25 擅长精确词面匹配。两者并行召回后用 RRF 或加权融合，通常比单路更稳健。</p>
+</blockquote>
+<h2 id="15-12-Milvus-内部-Rerank-与-Cross-Encoder-有什么区别">15.12 Milvus 内部 Rerank 与 Cross-Encoder 有什么区别</h2>
+<blockquote>
+<p>Milvus 的 RRF/Weighted Ranker 主要融合多路召回结果，通常基于排名或分数；Cross-Encoder 会联合编码 Query 和 Document，做更昂贵但更精细的相关性判断。前者解决融合，后者解决候选内部精排。</p>
+</blockquote>
+<h2 id="15-13-如何保证文档更新不重复">15.13 如何保证文档更新不重复</h2>
+<blockquote>
+<p>使用稳定主键或内容哈希，Upsert 时记录 document_version、chunk_version 和 embedding_version。推荐先写新版本、验证后切换 active 标记，再异步删除旧版本，避免先删后写造成空窗。还要监控旧版本残留。</p>
+</blockquote>
+<h2 id="15-14-Milvus-为什么比-pgvector-更适合大规模向量">15.14 Milvus 为什么比 pgvector 更适合大规模向量</h2>
+<blockquote>
+<p>不是简单说“更快”，而是 Milvus 把查询、写入、索引和共享存储拆开，可以独立扩展，并提供更丰富的专用索引、多向量、Sparse/BM25、磁盘和 GPU 路径。pgvector 的优势是 SQL、事务、Join 和复用 PostgreSQL；中小规模时它可能更合适。</p>
+</blockquote>
+<h2 id="15-15-如何评估一个-RAG-检索系统">15.15 如何评估一个 RAG 检索系统</h2>
+<blockquote>
+<p>先标注 Query-Document 相关性，离线测 Recall@K、MRR、NDCG，再测 P95/P99、QPS 和资源。分开评估 Dense、BM25、融合、Rerank，最后测答案正确率、引用正确率、无答案拒答和端到端延迟。</p>
+</blockquote>
+<h2 id="15-16-数据量从-100-万涨到-1-亿怎么办">15.16 数据量从 100 万涨到 1 亿怎么办</h2>
+<blockquote>
+<p>先重新做容量估算和基准测试：向量原始内存、索引开销、副本、过滤、Top-K、并发。根据内存和延迟选择 HNSW 压缩、IVF_PQ/SQ、DiskANN 或 mmap；再考虑增加 Query/Data 节点、分片、冷热分层和批量导入。不能只增加机器而不检查 Chunk 冗余和索引参数。</p>
+</blockquote>
+<h2 id="15-17-为什么查询慢，怎么定位">15.17 为什么查询慢，怎么定位</h2>
+<blockquote>
+<p>分层拆延迟：Query Embedding、网络、Milvus Search、过滤、结果回传、Reranker、LLM。Milvus 内部再看热点 Collection、Load 状态、Segment 数、索引参数、过滤索引、节点 CPU/内存/磁盘、对象存储和多分片归并。先定位阶段，再调参数。</p>
+</blockquote>
+<h2 id="15-18-如何选择向量数据库">15.18 如何选择向量数据库</h2>
+<blockquote>
+<p>我会先定义数据规模、增长率、QPS、P99、Recall、过滤、多租户、更新实时性、合规和预算，再用同一数据、Embedding、Top-K 和硬件压测候选系统。已有 PostgreSQL/ES 时优先评估复用成本；需要大规模专用向量扩缩容时再考虑 Milvus 等独立系统。</p>
+</blockquote>
+<h1>16. 容易说错的点</h1>
+<ul>
+<li>“RAG 必须用向量数据库”——错，小规模可以不用；</li>
+<li>“向量数据库会生成 Embedding”——通常 Embedding 由模型生成，数据库负责存储检索；Milvus 也提供部分 Function/集成，但两层概念不能混淆；</li>
+<li>“COSINE 距离越小越相似”——在 Milvus 的 COSINE similarity 语义下通常越大越相似；</li>
+<li>“HNSW 一定比 IVF 好”——取决于内存、Top-K、过滤、Recall 和数据规模；</li>
+<li>“索引建好后 Search 就一定准确”——ANN、Embedding、Chunking 都会影响 Recall；</li>
+<li>“Strong Consistency 会提高语义相关性”——它只影响数据新鲜度；</li>
+<li>“Flush 等于关系数据库 Commit”——两者语义不同；</li>
+<li>“Partition 越多越快”——过多 Partition 会增加管理和调度成本；</li>
+<li>“先召回再做租户过滤即可”——会泄漏风险并造成候选截断；</li>
+<li>“Milvus 一定比 pgvector/ES 快”——没有统一硬件和真实负载的基准，不能这样下结论；</li>
+<li>“RRF 就是模型 Reranker”——RRF 是基于排名的融合算法，不是 Cross-Encoder；</li>
+<li>“只监控 QPS/P99 就够了”——检索系统必须同时监控 Recall 和业务答案质量。</li>
+</ul>
+<h1>17. 项目介绍模板</h1>
+<p>面试时可以按“背景—设计—难点—指标—取舍”描述：</p>
+<blockquote>
+<p>我们为内部技术文档构建 RAG。文档解析后按标题和段落切块，保留 document_id、page_no、tenant_id、ACL 和版本信息，使用统一 Embedding 模型生成 Dense Vector 并批量写入 Milvus。在线查询同时执行 Dense 和 BM25 召回，权限条件在两路召回阶段下推，之后用 RRF 合并，再用 Cross-Encoder 将 Top-50 精排到 Top-5。索引选择不是拍脑袋，我们用 FLAT 结果作为 Ground Truth，对 HNSW 的 ef 和 IVF 的 nprobe 做 Recall-P99 曲线，最后在目标 Recall 下选择资源成本更低的方案。文档更新采用新版本先写、验证后切换 active 标记、旧版本延迟删除，避免知识库空窗。监控同时覆盖 P99、写入可见延迟、零结果率和 Recall 回归。</p>
+</blockquote>
+<p>如果被追问“为什么选择 Milvus”：</p>
+<blockquote>
+<p>当时向量数据需要独立扩缩容，而且后续要支持更大规模、多租户过滤、Dense+Sparse 和磁盘索引，所以没有把向量工作负载继续放在 OLTP PostgreSQL 中。Milvus 的存算分离和索引选择更适合这个方向。代价是多维护一个分布式系统和数据同步链路，所以小规模阶段我不会直接上 Distributed，而会从 Lite/Standalone 验证，再按指标迁移。</p>
+</blockquote>
+<h1>18. 速记总结</h1>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">RAG：给 LLM 找证据，不是把所有知识塞进 Prompt</span><br><span class="line">Embedding：对象 → 高维向量</span><br><span class="line">Vector Search：按 COSINE/IP/L2 找近邻</span><br><span class="line">ANN：用少量 Recall 换低延迟</span><br><span class="line">Milvus：ANN + 持久化 + 过滤 + 分布式 + 多租户 + 运维</span><br><span class="line"></span><br><span class="line">数据模型：Database → Collection → Partition → Segment → Entity</span><br><span class="line">实时数据：Growing Segment</span><br><span class="line">历史索引：Sealed Segment</span><br><span class="line"></span><br><span class="line">HNSW：高 Recall、低延迟、吃内存</span><br><span class="line">IVF：聚类分桶，nlist/nprobe 权衡</span><br><span class="line">PQ/SQ：压缩省内存，可能损失精度</span><br><span class="line">DiskANN：SSD 换内存</span><br><span class="line">FLAT：准确但慢，用于小数据和 Ground Truth</span><br><span class="line"></span><br><span class="line">一致性：Strong / Session / Bounded / Eventually</span><br><span class="line">混合检索：Dense + BM25/Sparse → RRF → Cross-Encoder</span><br><span class="line">权限：召回阶段过滤，不是召回后过滤</span><br><span class="line">评测：Recall/NDCG + P99/QPS + 端到端答案质量</span><br><span class="line"></span><br><span class="line">选型：</span><br><span class="line">小型静态 → NumPy/Faiss/Chroma</span><br><span class="line">已有 PostgreSQL → 先看 pgvector</span><br><span class="line">全文搜索为主 → 先看 Elasticsearch</span><br><span class="line">大规模专用向量与独立扩缩容 → Milvus 候选</span><br><span class="line">不想运维 → 托管服务</span><br></pre></td></tr></table></figure>
+<h1>参考资料</h1>
+<p>以下资料均优先使用各项目官方文档；本文以 Milvus 2.6.x 稳定 API 为主，具体参数应以部署版本文档为准。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/v2.6.x/overview.md">Milvus Overview</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/v2.6.x/architecture_overview.md">Milvus Architecture Overview</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/install-overview.md">Milvus Deployment Options</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/milvus_lite.md">Milvus Lite</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/index-explained.md">Milvus Index Explained</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/v2.6.x/metric.md">Milvus Metric Types</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/v2.6.x/consistency.md">Milvus Consistency</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/full-text-search.md">Milvus Full Text Search</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/multi-vector-search.md">Milvus Multi-Vector Hybrid Search</a></li>
+<li><a target="_blank" rel="noopener" href="https://milvus.io/docs/multi_tenancy.md">Milvus Multi-tenancy</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/pgvector/pgvector">pgvector</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/facebookresearch/faiss">Faiss</a></li>
+<li><a target="_blank" rel="noopener" href="https://qdrant.tech/documentation/scaling/distributed_deployment/">Qdrant Distributed Deployment</a></li>
+<li><a target="_blank" rel="noopener" href="https://qdrant.tech/documentation/search/hybrid-queries/">Qdrant Hybrid Queries</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.weaviate.io/weaviate/concepts/search/hybrid-search">Weaviate Hybrid Search</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.weaviate.io/weaviate/concepts/replication-architecture">Weaviate Replication Architecture</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.trychroma.com/docs/overview/architecture">Chroma Architecture</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.pinecone.io/guides/index-data/indexing-overview">Pinecone Indexing Overview</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.elastic.co/docs/solutions/search/vector/knn">Elasticsearch kNN Search</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://kjore.github.io">kjore</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://kjore.github.io/2026/08/09/milvus/">https://kjore.github.io/2026/08/09/milvus/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://kjore.github.io" target="_blank">kjore's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Milvus/">Milvus</a><a class="post-meta__tags" href="/tags/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/">向量数据库</a><a class="post-meta__tags" href="/tags/RAG/">RAG</a><a class="post-meta__tags" href="/tags/%E4%BF%A1%E6%81%AF%E6%A3%80%E7%B4%A2/">信息检索</a><a class="post-meta__tags" href="/tags/%E9%9D%A2%E8%AF%95/">面试</a></div><div class="post-share"><div class="social-share" data-image="/img/head.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/" title="RAG 混合检索"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">RAG 混合检索</div></div><div class="info-2"><div class="info-item-1">一句话回答 混合检索（Hybrid Search）通常是把关键词/稀疏检索与语义/稠密检索并行执行，再通过分数融合或排序融合合并候选集，最后用 Reranker 精排。  稀疏检索擅长精确匹配：专有名词、型号、错误码、人名、数字。 稠密检索擅长语义匹配：同义表达、口语化问题、没有共享关键词的相关文本。 混合检索的目标不是简单地“多查一次”，而是利用两类检索器的互补性，提高 Recall@K，并在精排后提高最终答案质量。  面试时可以先给出下面这条主线：  Query 预处理 → 稀疏检索与稠密检索并行召回 → 候选去重与融合 → Reranker 精排 → 上下文组装 → LLM 生成。  为什么需要混合检索 只用一种检索器会有明显盲区。    查询 BM25/关键词检索 向量检索     ORA-01555、iPhone 15 Pro Max 通常很好，能精确命中关键词 可能因罕见 token 或向量平滑而漏召回   “合同到期后还能续多久”与“协议期满可延长三个月” 词面重合少，可能漏召回 能利用语义相近性命中   带数字、版本号、缩写的查询 更稳定 容易忽略数字或细粒度差异...</div></div></div></a><a class="pagination-related" href="/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2"></div></div><div class="info-2"><div class="info-item-1">H.264 与“闭眼抽帧”学习笔记 在 PPT、网页操作、数据看板这类屏幕录制视频里，不一定要先把每一帧都解码成图像再判断页面变化，而是可以先观察 H.264 压缩码流里的数据包大小变化。编码器本来就已经分析过相邻画面的差异；如果画面很容易预测，压缩数据通常很小，如果画面突然大面积变化，压缩数据往往会明显变大。 所以所谓“闭眼抽帧”，不是完全不处理视频，而是在候选检测阶段不看像素画面，只看压缩数据的时间变化；等找到可能的换页位置后，再解码少量代表帧。 一、为什么这个问题可以从编码数据里找线索 DataAgent 的视频理解任务里，视频内容通常是界面操作、PPT 或类似页面讲解。这类视频有一个很明显的特点：大部分时间画面是静止的，只有在换页、弹窗、表格加载、动画出现时才发生大面积变化。 如果按固定间隔抽帧，会遇到两个问题：一是同一个静止页面会被抽出很多重复帧；二是停留时间很短但重要的页面可能被错过。传统做法是解码所有帧，然后用像素差、直方图、SSIM、感知哈希或视觉模型比较前后画面。这样当然可行，但成本比较高。 H.264 给了另一条线索。它的压缩依赖预测：能从当前画面内部或前后参...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/" title="RAG 混合检索"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-09</div><div class="info-item-2">RAG 混合检索</div></div><div class="info-2"><div class="info-item-1">一句话回答 混合检索（Hybrid Search）通常是把关键词/稀疏检索与语义/稠密检索并行执行，再通过分数融合或排序融合合并候选集，最后用 Reranker 精排。  稀疏检索擅长精确匹配：专有名词、型号、错误码、人名、数字。 稠密检索擅长语义匹配：同义表达、口语化问题、没有共享关键词的相关文本。 混合检索的目标不是简单地“多查一次”，而是利用两类检索器的互补性，提高 Recall@K，并在精排后提高最终答案质量。  面试时可以先给出下面这条主线：  Query 预处理 → 稀疏检索与稠密检索并行召回 → 候选去重与融合 → Reranker 精排 → 上下文组装 → LLM 生成。  为什么需要混合检索 只用一种检索器会有明显盲区。    查询 BM25/关键词检索 向量检索     ORA-01555、iPhone 15 Pro Max 通常很好，能精确命中关键词 可能因罕见 token 或向量平滑而漏召回   “合同到期后还能续多久”与“协议期满可延长三个月” 词面重合少，可能漏召回 能利用语义相近性命中   带数字、版本号、缩写的查询 更稳定 容易忽略数字或细粒度差异...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">kjore</div><div class="author-info-description">什么都不懂</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">46</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kjore"><i class="fab fa-github"></i><span>关注我</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://www.zhihu.com/people/19-30-31-12" target="_blank" title="知乎"><i class="fab fa-zhihu" style="color: #1772f6;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">一句话回答</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E2%80%9C%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E2%80%9D"><span class="toc-number">1.1.</span> <span class="toc-text">为什么需要“向量数据库”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%99%AE%E9%80%9A%E7%B4%A2%E5%BC%95%E4%B8%8D%E9%80%82%E5%90%88%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2"><span class="toc-number">1.1.1.</span> <span class="toc-text">为什么普通索引不适合向量检索</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9C%9F%E7%9A%84%E4%B8%8D%E8%83%BD%E5%81%9A%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%90%97"><span class="toc-number">1.1.2.</span> <span class="toc-text">关系数据库真的不能做向量检索吗</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">2. 向量检索基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Embedding-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 Embedding 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E5%B8%B8%E8%A7%81%E8%B7%9D%E7%A6%BB%E5%BA%A6%E9%87%8F"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 常见距离度量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%99%E5%BC%A6%E7%9B%B8%E4%BC%BC%E5%BA%A6-COSINE"><span class="toc-number">2.2.1.</span> <span class="toc-text">余弦相似度 COSINE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E7%A7%AF-IP"><span class="toc-number">2.2.2.</span> <span class="toc-text">内积 IP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AC%A7%E6%B0%8F%E8%B7%9D%E7%A6%BB-L2"><span class="toc-number">2.2.3.</span> <span class="toc-text">欧氏距离 L2</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-KNN%E3%80%81ANN%E3%80%81Recall"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 KNN、ANN、Recall</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">3. Milvus 的数据模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 核心概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-Growing-Segment-%E4%B8%8E-Sealed-Segment"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 Growing Segment 与 Sealed Segment</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-RAG-%E6%8E%A8%E8%8D%90-Schema"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 RAG 推荐 Schema</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">4. Milvus 2.6.x 架构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E6%80%BB%E4%BD%93%E8%AE%BE%E8%AE%A1"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 总体设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Access-Layer%EF%BC%9AProxy"><span class="toc-number">4.1.1.</span> <span class="toc-text">Access Layer：Proxy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Coordinator"><span class="toc-number">4.1.2.</span> <span class="toc-text">Coordinator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Streaming-Node"><span class="toc-number">4.1.3.</span> <span class="toc-text">Streaming Node</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Query-Node"><span class="toc-number">4.1.4.</span> <span class="toc-text">Query Node</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-Node"><span class="toc-number">4.1.5.</span> <span class="toc-text">Data Node</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Storage"><span class="toc-number">4.1.6.</span> <span class="toc-text">Storage</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E5%86%99%E5%85%A5%E9%93%BE%E8%B7%AF"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 写入链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-%E6%9F%A5%E8%AF%A2%E9%93%BE%E8%B7%AF"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 查询链路</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">5. Milvus 索引：面试重点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1-FLAT"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 FLAT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2-IVF-FLAT"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 IVF_FLAT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-3-IVF-SQ8-%E4%B8%8E-IVF-PQ"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 IVF_SQ8 与 IVF_PQ</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-4-HNSW"><span class="toc-number">5.4.</span> <span class="toc-text">5.4 HNSW</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-5-DiskANN"><span class="toc-number">5.5.</span> <span class="toc-text">5.5 DiskANN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-6-Sparse-Index-%E4%B8%8E-BM25"><span class="toc-number">5.6.</span> <span class="toc-text">5.6 Sparse Index 与 BM25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-7-%E5%A6%82%E4%BD%95%E9%80%89%E7%B4%A2%E5%BC%95"><span class="toc-number">5.7.</span> <span class="toc-text">5.7 如何选索引</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">6.</span> <span class="toc-text">6. 标量过滤、分区和多租户</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%87%E6%BB%A4%E5%BF%85%E9%A1%BB%E5%9C%A8%E5%8F%AC%E5%9B%9E%E9%98%B6%E6%AE%B5%E6%89%A7%E8%A1%8C"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 为什么过滤必须在召回阶段执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2-%E6%A0%87%E9%87%8F%E7%B4%A2%E5%BC%95"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 标量索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3-Partition-%E4%B8%8E-Partition-Key"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 Partition 与 Partition Key</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4-%E5%A4%9A%E7%A7%9F%E6%88%B7%E5%9B%9B%E7%A7%8D%E7%B2%92%E5%BA%A6"><span class="toc-number">6.4.</span> <span class="toc-text">6.4 多租户四种粒度</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">7.</span> <span class="toc-text">7. 一致性：为什么刚写入的数据可能搜不到</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">8.</span> <span class="toc-text">8. 用 Milvus 构建完整 RAG</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#8-1-%E7%A6%BB%E7%BA%BF%E5%86%99%E5%85%A5%E6%B5%81%E7%A8%8B"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 离线写入流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Chunking-%E5%8E%9F%E5%88%99"><span class="toc-number">8.1.1.</span> <span class="toc-text">Chunking 原则</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-2-%E5%9C%A8%E7%BA%BF%E6%9F%A5%E8%AF%A2%E6%B5%81%E7%A8%8B"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 在线查询流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-Reranker"><span class="toc-number">8.2.1.</span> <span class="toc-text">为什么需要 Reranker</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-3-RRF-%E8%9E%8D%E5%90%88"><span class="toc-number">8.3.</span> <span class="toc-text">8.3 RRF 融合</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">9.</span> <span class="toc-text">9. 从零运行一个 Milvus Lite Demo</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#9-1-%E5%AE%89%E8%A3%85"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-2-%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="toc-number">9.2.</span> <span class="toc-text">9.2 完整代码</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">10.</span> <span class="toc-text">10. Dense + BM25 混合检索示例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">11.</span> <span class="toc-text">11. Insert、Upsert、Delete、Flush、Load</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#11-1-Insert-%E4%B8%8E-Upsert"><span class="toc-number">11.1.</span> <span class="toc-text">11.1 Insert 与 Upsert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-2-Flush"><span class="toc-number">11.2.</span> <span class="toc-text">11.2 Flush</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-3-Load-%E4%B8%8E-Release"><span class="toc-number">11.3.</span> <span class="toc-text">11.3 Load 与 Release</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">12.</span> <span class="toc-text">12. 为什么选择 Milvus，而不是别的向量数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#12-1-%E5%AF%B9%E6%AF%94%E8%A1%A8"><span class="toc-number">12.1.</span> <span class="toc-text">12.1 对比表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8-Faiss"><span class="toc-number">12.2.</span> <span class="toc-text">12.2 为什么不用 Faiss</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-3-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8-pgvector"><span class="toc-number">12.3.</span> <span class="toc-text">12.3 为什么不用 pgvector</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-4-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8-Elasticsearch"><span class="toc-number">12.4.</span> <span class="toc-text">12.4 为什么不用 Elasticsearch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-5-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8-Qdrant-%E6%88%96-Weaviate"><span class="toc-number">12.5.</span> <span class="toc-text">12.5 为什么不用 Qdrant 或 Weaviate</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-6-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8-Pinecone"><span class="toc-number">12.6.</span> <span class="toc-text">12.6 为什么不用 Pinecone</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-7-%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E8%AF%A5%E9%80%89-Milvus"><span class="toc-number">12.7.</span> <span class="toc-text">12.7 什么时候不该选 Milvus</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">13.</span> <span class="toc-text">13. 生产调优</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#13-1-%E5%85%88%E5%BB%BA%E7%AB%8B%E8%AF%84%E6%B5%8B%E9%9B%86"><span class="toc-number">13.1.</span> <span class="toc-text">13.1 先建立评测集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-2-%E5%88%86%E9%98%B6%E6%AE%B5%E8%B0%83%E5%8F%82"><span class="toc-number">13.2.</span> <span class="toc-text">13.2 分阶段调参</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-3-%E5%86%85%E5%AD%98%E4%BC%B0%E7%AE%97"><span class="toc-number">13.3.</span> <span class="toc-text">13.3 内存估算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-4-%E5%B8%B8%E8%A7%81%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98"><span class="toc-number">13.4.</span> <span class="toc-text">13.4 常见性能问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Recall-%E4%BD%8E"><span class="toc-number">13.4.1.</span> <span class="toc-text">Recall 低</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%B6%E8%BF%9F%E9%AB%98"><span class="toc-number">13.4.2.</span> <span class="toc-text">延迟高</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5%E6%85%A2%E6%88%96%E6%95%B0%E6%8D%AE%E8%BF%9F%E8%BF%9F%E4%B8%8D%E5%8F%AF%E6%9F%A5"><span class="toc-number">13.4.3.</span> <span class="toc-text">写入慢或数据迟迟不可查</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">14.</span> <span class="toc-text">14. 高可用、安全和运维</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#14-1-%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B8%8D%E6%98%AF%E2%80%9C%E6%9C%89%E5%89%AF%E6%9C%AC%E5%B0%B1%E7%BB%93%E6%9D%9F%E2%80%9D"><span class="toc-number">14.1.</span> <span class="toc-text">14.1 高可用不是“有副本就结束”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-2-%E5%AE%89%E5%85%A8"><span class="toc-number">14.2.</span> <span class="toc-text">14.2 安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-3-%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87"><span class="toc-number">14.3.</span> <span class="toc-text">14.3 监控指标</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">15.</span> <span class="toc-text">15. 常见面试题与参考答案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#15-1-%E4%B8%BA%E4%BB%80%E4%B9%88-RAG-%E9%9C%80%E8%A6%81%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">15.1.</span> <span class="toc-text">15.1 为什么 RAG 需要向量数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-2-Milvus-%E4%B8%8E-Faiss-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">15.2.</span> <span class="toc-text">15.2 Milvus 与 Faiss 有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-3-%E4%B8%BA%E4%BB%80%E4%B9%88-Milvus-%E8%A6%81%E5%AD%98%E7%AE%97%E5%88%86%E7%A6%BB"><span class="toc-number">15.3.</span> <span class="toc-text">15.3 为什么 Milvus 要存算分离</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-4-HNSW-%E5%92%8C-IVF-%E6%80%8E%E4%B9%88%E9%80%89"><span class="toc-number">15.4.</span> <span class="toc-text">15.4 HNSW 和 IVF 怎么选</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-5-%E4%B8%BA%E4%BB%80%E4%B9%88-ANN-%E4%BC%9A%E4%B8%A2-Recall"><span class="toc-number">15.5.</span> <span class="toc-text">15.5 为什么 ANN 会丢 Recall</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-6-COSINE%E3%80%81IP%E3%80%81L2-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">15.6.</span> <span class="toc-text">15.6 COSINE、IP、L2 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-7-Milvus-%E4%B8%AD%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89-Growing-%E5%92%8C-Sealed-Segment"><span class="toc-number">15.7.</span> <span class="toc-text">15.7 Milvus 中为什么有 Growing 和 Sealed Segment</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-8-Flush-%E8%B6%8A%E9%A2%91%E7%B9%81%E6%95%B0%E6%8D%AE%E8%B6%8A%E5%AE%89%E5%85%A8%E5%90%97"><span class="toc-number">15.8.</span> <span class="toc-text">15.8 Flush 越频繁数据越安全吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-9-Strong-Consistency-%E6%98%AF%E5%90%A6%E4%B8%80%E5%AE%9A%E6%9C%80%E5%A5%BD"><span class="toc-number">15.9.</span> <span class="toc-text">15.9 Strong Consistency 是否一定最好</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-10-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E5%8F%AC%E5%9B%9E%E5%90%8E%E5%86%8D%E5%81%9A%E6%9D%83%E9%99%90%E8%BF%87%E6%BB%A4"><span class="toc-number">15.10.</span> <span class="toc-text">15.10 为什么不能召回后再做权限过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-11-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%98%E8%A6%81-BM25"><span class="toc-number">15.11.</span> <span class="toc-text">15.11 为什么还要 BM25</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-12-Milvus-%E5%86%85%E9%83%A8-Rerank-%E4%B8%8E-Cross-Encoder-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">15.12.</span> <span class="toc-text">15.12 Milvus 内部 Rerank 与 Cross-Encoder 有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-13-%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%96%87%E6%A1%A3%E6%9B%B4%E6%96%B0%E4%B8%8D%E9%87%8D%E5%A4%8D"><span class="toc-number">15.13.</span> <span class="toc-text">15.13 如何保证文档更新不重复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-14-Milvus-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%AF%94-pgvector-%E6%9B%B4%E9%80%82%E5%90%88%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%90%91%E9%87%8F"><span class="toc-number">15.14.</span> <span class="toc-text">15.14 Milvus 为什么比 pgvector 更适合大规模向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-15-%E5%A6%82%E4%BD%95%E8%AF%84%E4%BC%B0%E4%B8%80%E4%B8%AA-RAG-%E6%A3%80%E7%B4%A2%E7%B3%BB%E7%BB%9F"><span class="toc-number">15.15.</span> <span class="toc-text">15.15 如何评估一个 RAG 检索系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-16-%E6%95%B0%E6%8D%AE%E9%87%8F%E4%BB%8E-100-%E4%B8%87%E6%B6%A8%E5%88%B0-1-%E4%BA%BF%E6%80%8E%E4%B9%88%E5%8A%9E"><span class="toc-number">15.16.</span> <span class="toc-text">15.16 数据量从 100 万涨到 1 亿怎么办</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-17-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9F%A5%E8%AF%A2%E6%85%A2%EF%BC%8C%E6%80%8E%E4%B9%88%E5%AE%9A%E4%BD%8D"><span class="toc-number">15.17.</span> <span class="toc-text">15.17 为什么查询慢，怎么定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-18-%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">15.18.</span> <span class="toc-text">15.18 如何选择向量数据库</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">16.</span> <span class="toc-text">16. 容易说错的点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">17.</span> <span class="toc-text">17. 项目介绍模板</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">18.</span> <span class="toc-text">18. 速记总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">19.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/10/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/" title="上下文工程">上下文工程</a><time datetime="2026-08-09T16:00:00.000Z" title="发表于 2026-08-10 00:00:00">2026-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/milvus/" title="Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型">Milvus 从零到面试：RAG 向量数据库原理、架构、索引与选型</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/09/%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2/" title="RAG 混合检索">RAG 混合检索</a><time datetime="2026-08-08T16:00:00.000Z" title="发表于 2026-08-09 00:00:00">2026-08-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/H264%E9%97%AD%E7%9C%BC%E6%8A%BD%E5%B8%A7%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T02:12:47.350Z" title="发表于 2026-08-02 10:12:47">2026-08-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/02/KDD_Cup_DataAgent_ASR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="无标题">无标题</a><time datetime="2026-08-02T00:51:39.679Z" title="发表于 2026-08-02 08:51:39">2026-08-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By kjore</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        loader: {
+          load: [
+            // Four font extension packages (optional)
+            //- '[tex]/bbm',
+            //- '[tex]/bboldx',
+            //- '[tex]/dsfont',
+            '[tex]/mhchem'
+          ],
+          paths: {
+            'mathjax-newcm': '[mathjax]/../@mathjax/mathjax-newcm-font',
+
+            //- // Four font extension packages (optional)
+            //- 'mathjax-bbm-extension': '[mathjax]/../@mathjax/mathjax-bbm-font-extension',
+            //- 'mathjax-bboldx-extension': '[mathjax]/../@mathjax/mathjax-bboldx-font-extension',
+            //- 'mathjax-dsfont-extension': '[mathjax]/../@mathjax/mathjax-dsfont-font-extension',
+            'mathjax-mhchem-extension': '[mathjax]/../@mathjax/mathjax-mhchem-font-extension'
+          }
+        },
+        output: {
+          font: 'mathjax-newcm',
+        },
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+          packages: {
+            '[+]': [
+              'mhchem'
+            ]
+          }
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          menuOptions: {
+            settings: {
+              enrich: false  // Turn off Braille and voice narration text automatic generation
+            }
+          },
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
