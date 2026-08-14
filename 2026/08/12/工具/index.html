@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>工具 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="工具的分类    工具类型 调用方向 作用对象     感知工具 Agent 主动调用 获取信息   执行工具 Agent 主动调用 改变世界   协作工具 Agent 主动调用 驱动其他 Agent 或人类   用户沟通工具 Agent 主动调用 向用户传递信息   事件触发工具 Agent 注册、外部触发 驱动 Agent 开始执行    工具的设计的通用原则 工具的表现形式  专用代码工具：">
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>工具 | kjore's blog</title><meta name="author" content="kjore"><meta name="copyright" content="kjore"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="该笔记是对于开源项目 ai-agent-book中第四章的内容的个人思考与总结笔记。 工具的分类    工具类型 调用方向 作用对象     感知工具 Agent 主动调用 获取信息   执行工具 Agent 主动调用 改变世界   协作工具 Agent 主动调用 驱动其他 Agent 或人类   用户沟通工具 Agent 主动调用 向用户传递信息   事件触发工具 Agent 注册、外部触发 驱">
 <meta property="og:type" content="article">
 <meta property="og:title" content="工具">
 <meta property="og:url" content="https://kjore.github.io/2026/08/12/%E5%B7%A5%E5%85%B7/index.html">
 <meta property="og:site_name" content="kjore&#39;s blog">
-<meta property="og:description" content="工具的分类    工具类型 调用方向 作用对象     感知工具 Agent 主动调用 获取信息   执行工具 Agent 主动调用 改变世界   协作工具 Agent 主动调用 驱动其他 Agent 或人类   用户沟通工具 Agent 主动调用 向用户传递信息   事件触发工具 Agent 注册、外部触发 驱动 Agent 开始执行    工具的设计的通用原则 工具的表现形式  专用代码工具：">
+<meta property="og:description" content="该笔记是对于开源项目 ai-agent-book中第四章的内容的个人思考与总结笔记。 工具的分类    工具类型 调用方向 作用对象     感知工具 Agent 主动调用 获取信息   执行工具 Agent 主动调用 改变世界   协作工具 Agent 主动调用 驱动其他 Agent 或人类   用户沟通工具 Agent 主动调用 向用户传递信息   事件触发工具 Agent 注册、外部触发 驱">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kjore.github.io/img/head.png">
 <meta property="article:published_time" content="2026-08-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-08-13T01:43:34.076Z">
+<meta property="article:modified_time" content="2026-08-14T00:32:11.092Z">
 <meta property="article:author" content="kjore">
 <meta property="article:tag" content="MCP">
 <meta property="article:tag" content="tool">
@@ -19,7 +19,7 @@
   "url": "https://kjore.github.io/2026/08/12/%E5%B7%A5%E5%85%B7/",
   "image": "https://kjore.github.io/img/head.png",
   "datePublished": "2026-08-11T16:00:00.000Z",
-  "dateModified": "2026-08-13T01:43:34.076Z",
+  "dateModified": "2026-08-14T00:32:11.092Z",
   "author": [
     {
       "@type": "Person",
@@ -160,7 +160,8 @@
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">48</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">工具</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">工具</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-11T16:00:00.000Z" title="发表于 2026-08-12 00:00:00">2026-08-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-13T01:43:34.076Z" title="更新于 2026-08-13 09:43:34">2026-08-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/agent/">agent</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="工具的分类">工具的分类</h2>
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/head.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">48</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/bg.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/head.png" alt="Logo"><span class="site-name">kjore's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">工具</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-th-large"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">工具</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-11T16:00:00.000Z" title="发表于 2026-08-12 00:00:00">2026-08-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-14T00:32:11.092Z" title="更新于 2026-08-14 08:32:11">2026-08-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/agent/">agent</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>该笔记是对于开源项目 <a target="_blank" rel="noopener" href="https://github.com/bojieli/ai-agent-book">ai-agent-book</a>中第四章的内容的个人思考与总结笔记。</p>
+<h2 id="工具的分类">工具的分类</h2>
 <table>
 <thead>
 <tr>
@@ -294,15 +295,11 @@ microVM/虚拟机：Firecracker 等 microVM 提供带独立内核的硬件级隔
 </ul>
 <h3 id="核心设计">核心设计</h3>
 <ol>
-<li>
-<p>异步消息模式<br>
+<li>异步消息模式<br>
 用户不需要一直停留在当前 session，<br>
-Agent 可以在任务完成或事件发生后主动联系用户。</p>
-</li>
-<li>
-<p>多渠道选择<br>
-渠道包括 App 消息、Push、短信、邮件、电话等。</p>
-</li>
+Agent 可以在任务完成或事件发生后主动联系用户。</li>
+<li>多渠道选择<br>
+渠道包括 App 消息、Push、短信、邮件、电话等。</li>
 </ol>
 <p>根据：</p>
 <ul>
@@ -313,15 +310,11 @@ Agent 可以在任务完成或事件发生后主动联系用户。</p>
 </ul>
 <p>选择合适渠道，并避免重复打扰。</p>
 <ol start="3">
-<li>
-<p>用户召回<br>
+<li>用户召回<br>
 长任务完成、事件发生或周期任务完成后，<br>
-通过通知重新获取用户注意力。</p>
-</li>
-<li>
-<p>消息形态<br>
-除文本外，还可以支持图片、文件、结构化卡片和 Generative UI。</p>
-</li>
+通过通知重新获取用户注意力。</li>
+<li>消息形态<br>
+除文本外，还可以支持图片、文件、结构化卡片和 Generative UI。</li>
 </ol>
 <h2 id="如何从成百上千的工具中选择合适的工具">如何从成百上千的工具中选择合适的工具</h2>
 <h3 id="模型原生工具发现方法（主动发现）">模型原生工具发现方法（主动发现）</h3>
